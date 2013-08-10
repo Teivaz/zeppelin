@@ -1,0 +1,15 @@
+Client part will consist of 4 controllers (probably attiny13).
+Each controller will maintain two devices: servo and DC motor.
+Servo will recieve PWM signal with period 20 ms (50 Hz).
+DC motor will be driven using H-bridge witch requires 2 analog signals.
+To generate analog signals from controller will be used sowtware PWM with RC filter.
+Software PWM without using timer can be implemented in two ways.
+First way. Get normalized random number, compare it with required signal amplitude, if number is grater - enable pin, disable otherwise.
+- requires random number genarator
+- will be interrupted
++ high frequency pwm easy to filter
+
+Second way. Send a saw-shaped signal to ADC pin. If value of the decoded signal is grater - enable pin, disable otherwise.
+- requires additional saw-shape generator
+
+Saw-shaped signal can be obtained by integrating CLK signal but it shuld be at least 512 times slower than CPU frequency.
