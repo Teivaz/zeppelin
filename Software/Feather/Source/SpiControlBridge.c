@@ -1,6 +1,10 @@
 #include "SpiControlBridge.h"
 #include "SoftSpiPhy.h"
 
+#ifdef _AVR
+	#include <stdint.h>
+#endif
+
 char SpiMakeHead(char reciever, char device)
 {
 	return (1 << 6) | ( (reciever & D_MASK) << 3) | (device & D_MASK);

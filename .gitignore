@@ -221,3 +221,4 @@ pip-log.txt
 /Software/*.sdf
 /Software/Feather/UVisionOutput
 /Software/Nest/UVisionOutput
+/Software/Feather/*.atsuo

@@ -1,5 +1,10 @@
 #include "SoftSpiPhy.h"
-#include "CMSIS/stm32f10x.h"
+
+#ifndef _AVR
+	#include "CMSIS/stm32f10x.h"
+#else
+	#include "types.h"	
+#endif
 
 extern void OnSpiWordReceived(char message);
 extern void OnSpiWordSent(void);
@@ -65,7 +70,7 @@ void _SpiReadBit()
 	
 	if(s_spiReadBufferSize == SPI_WORD_SIZE)
 	{
-		// Now bit is read complitely
+		// Now bit is read completely
 		OnSpiWordReceived(s_spiReadBuffer);
 	}
 }

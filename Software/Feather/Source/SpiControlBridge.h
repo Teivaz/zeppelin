@@ -1,7 +1,9 @@
 #ifndef _SPICONTROLBRIDGE_H_
 #define _SPICONTROLBRIDGE_H_
 
-#include "CMSIS/STM32F10x.h"
+#ifndef _AVR
+	#include "CMSIS/STM32F10x.h"
+#endif // _AVR
 
 #define _USE_SPI_RECIEVER
 #define _USE_SPI_TRANSMITTER
