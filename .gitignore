@@ -219,3 +219,5 @@ pip-log.txt
 /Software/UVisionOutput
 *.bak
 /Software/*.sdf
+/Software/Feather/UVisionOutput
+/Software/Nest/UVisionOutput

@@ -1,0 +1,46 @@
+Dependencies for Project 'Nest', Target 'Target': (DO NOT MODIFY !)
+F (.\Source\main.c)(0x520572AF)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_MD -o ".\UVisionOutput\main.o" --omf_browse ".\UVisionOutput\main.crf" --depend ".\UVisionOutput\main.d")
+I (Source\main.h)(0x52056C09)
+I (Source\CMSIS/STM32F10x.h)(0x5206A3A6)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51F6E79F)
+I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F9B5B0)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51F59353)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x5087A1CE)
+I (Source\CMSIS/system_stm32f10x.h)(0x4BD14EE6)
+I (Source\SoftSpiPhy.h)(0x52056B1C)
+F (.\Source\STM32_Init.c)(0x5206A648)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_MD -o ".\UVisionOutput\stm32_init.o" --omf_browse ".\UVisionOutput\stm32_init.crf" --depend ".\UVisionOutput\stm32_init.d")
+I (Source\CMSIS/stm32f10x.h)(0x5206A3A6)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51F6E79F)
+I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F9B5B0)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51F59353)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x5087A1CE)
+I (Source\CMSIS/system_stm32f10x.h)(0x4BD14EE6)
+I (Source\CMSIS/STM32_Reg.h)(0x52075A8F)
+I (Source\CMSIS/stm32f10x_nvic.h)(0x5206A035)
+F (.\Source\CMSIS\STM32F10x.s)(0x5205724F)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x --list ".\UVisionOutput\STM32F10x.lst" --xref -o ".\UVisionOutput\STM32F10x.o" --depend ".\UVisionOutput\STM32F10x.d")
+F (.\Source\SoftSpiPhy.c)(0x52056B84)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_MD -o ".\UVisionOutput\softspiphy.o" --omf_browse ".\UVisionOutput\softspiphy.crf" --depend ".\UVisionOutput\softspiphy.d")
+I (Source\SoftSpiPhy.h)(0x52056B1C)
+I (Source\CMSIS/stm32f10x.h)(0x5206A3A6)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51F6E79F)
+I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F9B5B0)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51F59353)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x5087A1CE)
+I (Source\CMSIS/system_stm32f10x.h)(0x4BD14EE6)
+F (.\Source\SpiControlBridge.c)(0x52056F60)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_MD -o ".\UVisionOutput\spicontrolbridge.o" --omf_browse ".\UVisionOutput\spicontrolbridge.crf" --depend ".\UVisionOutput\spicontrolbridge.d")
+I (Source\SpiControlBridge.h)(0x5206A3AD)
+I (Source\CMSIS/STM32F10x.h)(0x5206A3A6)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51F6E79F)
+I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F9B5B0)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51F59353)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x5087A1CE)
+I (Source\CMSIS/system_stm32f10x.h)(0x4BD14EE6)
+I (Source\SoftSpiPhy.h)(0x52056B1C)
+F (.\Source\CMSIS\core_cm3.c)(0x4BD14EE4)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_MD -o ".\UVisionOutput\core_cm3.o" --omf_browse ".\UVisionOutput\core_cm3.crf" --depend ".\UVisionOutput\core_cm3.d")
+I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F9B5B0)
+F (.\Source\CMSIS\system_stm32f10x.c)(0x4BD14EE6)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_MD -o ".\UVisionOutput\system_stm32f10x.o" --omf_browse ".\UVisionOutput\system_stm32f10x.crf" --depend ".\UVisionOutput\system_stm32f10x.d")
+I (Source\CMSIS\stm32f10x.h)(0x5206A3A6)
+I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x51F6E79F)
+I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F9B5B0)
+I (C:\Keil\ARM\CMSIS\Include\core_cmInstr.h)(0x51F59353)
+I (C:\Keil\ARM\CMSIS\Include\core_cmFunc.h)(0x5087A1CE)
+I (Source\CMSIS\system_stm32f10x.h)(0x4BD14EE6)
