@@ -60,7 +60,7 @@ inline char GetSpiSendWord(){return 0;};
 
 
 
-#ifdef _USE_SPI_RECIEVER
+#ifdef _USE_SPI_RECEIVER
 void OnSpiWordReceived(char message)
 {
 	if(s_recieverStatus == READ_AS_HEADER)
@@ -90,11 +90,11 @@ void OnSpiWordReceived(char message)
 
 void ReadHeader(char message)
 {
-	if(message == SpiMakeHead(RECIEVER_ID, 0))
+	if(message == SpiMakeHead(RECEIVER_ID, 0))
 	{
 		s_recieverStatus = READ_AS_DATA0;
 	}
-	else if(message == SpiMakeHead(RECIEVER_ID, 1))
+	else if(message == SpiMakeHead(RECEIVER_ID, 1))
 	{
 		s_recieverStatus = READ_AS_DATA1;
 	}

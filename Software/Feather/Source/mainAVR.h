@@ -7,12 +7,12 @@ int main(void);
 void Init();
 
 
-inline bool ReadSpiDataBit(void)
+extern inline bool ReadSpiDataBit(void)
 {
 	return false;
 }
 
-inline void WriteSpiDataBit(bool bit)
+extern inline void WriteSpiDataBit(bool bit)
 {
 	;
 }

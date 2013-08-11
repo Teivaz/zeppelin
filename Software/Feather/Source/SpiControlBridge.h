@@ -37,12 +37,12 @@ char s_nextTransmitByteIndex = 0;
 char s_currentTransmitByte = 0;
 #endif
 
-// Receiever
+// Receiver
 void OnSpiWordReceived(char message);
 
 #ifdef _USE_SPI_RECIEVER
 
-#define RECIEVER_ID 1
+#define RECEIVER_ID 1
 
 extern char s_speed = 0;
 extern char s_position = 0;
