@@ -38,6 +38,21 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
+    <avrtoolinterface />
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolName xmlns="">Simulator</ToolName>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <StimuliFile xmlns="">
+      </StimuliFile>
+      <Channel xmlns="">
+        <host>127.0.0.1</host>
+        <port>49916</port>
+        <ssl>False</ssl>
+      </Channel>
+    </com_atmel_avrdbg_tool_simulator>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -102,18 +117,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\mainAVR.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\SoftSpiPhy.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\SoftSpiPhy.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\SpiControlBridge.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\SpiControlBridge.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\types.h">
