@@ -1,0 +1,4 @@
+attiny25 dip8 - 4
+attiny25 soic8 - 6
+L9190 dip8 - 2
+L9190 soic8 - 6
