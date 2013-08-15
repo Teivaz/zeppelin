@@ -93,10 +93,13 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="main.c">
+    <Folder Include="Source" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source\main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="main.h">
+    <Compile Include="Source\main.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
