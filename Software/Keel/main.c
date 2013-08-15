@@ -1,12 +1,5 @@
-/*
- * Keel.c
- *
- * Created: 16.08.2013 1:14:42
- *  Author: Teivaz
- */ 
-
-
 #include <avr/io.h>
+#include "main.h"
 
 int main(void)
 {
@@ -14,4 +7,41 @@ int main(void)
     {
         //TODO:: Please write your application code 
     }
+}
+
+void UpdateAxonStatus(unsigned char state)
+{
+	switch (state)
+	{
+	case EAxonHalt:
+	// This status should remove configurer
+		break;
+		
+	case EAxonReadyToSend:
+		// Check if has something to send
+		if(s_dendriteState == EDendriteReady)
+		{
+			AxonSend(s_buffer);
+		}
+		break;
+		
+	case EAxonSending:
+	
+		
+		break;
+	}
+}
+
+ISR(TIM0_COMPA_vect)
+{
+	// Generate SCK fall
+	
+	// === SPI ===
+	// Prepare data to send through
+}
+
+ISR(TIM0_COMPB_vect)
+{
+	// Generate SCK rise
+	
 }
