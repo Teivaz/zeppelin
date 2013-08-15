@@ -1,5 +1,2 @@
-attiny25 dip8 - 4
 attiny25 soic8 - 6
-L9190 dip8 - 2
-L9190 soic8 - 6
-IRF7105 so8 - 4
+IRF7105 so8 - 8
