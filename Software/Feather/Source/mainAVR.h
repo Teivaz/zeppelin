@@ -3,10 +3,15 @@
 
 #include "types.h"
 
-int main(void);
+int main();
 void Init();
+void SetMotorSpeed(signed char speed);
+void SetServoPosition(unsigned char position);
 
+// temporary for tests
+void UpdateCounter(unsigned char counter);
 
+// SPI
 extern inline bool ReadSpiDataBit(void)
 {
 	return false;

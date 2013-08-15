@@ -4,19 +4,51 @@
 
 volatile unsigned char position = 40;	//7...40
 
+volatile uint8_t s_motorA = 0;
+volatile uint8_t s_motorB = 0;
+
+volatile uint8_t s_counter = 0;
+
+#define MOTOR_PIN_A PB3
+#define MOTOR_PIN_B	PB4
+
 int main(void)
 {
 	Init();
     while(1)
     {
-		;
+		for(uint8_t a = 0; a < 0xff; ++a)
+		{
+			for(uint8_t b = 0; b < 0x0f; ++b)
+			{
+				volatile char a = 0;
+			}
+		}
+		UpdateCounter(1);
+		signed char speed = s_counter - 0x7f;
+		SetMotorSpeed(speed);
     }
 }
 
+
+void UpdateCounter(uint8_t additional)
+{
+	uint8_t dt = 0xff - s_counter;
+	if(dt < additional)
+	{
+		s_counter = additional - dt;
+	}
+	else
+	{
+		s_counter += additional;
+	}
+}
+
+
 void Init()
 {
-	// Default frequency is 9.6 MHz divided by 8
-	// System frequency = 1.2 MHz
+	// Default frequency is 8.0 MHz divided by 1
+	// System frequency = 8.0 MHz
 	
 	/* === Configure prescale here ===	*/
 	uint8_t clkpr = (0 & CLKPS0)|
@@ -28,48 +60,73 @@ void Init()
 	
 	
 	
-	/* === Configure timer here === */
-	SET_BIT(TCCR0B, CS00);
-	SET_BIT(TCCR0B, CS01);
-	// divide by 256
-	// 4.69 kHz min = 0.21 ms, max = 54ms
+	/* === Configure timer here === */	
+	// Stop timers
+	SET_BIT(GTCCR, TSM);
+	{
+		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
+		SET_BIT(TCCR0B, CS01);
+		
+		SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
+		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
+		SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
+			
+		WRITE_REG(OCR0A, s_motorA);
+		WRITE_REG(OCR0B, s_motorB);
+	}
+	// start timers
+	CLEAR_BIT(GTCCR, TSM);	
 	
-	SET_BIT(TIMSK0, OCIE0A);
-	
-	SET_BIT(PORTB, PB3);
-	SET_BIT(PORTB, PB4);
-	SET_BIT(DDRB, DDB4);
-	SET_BIT(DDRB, DDB3);
+	SET_BIT(PORTB, MOTOR_PIN_A);
+	SET_BIT(PORTB, MOTOR_PIN_B);
+	SET_BIT(DDRB, MOTOR_PIN_A);
+	SET_BIT(DDRB, MOTOR_PIN_B);
 	
 	sei();
 }
 
-ISR(TIM0_COMPA_vect)
-{	// High ends here
+// === Servo controls ===
+
+void SetServoPosition(unsigned char position)
+{
 	
-	char prevLevel = READ_BIT(PORTB, PB4);
-	if(prevLevel == 0)
+}
+
+// === DC motor controls ===
+void SetMotorSpeed(signed char speed)
+{
+	cli();
+	if(speed > 0)
 	{
-		// High Impulse
-		
-		// Set timer prescale
-		SET_BIT(TCCR0B, CS00);
-		SET_BIT(TCCR0B, CS01);
-		CLEAR_BIT(TCCR0B, CS02);
-		WRITE_REG(TCNT0, 0);
-				
-		SET_BIT(PORTB, PB4);
-		WRITE_REG(OCR0A, position);
+		uint8_t newSpeed = speed;
+		s_motorA = newSpeed << 1;
+		s_motorB = 0;
 	}
 	else
 	{
-		// Set timer prescale
-		CLEAR_BIT(TCCR0B, CS00);
-		CLEAR_BIT(TCCR0B, CS01);
-		SET_BIT(TCCR0B, CS02);
-		WRITE_REG(TCNT0, 0);
-		
-		CLEAR_BIT(PORTB, PB4);
-		WRITE_REG(OCR0A, 64);
+		uint8_t newSpeed = -speed;
+		s_motorA = 0;
+		s_motorB = newSpeed << 1;
 	}
+	sei();
+}
+
+ISR(TIM0_COMPA_vect)
+{
+	CLEAR_BIT(PORTB, MOTOR_PIN_A);
+}
+ISR(TIM0_COMPB_vect)
+{
+	CLEAR_BIT(PORTB, MOTOR_PIN_B);
+}
+
+ISR(TIM0_OVF_vect)
+{
+	if(s_motorA != 0)
+		SET_BIT(PORTB, MOTOR_PIN_A);
+	if(s_motorB != 0)
+		SET_BIT(PORTB, MOTOR_PIN_B);
+	
+	WRITE_REG(OCR0A, s_motorA);
+	WRITE_REG(OCR0B, s_motorB);
 }
