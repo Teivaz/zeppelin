@@ -1,5 +1,6 @@
-#include <avr/io.h>
 #include "main.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 int main(void)
 {
@@ -44,4 +45,6 @@ ISR(TIM0_COMPB_vect)
 {
 	// Generate SCK rise
 	
+	// === SPI ===
+	// Read data
 }
