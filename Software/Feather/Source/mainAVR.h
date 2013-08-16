@@ -3,28 +3,14 @@
 
 #include "types.h"
 
+#define PRIMARY_LETTER 'Z'
+#define SECONDARY_LETTER '1'
+
 int main();
 void Init();
 void SetMotorSpeedSigned(signed char speed);
 void SetMotorSpeedUnsigned(unsigned char speed);
 void SetServoPosition(unsigned char position);
-
-// temporary for tests
-void UpdateCounter(unsigned char counter);
-char IsValidHeader(char header);
 void ReadSpi();
-
-
-
-// SPI
-extern inline bool ReadSpiDataBit(void)
-{
-	return false;
-}
-
-extern inline void WriteSpiDataBit(bool bit)
-{
-	;
-}
 
 #endif /* MAINAVR_H_ */

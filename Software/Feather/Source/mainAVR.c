@@ -18,16 +18,7 @@ int main(void)
 	Init();
     while(1)
     {
-		for(uint8_t a = 0; a < 0xff; ++a)
-		{
-			for(uint8_t b = 0; b < 0x0f; ++b)
-			{
-				volatile char a = 0;
-			}
-		}
-		UpdateCounter(1);
-		signed char speed = s_counter - 0x7f;
-		//SetMotorSpeedSigned(speed);
+		;
     }
 }
 
@@ -100,34 +91,51 @@ ISR(INT0_vect)
 	ReadSpi();
 }
 
-char IsValidHeader(char header)
-{
-	return header == 0b10101010;
-}
-
 void ReadSpi()
 {
 	if(s_spiState == 0)
 	{
-		if((USIDR) == 98)
+		if((USIDR) == PRIMARY_LETTER)
 		{
-			s_spiState = 1;
+			++s_spiState;
 		}
 	}
 	else if(s_spiState < 9)
 	{
-		
 		++s_spiState;
 	}
-	else
+	else if(s_spiState == 9)
 	{
+		if(USIDR == SECONDARY_LETTER)
+		{
+			++s_spiState;
+		}
+		else
+		{
+			s_spiState = 0;
+		}
+	}
+	else if(s_spiState < 18)
+	{
+		++s_spiState;
+	}
+	else if(s_spiState == 18)
+	{
+		SetMotorSpeedSigned(USIDR);
+		++s_spiState;
+	}
+	else if(s_spiState < 27)
+	{
+		++s_spiState;
+	}
+	else if(s_spiState == 27)
+	{		
+		SetServoPosition(USIDR);
 		s_spiState = 0;
-		SetMotorSpeedUnsigned(USIDR);
 	}
 }
 
 // === Servo controls ===
-
 void SetServoPosition(unsigned char position)
 {
 	
@@ -166,8 +174,8 @@ void SetMotorSpeedUnsigned(unsigned char speed)
 	else
 	{
 		uint8_t newSpeed = 127 - speed;
-		s_motorA = newSpeed << 1;
-		s_motorB = 0;
+		s_motorA = 0;
+		s_motorB = newSpeed << 1;
 	}
 	sei();
 }
