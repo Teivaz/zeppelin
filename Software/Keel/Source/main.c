@@ -19,7 +19,6 @@ int main(void)
 	Configure();
     while(1)
     {
-		UpdateDendriteState();
         UpdateAxonState();
     }
 }
