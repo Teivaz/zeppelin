@@ -1,13 +1,15 @@
-#include "mainAVR.h"
+#include "main.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "types.h"
+#include "ModuleConfig.h"
+#include "SystemConfig.h"
 
 volatile unsigned char position = 40;	//7...40
 
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
-volatile uint8_t s_counter = 0;
 char s_spiState = 0;
 
 #define MOTOR_PIN_A PB3
@@ -22,21 +24,6 @@ int main(void)
     }
 }
 
-
-void UpdateCounter(uint8_t additional)
-{
-	uint8_t dt = 0xff - s_counter;
-	if(dt < additional)
-	{
-		s_counter = additional - dt;
-	}
-	else
-	{
-		s_counter += additional;
-	}
-}
-
-
 void Init()
 {
 	// Default frequency is 8.0 MHz divided by 1
@@ -49,9 +36,7 @@ void Init()
 					(0 & CLKPS3);
 	WRITE_REG(CLKPR, CLKPCE);
 	WRITE_REG(CLKPR, clkpr);
-	
-	
-	
+		
 	/* === Configure timer here === */	
 	// Stop timers
 	SET_BIT(GTCCR, TSM);
@@ -146,7 +131,12 @@ void SetServoPosition(unsigned char position)
 void SetMotorSpeedSigned(signed char speed)
 {
 	cli();
-	if(speed > 0)
+	if (speed == 0)
+	{
+		s_motorA = 0;
+		s_motorB = 0;
+	}
+	else if(speed > 0)
 	{
 		uint8_t newSpeed = speed;
 		s_motorA = newSpeed << 1;

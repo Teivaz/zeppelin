@@ -1,0 +1,7 @@
+#ifndef _SYSTEM_CONFIG_H
+#define _SYSTEM_CONFIG_H
+
+#define PRIMARY_LETTER 'Z'
+#define RADIO_FREQUENCY	0
+
+#endif /* _SYSTEM_CONFIG_H */

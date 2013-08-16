@@ -15,20 +15,16 @@ TStreamBuffer s_stream;
 int main(void)
 {
 	Configure();
-    while(1)
+
+
+   while(1)
     {
-		if(GetStreamBufferSize(&s_stream) == 0)
+	 	if(GetStreamBufferSize(&s_stream) == 0)
 		{
-			WriteStream(&s_stream, 0x0);
-			WriteStream(&s_stream, 0x0);
-			WriteStream(&s_stream, 0x0);
-			WriteStream(&s_stream, 0b10101010);
-			WriteStream(&s_stream, 250);
-			WriteStream(&s_stream, 0x0);
-			WriteStream(&s_stream, 0x0);
-			WriteStream(&s_stream, 0b01010101);
-			WriteStream(&s_stream, 50);
-			WriteStream(&s_stream, 0x0);
+			WriteStream(&s_stream, 'Z');
+			WriteStream(&s_stream, '1');
+			WriteStream(&s_stream, 1);
+			WriteStream(&s_stream, 0);
 		}
         UpdateAxonState();
 		
@@ -104,7 +100,7 @@ ISR(TIM0_COMPB_vect)
 {
 	// Generate CLK rise
 	SET_BIT(PORTB, CLK);
-	WRITE_REG(TCNT0, 0);
+	//WRITE_REG(TCNT0, 0);
 	// === SPI ===
 	// Read data
 }
