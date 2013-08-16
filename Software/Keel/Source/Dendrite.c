@@ -7,6 +7,7 @@
 #include "types.h"
 #include "TransmitPool.h"
 #include "StreamBuffer.h"
+#include "SystemConfig.h"
 
 extern TStreamBuffer s_stream;
 char s_dendriteState = EDendriteIdle;
@@ -26,7 +27,7 @@ const char sk_dendriteInitSequence[DENDRITE_INIT_SEQUENCE_SIZE] =
 	
 	// Set frequency
 	W_REGISTER | RF_CH,
-	FREQUENCY,
+	RADIO_FREQUENCY,
 	
 	// Set data rate to 1 MHz
 	W_REGISTER | RF_SETUP,

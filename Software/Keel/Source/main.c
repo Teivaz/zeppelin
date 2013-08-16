@@ -6,6 +6,7 @@
 #include "nRF24L01.h"
 #include "config.h"
 #include "types.h"
+#include "SystemConfig.h"
 
 #include "Axon.h"
 #include "Dendrite.h"
@@ -14,20 +15,18 @@ TStreamBuffer s_stream;
 
 int main(void)
 {
+	InitializeStream(&s_stream);
 	Configure();
-
-
-   while(1)
+	while(1)
     {
 	 	if(GetStreamBufferSize(&s_stream) == 0)
 		{
-			WriteStream(&s_stream, 'Z');
+			WriteStream(&s_stream, PRIMARY_LETTER);
 			WriteStream(&s_stream, '1');
-			WriteStream(&s_stream, 1);
+			WriteStream(&s_stream, 2);
 			WriteStream(&s_stream, 0);
 		}
         UpdateAxonState();
-		
     }
 }
 
