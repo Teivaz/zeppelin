@@ -3,6 +3,7 @@
 #include "config.h"
 #include "types.h"
 #include "StreamBuffer.h"
+#include "main.h"
 
 char s_axonState = EAxonHalt;
 char s_axonData = 0;
@@ -17,9 +18,9 @@ void UpdateAxonState()
 		
 	case EAxonReady:
 		// Check if has something to send
-		if(GetStreamBufferSize() != 0)
+		if(GetStreamBufferSize(&s_stream) != 0)
 		{
-			AxonSend(ReadStream());
+			AxonSend(ReadStream(&s_stream));
 		}
 		break;
 		
@@ -44,7 +45,7 @@ void AxonIncrementBit()
 			return;
 		}
 		
-		(0x7F & s_axonData) ? SET_BIT(PORTB, AXON_MOSI) : CLEAR_BIT(PORTB, AXON_MOSI);
+		(0x80 & s_axonData) ? SET_BIT(PORTB, AXON_MOSI) : CLEAR_BIT(PORTB, AXON_MOSI);
 		s_axonData = s_axonData << 1;
 		++s_axonState;
 	}

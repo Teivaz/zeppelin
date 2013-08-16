@@ -19,9 +19,9 @@ extern char s_axonState;
 extern char s_axonData;
 
 void UpdateAxonState();
-void AxonSend(char data);
 void AxonIncrementBit();
 
+void AxonSend(char data);
 void UpdateDendriteState();
 void DendriteSendReadRequest();
 

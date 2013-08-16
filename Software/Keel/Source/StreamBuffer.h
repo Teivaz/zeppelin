@@ -2,37 +2,61 @@
 #define STREAMBUFFER_H_
 #include "config.h"
 
-extern char s_buffer[STREAM_BUFFER_SIZE];
-extern char* s_bufferFirst;
-extern char* s_bufferLast;
+// Something is wrong with it
 
-inline void IncrementBufferPointer(char* pointer)
+typedef struct 
 {
-	pointer += 1;
-	if(pointer == &s_buffer[STREAM_BUFFER_SIZE])
+	char buffer[STREAM_BUFFER_SIZE];
+	char* first;
+	char* last;
+} TStreamBuffer;
+
+inline void InitializeStream(TStreamBuffer* stream)
+{
+	stream->first = stream->buffer;
+	stream->last = stream->buffer;
+}
+
+inline void IncrementFirst(TStreamBuffer* stream)
+{
+	++stream->first;
+	if(stream->first == stream->buffer + STREAM_BUFFER_SIZE)
 	{
-		pointer = &s_buffer[0];
+		stream->first = stream->buffer;
 	}
 }
 
-inline char GetStreamBufferSize()
+inline void IncrementLast(TStreamBuffer* stream)
 {
-	if(s_bufferLast >= s_bufferFirst)
-	return s_bufferLast - s_bufferFirst;
+	++stream->last;
+	if(stream->last == stream->buffer + STREAM_BUFFER_SIZE)
+	{
+		stream->last = stream->buffer;
+	}
+}
+
+inline char GetStreamBufferSize(TStreamBuffer* stream)
+{
+	return (stream->first != stream->last);
+	/*
+	if(stream->last >= stream->first)
+	{
+		return (stream->last - stream->first);
+	}
 	
-	return (s_buffer + STREAM_BUFFER_SIZE - s_bufferFirst) + (s_bufferLast - &s_buffer[0]);
+	return (stream->buffer + STREAM_BUFFER_SIZE - stream->first) + (stream->last - stream->buffer);*/
 }
 
-inline void WriteStream(char data)
+inline void WriteStream(TStreamBuffer* stream, char data)
 {
-	*s_bufferLast = data;
-	IncrementBufferPointer(s_bufferLast);
+	*(stream->last) = data;
+	IncrementLast(stream);
 }
 
-inline char ReadStream()
+inline char ReadStream(TStreamBuffer* stream)
 {
-	char ret = *s_bufferFirst;
-	IncrementBufferPointer(s_bufferFirst);
+	char ret = *stream->first;
+	IncrementFirst(stream);
 	return ret;
 }
 #endif /* STREAMBUFFER_H_ */

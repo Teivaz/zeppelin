@@ -8,6 +8,7 @@
 #include "TransmitPool.h"
 #include "StreamBuffer.h"
 
+extern TStreamBuffer s_stream;
 char s_dendriteState = EDendriteIdle;
 unsigned short s_rxInitState = 0;
 TPool s_dendrideActivePool;
@@ -136,5 +137,5 @@ void DendritePrepareNextByte()
 
 void DendriteSaveByte()
 {
-	WriteStream(USIDR);
+	WriteStream(&s_stream, USIDR);
 }
