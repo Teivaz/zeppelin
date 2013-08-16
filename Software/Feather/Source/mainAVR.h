@@ -5,11 +5,16 @@
 
 int main();
 void Init();
-void SetMotorSpeed(signed char speed);
+void SetMotorSpeedSigned(signed char speed);
+void SetMotorSpeedUnsigned(unsigned char speed);
 void SetServoPosition(unsigned char position);
 
 // temporary for tests
 void UpdateCounter(unsigned char counter);
+char IsValidHeader(char header);
+void ReadSpi();
+
+
 
 // SPI
 extern inline bool ReadSpiDataBit(void)

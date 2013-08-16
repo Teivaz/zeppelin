@@ -8,6 +8,7 @@ volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
 volatile uint8_t s_counter = 0;
+char s_spiState = 0;
 
 #define MOTOR_PIN_A PB3
 #define MOTOR_PIN_B	PB4
@@ -26,7 +27,7 @@ int main(void)
 		}
 		UpdateCounter(1);
 		signed char speed = s_counter - 0x7f;
-		SetMotorSpeed(speed);
+		//SetMotorSpeedSigned(speed);
     }
 }
 
@@ -77,12 +78,52 @@ void Init()
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);	
 	
+	// The rising edge of INT0 generates an interrupt request.
+	SET_BIT(MCUCR, ISC00);
+	SET_BIT(MCUCR, ISC01);
+	SET_BIT(GIMSK, INT0); // Enable INT0 interrupt
+	
+	SET_BIT(USICR, USIWM0);
+	SET_BIT(USICR, USICS1);
+	
 	SET_BIT(PORTB, MOTOR_PIN_A);
 	SET_BIT(PORTB, MOTOR_PIN_B);
 	SET_BIT(DDRB, MOTOR_PIN_A);
 	SET_BIT(DDRB, MOTOR_PIN_B);
 	
 	sei();
+}
+
+// === SPI ===
+ISR(INT0_vect)
+{
+	ReadSpi();
+}
+
+char IsValidHeader(char header)
+{
+	return header == 0b10101010;
+}
+
+void ReadSpi()
+{
+	if(s_spiState == 0)
+	{
+		if((USIDR) == 98)
+		{
+			s_spiState = 1;
+		}
+	}
+	else if(s_spiState < 9)
+	{
+		
+		++s_spiState;
+	}
+	else
+	{
+		s_spiState = 0;
+		SetMotorSpeedUnsigned(USIDR);
+	}
 }
 
 // === Servo controls ===
@@ -93,7 +134,8 @@ void SetServoPosition(unsigned char position)
 }
 
 // === DC motor controls ===
-void SetMotorSpeed(signed char speed)
+// -128 - max CCW, 0 - stop, 127 - max CW
+void SetMotorSpeedSigned(signed char speed)
 {
 	cli();
 	if(speed > 0)
@@ -107,6 +149,25 @@ void SetMotorSpeed(signed char speed)
 		uint8_t newSpeed = -speed;
 		s_motorA = 0;
 		s_motorB = newSpeed << 1;
+	}
+	sei();
+}
+
+// 0 - max CCW, 127 - stop, 255 - max CW
+void SetMotorSpeedUnsigned(unsigned char speed)
+{
+	cli();
+	if(speed > 127)
+	{
+		uint8_t newSpeed = speed - 127;
+		s_motorA = newSpeed << 1;
+		s_motorB = 0;		
+	}
+	else
+	{
+		uint8_t newSpeed = 127 - speed;
+		s_motorA = newSpeed << 1;
+		s_motorB = 0;
 	}
 	sei();
 }
