@@ -13,19 +13,21 @@
 
 TStreamBuffer s_stream;
 
+signed char s_speed = 0;
+
 int main(void)
 {
 	InitializeStream(&s_stream);
 	Configure();
 	while(1)
     {
-	 	if(GetStreamBufferSize(&s_stream) == 0)
-		{
-			WriteStream(&s_stream, PRIMARY_LETTER);
-			WriteStream(&s_stream, '1');
-			WriteStream(&s_stream, 2);
-			WriteStream(&s_stream, 0);
-		}
+	    if(GetStreamBufferSize(&s_stream) == 0)
+	    {
+		    WriteStream(&s_stream, PRIMARY_LETTER);
+		    WriteStream(&s_stream, '1');
+		    WriteStream(&s_stream, s_speed);
+		    WriteStream(&s_stream, 0);
+	    }
         UpdateAxonState();
     }
 }
@@ -43,7 +45,7 @@ void Configure()
 	SET_BIT(GTCCR, TSM);
 	{
 		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
-		SET_BIT(TCCR0B, CS01);
+		//SET_BIT(TCCR0B, CS01);
 			
 		SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
 		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
@@ -55,6 +57,17 @@ void Configure()
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);
 	
+	// ADC for tests
+	SET_BIT(ADMUX, MUX0);
+	SET_BIT(ADMUX, ADLAR);
+	SET_BIT(ADCSRA, ADEN);
+	SET_BIT(ADCSRA, ADSC);
+	SET_BIT(ADCSRA, ADIE);
+	SET_BIT(ADCSRA, ADPS1);
+	SET_BIT(ADCSRA, ADPS2);
+	SET_BIT(ADCSRA, ADATE);
+	SET_BIT(DIDR0, ADC1D);
+	// end ADC
 	
 	SET_BIT(PORTB,	CLK);
 	SET_BIT(PORTB,	AXON_MOSI);
@@ -83,6 +96,15 @@ void Sleep()
 			}
 		}
 	}
+}
+
+ISR(ADC_vect)
+{
+	signed char a = ADCH;
+	a = 127 - a;
+	if(a > 127)
+		a = 127;
+	s_speed = a;
 }
 
 ISR(TIM0_COMPA_vect)
