@@ -8,13 +8,16 @@ volatile unsigned char position = 40;	//7...40
 
 volatile uint8_t s_servo = 0;
 
+volatile char s_servoState = 0;
+volatile char s_servo0 = 0;
+volatile char s_servo1 = 0;
+volatile char s_servo2 = 0;
+volatile char s_servo3 = 0;
+
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
 char s_spiState = 0;
-
-#define MOTOR_PIN_A PB3
-#define MOTOR_PIN_B	PB4
 
 int main(void)
 {
@@ -43,7 +46,7 @@ void Init()
 	// Stop timers
 	SET_BIT(GTCCR, TSM);
 	{
-		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
+		SET_BIT(TCCR0B, CS00); // Set source Fcpu/8
 		SET_BIT(TCCR0B, CS01);
 		
 		SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
@@ -72,7 +75,7 @@ void Init()
 	sei();
 }
 
-// === SPI ===
+#pragma mark "SPI"
 ISR(INT0_vect)
 {
 	ReadSpi();
@@ -122,13 +125,35 @@ void ReadSpi()
 	}
 }
 
-// === Servo controls ===
+#pragma mark "Servo"
 void SetServoPosition(unsigned char position)
 {
 	
 }
 
-// === DC motor controls ===
+void ServoNextState()
+{
+	switch(s_servoState)
+	{
+		case 0:	// Pin is low
+		break;
+		
+		case 1: // Pin high. Longest pause
+		break;
+		
+		case 2: // Pin high. Shorter pause
+		break;
+		
+		case 3: // Pin high. Short pause
+		break;
+		
+		case 4: // Pin high. Shortest pause
+		break;
+	}
+}
+
+
+#pragma mark "DC Motor"
 // -128 - max CCW, 0 - stop, 127 - max CW
 void SetMotorSpeedSigned(signed char speed)
 {
