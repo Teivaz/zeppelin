@@ -4143,8 +4143,8 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="SUPPLY6" library="supply2" deviceset="0V" device=""/>
 <part name="SUPPLY7" library="supply2" deviceset="0V" device=""/>
 <part name="SUPPLY8" library="supply2" deviceset="+UB" device=""/>
-<part name="R1" library="rcl" deviceset="R-EU_" device="R0805"/>
-<part name="R2" library="rcl" deviceset="R-EU_" device="R0805"/>
+<part name="R1" library="rcl" deviceset="R-EU_" device="R1206"/>
+<part name="R2" library="rcl" deviceset="R-EU_" device="R1206"/>
 </parts>
 <sheets>
 <sheet>
