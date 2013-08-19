@@ -2,10 +2,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "types.h"
-#include "ModuleConfig.h"
 #include "SystemConfig.h"
 
 volatile unsigned char position = 40;	//7...40
+
+volatile uint8_t s_servo = 0;
 
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
@@ -26,6 +27,7 @@ int main(void)
 
 void Init()
 {
+	InitLetters;
 	// Default frequency is 8.0 MHz divided by 1
 	// System frequency = 8.0 MHz
 	
@@ -80,7 +82,7 @@ void ReadSpi()
 {
 	if(s_spiState == 0)
 	{
-		if((USIDR) == PRIMARY_LETTER)
+		if(USIDR == PRIMARY_LETTER)
 		{
 			++s_spiState;
 		}
