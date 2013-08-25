@@ -4081,6 +4081,8 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="SUPPLY7" library="supply2" deviceset="+UB" device=""/>
 <part name="SUPPLY8" library="supply2" deviceset="0V" device=""/>
 <part name="SUPPLY9" library="supply2" deviceset="+UB" device=""/>
+<part name="R2" library="rcl" deviceset="R-EU_" device="M1206"/>
+<part name="SUPPLY10" library="supply2" deviceset="+UB" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -4095,12 +4097,14 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <instance part="BAT" gate="G$1" x="5.08" y="10.16" rot="R180"/>
 <instance part="SUPPLY3" gate="G$1" x="15.24" y="15.24"/>
 <instance part="SUPPLY4" gate="0V" x="15.24" y="2.54"/>
-<instance part="SUPPLY5" gate="G$1" x="-10.16" y="43.18"/>
-<instance part="SUPPLY6" gate="0V" x="-10.16" y="30.48"/>
+<instance part="SUPPLY5" gate="G$1" x="-10.16" y="30.48" rot="R180"/>
+<instance part="SUPPLY6" gate="0V" x="-20.32" y="35.56"/>
 <instance part="R1" gate="G$1" x="55.88" y="-5.08"/>
 <instance part="SUPPLY7" gate="G$1" x="43.18" y="-5.08" rot="R90"/>
 <instance part="SUPPLY8" gate="0V" x="96.52" y="45.72"/>
 <instance part="SUPPLY9" gate="G$1" x="121.92" y="48.26"/>
+<instance part="R2" gate="G$1" x="83.82" y="43.18" rot="R90"/>
+<instance part="SUPPLY10" gate="G$1" x="83.82" y="53.34"/>
 </instances>
 <busses>
 </busses>
@@ -4119,19 +4123,17 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="68.58" y1="-7.62" x2="68.58" y2="-10.16" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP2" gate="A" pin="3"/>
-<pinref part="SUPPLY6" gate="0V" pin="0V"/>
-<wire x1="-2.54" y1="35.56" x2="-10.16" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="-10.16" y1="35.56" x2="-10.16" y2="33.02" width="0.1524" layer="91"/>
-<label x="-15.24" y="35.56" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="SUPPLY8" gate="0V" pin="0V"/>
 <wire x1="96.52" y1="48.26" x2="96.52" y2="50.8" width="0.1524" layer="91"/>
 <wire x1="96.52" y1="50.8" x2="101.6" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="RF" gate="A" pin="1"/>
 <wire x1="101.6" y1="50.8" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="101.6" y1="38.1" x2="109.22" y2="38.1" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SUPPLY6" gate="0V" pin="0V"/>
+<pinref part="JP2" gate="A" pin="1"/>
+<wire x1="-20.32" y1="38.1" x2="-2.54" y2="38.1" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+UB" class="0">
@@ -4147,13 +4149,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="71.12" y1="10.16" x2="68.58" y2="10.16" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP2" gate="A" pin="1"/>
-<pinref part="SUPPLY5" gate="G$1" pin="+UB"/>
-<wire x1="-2.54" y1="38.1" x2="-10.16" y2="38.1" width="0.1524" layer="91"/>
-<wire x1="-10.16" y1="38.1" x2="-10.16" y2="40.64" width="0.1524" layer="91"/>
-<label x="-17.78" y="38.1" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="SUPPLY7" gate="G$1" pin="+UB"/>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="45.72" y1="-5.08" x2="50.8" y2="-5.08" width="0.1524" layer="91"/>
@@ -4163,6 +4158,17 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="116.84" y1="38.1" x2="121.92" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="121.92" y1="38.1" x2="121.92" y2="45.72" width="0.1524" layer="91"/>
 <pinref part="SUPPLY9" gate="G$1" pin="+UB"/>
+</segment>
+<segment>
+<pinref part="R2" gate="G$1" pin="2"/>
+<pinref part="SUPPLY10" gate="G$1" pin="+UB"/>
+<wire x1="83.82" y1="48.26" x2="83.82" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="JP2" gate="A" pin="3"/>
+<wire x1="-2.54" y1="35.56" x2="-10.16" y2="35.56" width="0.1524" layer="91"/>
+<pinref part="SUPPLY5" gate="G$1" pin="+UB"/>
+<wire x1="-10.16" y1="35.56" x2="-10.16" y2="33.02" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="SCK" class="0">
@@ -4204,33 +4210,35 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </net>
 <net name="MOSI" class="0">
 <segment>
-<pinref part="IC1" gate="G$1" pin="PB0/PCINT0/AIN0/OC0A/MOSI"/>
-<wire x1="71.12" y1="7.62" x2="63.5" y2="7.62" width="0.1524" layer="91"/>
-<wire x1="63.5" y1="7.62" x2="63.5" y2="22.86" width="0.1524" layer="91"/>
 <pinref part="RF" gate="A" pin="6"/>
 <wire x1="116.84" y1="33.02" x2="129.54" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="33.02" x2="129.54" y2="22.86" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="22.86" x2="63.5" y2="22.86" width="0.1524" layer="91"/>
 <label x="121.92" y="33.02" size="1.778" layer="95"/>
+<wire x1="63.5" y1="22.86" x2="63.5" y2="0" width="0.1524" layer="91"/>
+<pinref part="IC1" gate="G$1" pin="PB3/PCINT3/CLKI/ADC3"/>
+<wire x1="63.5" y1="0" x2="71.12" y2="0" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="IRQ" class="0">
 <segment>
-<pinref part="IC1" gate="G$1" pin="PB3/PCINT3/CLKI/ADC3"/>
-<wire x1="71.12" y1="0" x2="60.96" y2="0" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="0" x2="60.96" y2="25.4" width="0.1524" layer="91"/>
 <pinref part="RF" gate="A" pin="8"/>
 <wire x1="116.84" y1="30.48" x2="127" y2="30.48" width="0.1524" layer="91"/>
 <wire x1="127" y1="30.48" x2="127" y2="25.4" width="0.1524" layer="91"/>
-<wire x1="127" y1="25.4" x2="60.96" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="127" y1="25.4" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
 <label x="121.92" y="30.48" size="1.778" layer="95"/>
+<pinref part="IC1" gate="G$1" pin="PB0/PCINT0/AIN0/OC0A/MOSI"/>
+<wire x1="71.12" y1="7.62" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="7.62" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="CE" class="0">
 <segment>
 <pinref part="RF" gate="A" pin="3"/>
-<wire x1="91.44" y1="35.56" x2="109.22" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="35.56" x2="109.22" y2="35.56" width="0.1524" layer="91"/>
 <label x="93.98" y="35.56" size="1.778" layer="95"/>
+<pinref part="R2" gate="G$1" pin="1"/>
+<wire x1="83.82" y1="35.56" x2="83.82" y2="38.1" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="CSN" class="0">
