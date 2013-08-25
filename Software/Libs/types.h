@@ -21,4 +21,15 @@ typedef enum {false = 0, true = !false} bool;
 #define MODIFY_REG(REG, CLEARMASK, SETMASK)  WRITE_REG((REG), (((READ_REG(REG)) & (~(CLEARMASK))) | (SETMASK)))
 
 
+
+inline char CRC(char* data, uint8_t size)
+{
+	char ret = 0;
+	for(uint8_t i = 0; i < size; ++i)
+	{
+		ret += data[i];
+	}
+	return ret;
+}
+
 #endif /* TYPES_H_ */

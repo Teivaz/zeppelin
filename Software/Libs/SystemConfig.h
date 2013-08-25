@@ -14,7 +14,7 @@ char e_secondaryLetter EEMEM = '1';
 char PRIMARY_LETTER;
 char SECONDARY_LETTER;
 
-#define InitLetters \
+#define InitLetters() \
 	PRIMARY_LETTER = eeprom_read_byte(&e_primaryLetter);\
 	SECONDARY_LETTER = eeprom_read_byte(&e_secondaryLetter);
 

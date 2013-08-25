@@ -4,6 +4,13 @@
 #include "types.h"
 #include "SystemConfig.h"
 
+volatile char s_spiBuffer[4] = {0};
+// s_spiBuffer[0] - primary letter
+// s_spiBuffer[1] - secondary letter
+// s_spiBuffer[2] - DC motor speed
+// s_spiBuffer[3] - servo position
+// 5th byte corresponds CRC
+
 volatile unsigned char position = 40;	//7...40
 
 volatile uint8_t s_servo = 0;
@@ -30,7 +37,7 @@ int main(void)
 
 void Init()
 {
-	InitLetters;
+	InitLetters();
 	// Default frequency is 8.0 MHz divided by 1
 	// System frequency = 8.0 MHz
 	
@@ -42,7 +49,7 @@ void Init()
 	WRITE_REG(CLKPR, CLKPCE);
 	WRITE_REG(CLKPR, clkpr);
 		
-	/* === Configure timer here === */	
+	/* === Configure timer 0 here === */	
 	// Stop timers
 	SET_BIT(GTCCR, TSM);
 	{
@@ -87,6 +94,7 @@ void ReadSpi()
 	{
 		if(USIDR == PRIMARY_LETTER)
 		{
+			s_spiBuffer[0] = USIDR
 			++s_spiState;
 		}
 	}
@@ -98,6 +106,7 @@ void ReadSpi()
 	{
 		if(USIDR == SECONDARY_LETTER)
 		{
+			s_spiBuffer[1] = USIDR;
 			++s_spiState;
 		}
 		else
@@ -111,7 +120,7 @@ void ReadSpi()
 	}
 	else if(s_spiState == 18)
 	{
-		SetMotorSpeedSigned(USIDR);
+		s_spiBuffer[2] = USIDR;
 		++s_spiState;
 	}
 	else if(s_spiState < 27)
@@ -119,8 +128,21 @@ void ReadSpi()
 		++s_spiState;
 	}
 	else if(s_spiState == 27)
-	{		
-		SetServoPosition(USIDR);
+	{
+		s_spiBuffer[3] = USIDR;
+		++s_spiState;
+	}
+	else if(s_spiState < 36)
+	{
+		++s_spiState;
+	}
+	else if(s_spiState == 36)
+	{
+		if(CRC(s_spiBuffer, 4) == USIDR)
+		{
+			SetMotorSpeedSigned(s_spiBuffer[2]);
+			SetServoPosition(s_spiBuffer[3]);
+		}
 		s_spiState = 0;
 	}
 }
