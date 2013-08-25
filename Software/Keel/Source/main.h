@@ -8,4 +8,6 @@ int main();
 void Configure();
 void Sleep();
 
+void CreateSpiPacket(char letter, signed char dcSpeed, char servo);
+
 #endif //_MAIN_H_

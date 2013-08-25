@@ -5,9 +5,9 @@
 #include "nRF24L01.h"
 #include "config.h"
 #include "types.h"
+#include "utils.h"
 #include "TransmitPool.h"
 #include "StreamBuffer.h"
-#include "SystemConfig.h"
 
 extern TStreamBuffer s_stream;
 char s_dendriteState = EDendriteIdle;

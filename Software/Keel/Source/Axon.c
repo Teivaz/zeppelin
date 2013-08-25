@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include "config.h"
 #include "types.h"
+#include "utils.h"
 #include "StreamBuffer.h"
 #include "main.h"
 

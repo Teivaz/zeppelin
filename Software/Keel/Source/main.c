@@ -6,14 +6,16 @@
 #include "nRF24L01.h"
 #include "config.h"
 #include "types.h"
-#include "SystemConfig.h"
+#include "utils.h"
 
 #include "Axon.h"
 #include "Dendrite.h"
+#include "SystemConfig.h"
 
 TStreamBuffer s_stream;
 
 signed char s_speed = 0;
+char s_spiPackage[5] = {0};
 
 int main(void)
 {
@@ -23,17 +25,19 @@ int main(void)
     {
 	    if(GetStreamBufferSize(&s_stream) == 0)
 	    {
-		    WriteStream(&s_stream, PRIMARY_LETTER);
-		    WriteStream(&s_stream, '1');
-		    WriteStream(&s_stream, s_speed);
-		    WriteStream(&s_stream, 0);
-	    }
+			CreateSpiPacket('1', s_speed, 0);
+			for(uint8_t i = 0; i < 5; ++i)
+			{
+				WriteStream(&s_stream, s_spiPackage[i]);
+			}
+		}
         UpdateAxonState();
     }
 }
 
 void Configure()
 {
+	InitLetters();
 	//Clock
 	uint8_t clkpr = (0 & CLKPS0)|
 					(0 & CLKPS1)|
@@ -97,6 +101,16 @@ void Sleep()
 		}
 	}
 }
+
+void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
+{
+	s_spiPackage[0] = PRIMARY_LETTER;
+	s_spiPackage[1] = letter;
+	s_spiPackage[2] = dcSpeed;
+	s_spiPackage[3] = servo;
+	s_spiPackage[4] = CRC(s_spiPackage, 4);
+}
+
 
 ISR(ADC_vect)
 {
