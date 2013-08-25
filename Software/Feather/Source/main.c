@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "types.h"
+#include "utils.h"
 #include "SystemConfig.h"
 
 volatile char s_spiBuffer[4] = {0};
