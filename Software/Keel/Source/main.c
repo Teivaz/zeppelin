@@ -25,7 +25,8 @@ int main(void)
     {
 	    if(GetStreamBufferSize(&s_stream) == 0)
 	    {
-			CreateSpiPacket('1', s_speed, 0);
+			unsigned char servo = s_speed + 127;
+			CreateSpiPacket('1', s_speed, servo);
 			for(uint8_t i = 0; i < 5; ++i)
 			{
 				WriteStream(&s_stream, s_spiPackage[i]);
@@ -55,8 +56,8 @@ void Configure()
 		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
 		//SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
 			
-		WRITE_REG(OCR0A, 127);
-		WRITE_REG(OCR0B, 254);
+		WRITE_REG(OCR0A, 128);
+		WRITE_REG(OCR0B, 255);
 	}
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);
@@ -77,8 +78,8 @@ void Configure()
 	SET_BIT(PORTB,	AXON_MOSI);
 	SET_BIT(DDRB,	CLK);
 	SET_BIT(DDRB,	AXON_MOSI);
-	//SET_BIT(PORTB,	DENDRITE_MOSI);
-	//SET_BIT(DDRB,	DENDRITE_MOSI);
+	SET_BIT(PORTB,	CN);
+	SET_BIT(DDRB,	CN);
 	
 	
 	// Wait for clients to start

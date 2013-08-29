@@ -18,6 +18,7 @@ void UpdateAxonState()
 		break;
 		
 	case EAxonReady:
+		CLEAR_BIT(PORTB, CN);
 		// Check if has something to send
 		if(GetStreamBufferSize(&s_stream) != 0)
 		{
@@ -38,6 +39,9 @@ void AxonSend(char data)
 
 void AxonIncrementBit()
 {
+	if(s_axonState >= EAxonSending0)
+		SET_BIT(PORTB, CN);
+		
 	if(s_axonState >= EAxonSending0)
 	{
 		

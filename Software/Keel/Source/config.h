@@ -3,6 +3,7 @@
 
 #define CLK				PB3
 #define AXON_MOSI		PB4
+#define CN				PB0
 /*#define DENDRITE_MOSI	PB3
 #define DENDRITE_MISO	PB4
 #define DENDRITE_IRQ	PB5*/
