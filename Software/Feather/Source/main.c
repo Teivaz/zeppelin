@@ -95,15 +95,15 @@ void ReadSpi()
 	{
 		if(USIDR == PRIMARY_LETTER)
 		{
-			s_spiBuffer[0] = USIDR
+			s_spiBuffer[0] = USIDR;
 			++s_spiState;
 		}
 	}
-	else if(s_spiState < 9)
+	else if(s_spiState < SPI_WORD_SIZE * 1)
 	{
 		++s_spiState;
 	}
-	else if(s_spiState == 9)
+	else if(s_spiState == SPI_WORD_SIZE * 1)
 	{
 		if(USIDR == SECONDARY_LETTER)
 		{
@@ -115,29 +115,29 @@ void ReadSpi()
 			s_spiState = 0;
 		}
 	}
-	else if(s_spiState < 18)
+	else if(s_spiState < SPI_WORD_SIZE * 2)
 	{
 		++s_spiState;
 	}
-	else if(s_spiState == 18)
+	else if(s_spiState == SPI_WORD_SIZE * 2)
 	{
 		s_spiBuffer[2] = USIDR;
 		++s_spiState;
 	}
-	else if(s_spiState < 27)
+	else if(s_spiState < SPI_WORD_SIZE * 3)
 	{
 		++s_spiState;
 	}
-	else if(s_spiState == 27)
+	else if(s_spiState == SPI_WORD_SIZE * 3)
 	{
 		s_spiBuffer[3] = USIDR;
 		++s_spiState;
 	}
-	else if(s_spiState < 36)
+	else if(s_spiState < SPI_WORD_SIZE * 4)
 	{
 		++s_spiState;
 	}
-	else if(s_spiState == 36)
+	else if(s_spiState == SPI_WORD_SIZE * 4)
 	{
 		if(CRC(s_spiBuffer, 4) == USIDR)
 		{
