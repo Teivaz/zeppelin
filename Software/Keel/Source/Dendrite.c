@@ -27,7 +27,7 @@ const char sk_dendriteInitSequence[DENDRITE_INIT_SEQUENCE_SIZE] =
 	
 	// Set frequency
 	W_REGISTER | RF_CH,
-	RADIO_FREQUENCY,
+	/*RADIO_FREQUENCY*/0,
 	
 	// Set data rate to 1 MHz
 	W_REGISTER | RF_SETUP,

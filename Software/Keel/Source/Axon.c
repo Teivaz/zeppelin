@@ -40,14 +40,14 @@ void AxonIncrementBit()
 {
 	if(s_axonState >= EAxonSending0)
 	{
-		if(s_axonState > EAxonSending7)
+		
+		(0x80 & s_axonData) ? SET_BIT(PORTB, AXON_MOSI) : CLEAR_BIT(PORTB, AXON_MOSI);
+		s_axonData = s_axonData << 1;
+		if(s_axonState >= EAxonSending7)
 		{
 			s_axonState = EAxonReady;
 			return;
 		}
-		
-		(0x80 & s_axonData) ? SET_BIT(PORTB, AXON_MOSI) : CLEAR_BIT(PORTB, AXON_MOSI);
-		s_axonData = s_axonData << 1;
 		++s_axonState;
 	}
 }

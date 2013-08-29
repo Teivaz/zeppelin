@@ -9,6 +9,8 @@
 char e_primaryLetter EEMEM = 'Z';
 char e_secondaryLetter EEMEM = '1';
 
+#define SPI_WORD_SIZE 8
+
 #define RADIO_FREQUENCY	0
 
 char PRIMARY_LETTER;
