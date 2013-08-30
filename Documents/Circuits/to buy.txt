@@ -1,3 +1,1 @@
-attiny25 soic8 - 6
-IRF7105 so8 - 8
 resistors 1206 1k - 100
