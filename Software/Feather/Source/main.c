@@ -89,7 +89,6 @@ void Init()
 	SET_BIT(DDRB, SERVO_PIN);
 	
 	sei();
-	SetMotorSpeedUnsigned(0);
 }
 
 #pragma mark "SPI"
