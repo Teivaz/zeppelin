@@ -1,9 +1,9 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+int main();
+void Configure();
 
-void Init(void);
-extern void stm32_Init(void);
-void Switch(void);
+void CreateSpiPacket(char letter, signed char dcSpeed, char servo);
 
 #endif //_MAIN_H_
