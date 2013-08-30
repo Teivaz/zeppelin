@@ -8,9 +8,16 @@ void SetMotorSpeedSigned(signed char speed);
 void SetMotorSpeedUnsigned(unsigned char speed);
 
 void SetServoPosition(unsigned char position);
-void ServoNextState();
-
+void AdvanceServoState();
+ 
 void ReadSpi();
+
+typedef enum
+{
+	EServoFirst,
+	EServoSecond,
+	EServoPause
+}	TServoState;
 
 // Configuration
 #define SERVO_PIN	PB1

@@ -5,6 +5,9 @@
 #include "utils.h"
 #include "SystemConfig.h"
 
+#define SERVO_MIN_IMPULSE	100	// This value should be around 0.5 ms. 1 equals to 0.005 ms
+#define SERVO_PAUSE			80	// This value should be around 20 ms. 1 equals 0.25 ms 
+
 volatile char s_spiBuffer[4] = {0};
 // s_spiBuffer[0] - primary letter
 // s_spiBuffer[1] - secondary letter
@@ -12,20 +15,12 @@ volatile char s_spiBuffer[4] = {0};
 // s_spiBuffer[3] - servo position
 // 5th byte corresponds CRC
 
-volatile unsigned char position = 40;	//7...40
-
-volatile uint8_t s_servo = 0;
-
-volatile char s_servoState = 0;
-volatile char s_servo0 = 0;
-volatile char s_servo1 = 0;
-volatile char s_servo2 = 0;
-volatile char s_servo3 = 0;
-
+volatile uint8_t s_servo = 128;	// 1 equals 0.0078 ms
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
 char s_spiState = 0;
+volatile char s_servoState = EServoPause;
 
 int main(void)
 {
@@ -63,6 +58,16 @@ void Init()
 			
 		WRITE_REG(OCR0A, s_motorA);
 		WRITE_REG(OCR0B, s_motorB);
+		
+
+		SET_BIT(TCCR1, CS13);
+		SET_BIT(TCCR1, CS10);
+		WRITE_REG(OCR1A, SERVO_PAUSE);
+		
+		SET_BIT(TIMSK, OCIE1A);
+		SET_BIT(PLLCSR, LSM);
+		SET_BIT(PLLCSR, PCKE);
+		SET_BIT(PLLCSR, PLLE);
 	}
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);	
@@ -72,15 +77,19 @@ void Init()
 	SET_BIT(MCUCR, ISC01);
 	SET_BIT(GIMSK, INT0); // Enable INT0 interrupt
 	
-	SET_BIT(USICR, USIWM0);
+	SET_BIT(USICR, USIWM1);
 	SET_BIT(USICR, USICS1);
 	
 	SET_BIT(PORTB, MOTOR_PIN_A);
 	SET_BIT(PORTB, MOTOR_PIN_B);
+	SET_BIT(PORTB, SERVO_PIN);
+	
 	SET_BIT(DDRB, MOTOR_PIN_A);
 	SET_BIT(DDRB, MOTOR_PIN_B);
+	SET_BIT(DDRB, SERVO_PIN);
 	
 	sei();
+	SetMotorSpeedUnsigned(0);
 }
 
 #pragma mark "SPI"
@@ -151,30 +160,61 @@ void ReadSpi()
 #pragma mark "Servo"
 void SetServoPosition(unsigned char position)
 {
-	
-}
-
-void ServoNextState()
-{
-	switch(s_servoState)
+	cli();
+	// Doesn't trigger when value is less than 2
+	if(position < 2)
 	{
-		case 0:	// Pin is low
-		break;
-		
-		case 1: // Pin high. Longest pause
-		break;
-		
-		case 2: // Pin high. Shorter pause
-		break;
-		
-		case 3: // Pin high. Short pause
-		break;
-		
-		case 4: // Pin high. Shortest pause
-		break;
+		position = 2;
 	}
+	s_servo = position;
+	sei();
 }
 
+void AdvanceServoState()
+{
+	if(s_servoState == EServoPause)
+	{
+		s_servoState = EServoFirst;
+		SET_BIT(PORTB, SERVO_PIN);
+		// PCK/4
+		CLEAR_BIT(TCCR1, CS13);
+		CLEAR_BIT(TCCR1, CS12);
+		SET_BIT(TCCR1, CS11);
+		SET_BIT(TCCR1, CS10);
+		
+		CLEAR_REG(TCNT1);
+		WRITE_REG(OCR1A, SERVO_MIN_IMPULSE);
+		return;
+	}
+	else if(s_servoState == EServoFirst)
+	{
+		s_servoState = EServoSecond;
+		SET_BIT(PORTB, SERVO_PIN);
+		// PCK/8
+		CLEAR_BIT(TCCR1, CS13);
+		SET_BIT(TCCR1, CS12);
+		CLEAR_BIT(TCCR1, CS11);
+		CLEAR_BIT(TCCR1, CS10);
+		
+		CLEAR_REG(TCNT1);
+		WRITE_REG(OCR1A, s_servo);
+		return;
+	}
+	else if(s_servoState == EServoSecond)
+	{
+		s_servoState = EServoPause;
+		CLEAR_BIT(PORTB, SERVO_PIN);
+		// PCK/256
+		SET_BIT(TCCR1, CS13);
+		CLEAR_BIT(TCCR1, CS12);
+		CLEAR_BIT(TCCR1, CS11);
+		SET_BIT(TCCR1, CS10);
+		
+		CLEAR_REG(TCNT1);
+		WRITE_REG(OCR1A, SERVO_PAUSE);
+		return;
+	}	
+}
 
 #pragma mark "DC Motor"
 // -128 - max CCW, 0 - stop, 127 - max CW
@@ -238,4 +278,9 @@ ISR(TIM0_OVF_vect)
 	
 	WRITE_REG(OCR0A, s_motorA);
 	WRITE_REG(OCR0B, s_motorB);
+}
+
+ISR(TIM1_COMPA_vect)
+{
+	AdvanceServoState();
 }
