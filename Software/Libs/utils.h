@@ -13,6 +13,8 @@
 
 #define READ_REG(REG)         ((REG))
 
+#define TOGGLE_BIT(REG, BIT)	(READ_BIT(REG, BIT) ? CLEAR_BIT(REG, BIT) : SET_BIT(REG, BIT))
+
 #define MODIFY_REG(REG, CLEARMASK, SETMASK)  WRITE_REG((REG), (((READ_REG(REG)) & (~(CLEARMASK))) | (SETMASK)))
 
 inline char CRC(char* data, uint8_t size)
