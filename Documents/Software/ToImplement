@@ -1,11 +1,13 @@
 Client part will consist of 5 controllers (attiny25) four "feathers" and one "keel".
 Each of 4 "feather" controllers will maintain two devices: servo and DC motor.
-One "keel" controller will maintain tranciever through SPI. It will configure transciever and acquire data when ready. Data sent from transciever to Keel will be listened by all 4 controllers. When Feather sees two bytes corresponding to Primary and Secondary letters it will read two more bytes, calculate overall CRC and compare to fifth byte witch is calculated by nest. If CRC match - data will be decoded to DC motor speed and servo position.
+One "keel" controller will maintain tranciever through SPI. It will configure transciever and acquire data when ready. Data sent from transciever to Keel will be listened by all 4 controllers. When Feather sees two bytes corresponding to Primary and Secondary letters it will read two more bytes, calculate overall CRC and compare to fifth byte witch is calculated and transmitted by nest. If CRC matches - data will be decoded to DC motor speed and servo position.
 
-Feather.
+Nest will consist of one MCU (atmega16) and will query all controls with time interval. 
+
+Feather. DONE
 Decode SPI commands - DONE
-Calculate CRC - DONE NtC
-Servo will recieve PWM signal with period ~20 ms (50 Hz) - WIP
+Calculate CRC - DONE
+Servo will recieve PWM signal with period ~20 ms (50 Hz) - DONE
 DC motor will be driven using H-bridge witch requires 2 PWM signals - DONE
 
 Keel.
@@ -14,7 +16,7 @@ Configure transciever - WIP
 Handle inturrupts - TODO
 
 Nest.
-Design number, type and layout of controls - TODO
+Design number, type and layout of controls - WIP
 Configure transciever - TODO
 Query all controls, form packages, transmitt them with interval ~10 ms (100 Hz) - TODO
 Create calibration mode - TODO
