@@ -23,16 +23,10 @@ int main(void)
 	Configure();
 	while(1)
     {
-	    if(GetStreamBufferSize(&s_stream) == 0)
-	    {
-			unsigned char servo = s_speed + 127;
-			CreateSpiPacket('1', s_speed, servo);
-			for(uint8_t i = 0; i < 5; ++i)
-			{
-				WriteStream(&s_stream, s_spiPackage[i]);
-			}
+		if(!READ_BIT(PORTB, INT))
+		{
+			OnDendriteInterrupt();
 		}
-        UpdateAxonState();
     }
 }
 
@@ -62,31 +56,23 @@ void Configure()
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);
 	
-	// ADC for tests
-	SET_BIT(ADMUX, MUX0);
-	SET_BIT(ADMUX, ADLAR);
-	SET_BIT(ADCSRA, ADEN);
-	SET_BIT(ADCSRA, ADSC);
-	SET_BIT(ADCSRA, ADIE);
-	SET_BIT(ADCSRA, ADPS1);
-	SET_BIT(ADCSRA, ADPS2);
-	SET_BIT(ADCSRA, ADATE);
-	SET_BIT(DIDR0, ADC1D);
-	// end ADC
+	SET_BIT(USICR, USIWM0); // Three wire USI mode
 	
 	SET_BIT(PORTB,	CLK);
-	SET_BIT(PORTB,	AXON_MOSI);
 	SET_BIT(DDRB,	CLK);
-	SET_BIT(DDRB,	AXON_MOSI);
-	SET_BIT(PORTB,	CN);
-	SET_BIT(DDRB,	CN);
+	SET_BIT(PORTB,	CSN);
+	SET_BIT(DDRB,	CSN);
+	SET_BIT(DDRB,	PB1);
+	SET_BIT(PORTB,	PB1);
+	
 	
 	
 	// Wait for clients to start
 	Sleep();
 	// Finish configure
-	s_axonState = EAxonReady;
 	sei();
+	DendriteInit();
+	OnDendriteSpiReady();
 }
 
 void Sleep()
@@ -112,30 +98,34 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 	s_spiPackage[4] = CRC(s_spiPackage, 4);
 }
 
-
-ISR(ADC_vect)
-{
-	signed char a = ADCH;
-	a = 127 - a;
-	if(a > 127)
-		a = 127;
-	s_speed = a;
-}
-
 ISR(TIM0_COMPA_vect)
 {
 	// Generate CLK fall
 	CLEAR_BIT(PORTB, CLK);
+	//SET_BIT(USICR, USITC);
 	
 	// === SPI ===
 	// Prepare data to send through
-	AxonIncrementBit();
+	SET_BIT(USICR, USICLK);
+	
+	char counter = READ_REG(USISR) & (1<<USICNT0 | 1<<USICNT1 | 1<<USICNT2 | 1<<USICNT3);
+	if(counter > 7)
+	{
+		CLEAR_BIT(USISR, USICNT0);
+		CLEAR_BIT(USISR, USICNT1);
+		CLEAR_BIT(USISR, USICNT2);
+		CLEAR_BIT(USISR, USICNT3);
+		OnDendriteSpiReady();
+	}
+	//AxonIncrementBit();
 }
 
 ISR(TIM0_COMPB_vect)
 {
 	// Generate CLK rise
 	SET_BIT(PORTB, CLK);
+	//SET_BIT(USICR, USITC);
+	
 	//WRITE_REG(TCNT0, 0);
 	// === SPI ===
 	// Read data

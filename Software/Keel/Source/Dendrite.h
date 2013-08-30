@@ -3,6 +3,9 @@
 
 #define DENDRITE_PACKAGE_SIZE 32
 
+// Call this once after initializations is done
+void DendriteInit();
+
 // Call this when SPI is ready
 void OnDendriteSpiReady();
 
@@ -21,10 +24,11 @@ typedef enum
 	EDendriteIdle			= 1,	// Can check if data is ready to 
 	EDendriteSendingRequest = 2,	// Send request to receive data
 	EDendriteReadFirst		= 3,	// Data is being read
-	EDendriteReadLast		= 3 + DENDRITE_PACKAGE_SIZE - 1,
+	EDendriteReadLast		= 3 + DENDRITE_PACKAGE_SIZE,
 	EDendriteFinish,
 }	EDendriteState;
 extern char s_dendriteState;
 
+#define PDBG		CLEAR_BIT(PORTB, DBG);SET_BIT(PORTB, DBG);
 
 #endif //_DENDRITE_H_

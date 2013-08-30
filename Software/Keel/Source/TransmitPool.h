@@ -7,17 +7,17 @@ typedef struct
 	char size;
 } TPool;
 
-inline char IsDone(TPool pool)
+inline char IsDone(TPool* pool)
 {
-	return pool.size == 0;
+	return pool->size == 0;
 }
 
-inline char PoolPopFront(TPool pool)
+inline char PoolPopFront(TPool* pool)
 {
 	if(IsDone(pool))
 		return 0;
-	--pool.size;	
-	return *(pool.pointer++);
+	--pool->size;
+	return *(pool->pointer++);
 }
 
 #endif /* TRANSMITPOOL_H_ */

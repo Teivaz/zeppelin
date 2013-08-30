@@ -12,11 +12,12 @@
 extern TStreamBuffer s_stream;
 char s_dendriteState = EDendriteIdle;
 unsigned short s_rxInitState = 0;
-TPool s_dendrideActivePool;
+TPool s_dendrideActivePool = {0, 0};
 
-#define DENDRITE_INIT_SEQUENCE_SIZE 10
+#define DENDRITE_INIT_SEQUENCE_SIZE 11
 const char sk_dendriteInitSequence[DENDRITE_INIT_SEQUENCE_SIZE] =
 {
+	0,
 	// Power Up
 	W_REGISTER | CONFIG,	
 	1 << PWR_UP | 1 << EN_CRC,
@@ -49,8 +50,15 @@ const char sk_denditeFinishReadingSequence[2] =
 	0
 };
 
-void DendriteAdvanceState()
+void DendriteInit()
 {
+	DendriteAdvanceToState(EDendriteInit);
+	SET_BIT(PORTB, CSN);
+}
+
+
+void DendriteAdvanceState()
+{	
 	char nextState = s_dendriteState + 1;
 	if(nextState > EDendriteFinish)
 		nextState = EDendriteIdle;
@@ -63,7 +71,7 @@ void DendriteAdvanceToState(char state)
 	switch (state)
 	{
 		case EDendriteInit:
-			if(!IsDone(s_dendrideActivePool))
+			if(!IsDone(&s_dendrideActivePool))
 				return;
 			
 			s_dendriteState = state;
@@ -76,7 +84,7 @@ void DendriteAdvanceToState(char state)
 		break;
 		
 		case EDendriteSendingRequest:
-			if(!IsDone(s_dendrideActivePool))
+			if(!IsDone(&s_dendrideActivePool))
 				return;
 		
 			s_dendriteState = state;
@@ -92,7 +100,7 @@ void DendriteAdvanceToState(char state)
 		break;
 		
 		case EDendriteFinish:
-			if(!IsDone(s_dendrideActivePool))
+			if(!IsDone(&s_dendrideActivePool))
 				return;
 			
 			s_dendriteState = state;
@@ -112,11 +120,14 @@ void OnDendriteInterrupt()
 
 void OnDendriteSpiReady()
 {
+	SET_BIT(PORTB, CSN);
 	if(s_dendriteState == EDendriteIdle)
+	{
 		return;
+	}
 	else if(s_dendriteState == EDendriteInit || s_dendriteState == EDendriteSendingRequest || s_dendriteState == EDendriteFinish)
 	{
-		if(IsDone(s_dendrideActivePool))
+		if(IsDone(&s_dendrideActivePool))
 		{
 			DendriteAdvanceState();
 		}
@@ -133,7 +144,9 @@ void OnDendriteSpiReady()
 
 void DendritePrepareNextByte()
 {
-	WRITE_REG(USIDR, PoolPopFront(s_dendrideActivePool));
+	CLEAR_BIT(PORTB, CSN);
+	WRITE_REG(USIDR, PoolPopFront(&s_dendrideActivePool));
+
 }
 
 void DendriteSaveByte()

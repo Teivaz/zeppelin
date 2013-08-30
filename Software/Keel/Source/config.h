@@ -1,9 +1,10 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define CLK				PB3
-#define AXON_MOSI		PB4
-#define CN				PB0
+#define CLK				PB2
+#define DBG				PB3
+#define INT				PB3
+#define CSN				PB4
 /*#define DENDRITE_MOSI	PB3
 #define DENDRITE_MISO	PB4
 #define DENDRITE_IRQ	PB5*/
