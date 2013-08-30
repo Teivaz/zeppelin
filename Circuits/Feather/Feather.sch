@@ -4142,10 +4142,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="R2" library="rcl" deviceset="R-EU_" device="R1206"/>
 <part name="R3" library="rcl" deviceset="R-EU_" device="R1206"/>
 <part name="SUPPLY9" library="supply2" deviceset="+UB" device=""/>
-<part name="IC2" library="atmel" deviceset="TINY13" device="SSU" technology="-20"/>
+<part name="IC2" library="atmel" deviceset="TINY13" device="SU" technology="V-10" value="TINY13V-10SU"/>
 <part name="V2" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="V1" library="pinhead" deviceset="PINHD-1X1" device=""/>
-<part name="DATA" library="pinhead" deviceset="PINHD-1X1" device=""/>
+<part name="MO" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="CLK" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="GND" library="pinhead" deviceset="PINHD-1X1" device=""/>
 </parts>
@@ -4177,7 +4177,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <attribute name="NAME" x="-47.244" y="-3.937" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-39.37" y="0" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="DATA" gate="G$1" x="-45.72" y="-10.16" smashed="yes" rot="R180">
+<instance part="MO" gate="G$1" x="-45.72" y="-10.16" smashed="yes" rot="R180">
 <attribute name="NAME" x="-47.244" y="-9.017" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-39.37" y="-5.08" size="1.778" layer="96" rot="R180"/>
 </instance>
@@ -4258,7 +4258,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="-43.18" y1="-10.16" x2="17.78" y2="-10.16" width="0.1524" layer="91"/>
 <label x="-20.32" y="-7.62" size="1.778" layer="95" rot="R180"/>
 <pinref part="IC2" gate="G$1" pin="PB0/PCINT0/AIN0/OC0A/MOSI"/>
-<pinref part="DATA" gate="G$1" pin="1"/>
+<pinref part="MO" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$11" class="0">
