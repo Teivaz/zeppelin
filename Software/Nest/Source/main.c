@@ -5,7 +5,6 @@
 
 #include "nRF24L01.h"
 #include "config.h"
-#include "types.h"
 #include "utils.h"
 
 #include "StreamBuffer.h"

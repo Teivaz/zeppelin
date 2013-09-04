@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Nest", "Nest.cppproj", "{BF7F32A0-AEA8-40A2-B9F8-6D627C57A636}"
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Nest", "Nest.cproj", "{FBD1F165-B715-4523-BD16-23A188F2309B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|AVR = Release|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BF7F32A0-AEA8-40A2-B9F8-6D627C57A636}.Debug|AVR.ActiveCfg = Debug|AVR
-		{BF7F32A0-AEA8-40A2-B9F8-6D627C57A636}.Debug|AVR.Build.0 = Debug|AVR
-		{BF7F32A0-AEA8-40A2-B9F8-6D627C57A636}.Release|AVR.ActiveCfg = Release|AVR
-		{BF7F32A0-AEA8-40A2-B9F8-6D627C57A636}.Release|AVR.Build.0 = Release|AVR
+		{FBD1F165-B715-4523-BD16-23A188F2309B}.Debug|AVR.ActiveCfg = Debug|AVR
+		{FBD1F165-B715-4523-BD16-23A188F2309B}.Debug|AVR.Build.0 = Debug|AVR
+		{FBD1F165-B715-4523-BD16-23A188F2309B}.Release|AVR.ActiveCfg = Release|AVR
+		{FBD1F165-B715-4523-BD16-23A188F2309B}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
