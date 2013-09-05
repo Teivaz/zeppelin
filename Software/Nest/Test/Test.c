@@ -30,12 +30,11 @@ int main()
 	s_y = 0;
 	s_x = 0;
 	
-	Transmit();
-	//s_featherResult;
-	
 	while(1)
 	{
-		;
+		DendriteReadSticks();
+		UpdateDendrite();
+		Transmit();
 	}
 }
 

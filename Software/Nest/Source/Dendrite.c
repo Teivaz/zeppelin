@@ -1,7 +1,15 @@
 #include "Dendrite.h"
 
-TEMode s_dendriteMode;
-TFeatherData s_featherResult[FEATHER_NUM];
+TStickCalibration	s_stickCalibration[STICK_NUM];
+TStickPosition		s_stickNext[STICK_NUM];
+TStickPosition		s_stickCurrent[STICK_NUM];
+TStickPosition		s_stickPreset[STICK_NUM];
+
+TFeatherCalibration s_featherCalibration[FEATHER_NUM];
+TFeatherData		s_featherResult[FEATHER_NUM];
+
+TEMode				s_dendriteMode;
+TEStickState		s_dendriteState[STICK_NUM];
 
 uint8_t e_featherCalibration[sizeof(TFeatherCalibration) * FEATHER_NUM] =\
 {
@@ -29,7 +37,6 @@ void DendriteInit()
 {
 	s_dendriteMode = eeprom_read_byte(&e_mode);	
 }
-
 
 void SaveFeatherCalibrationValues()
 {
@@ -139,8 +146,8 @@ void SetFeathers()
 		{
 			TStickPosition servosFront = Sum(DecodeStickData(EFrontLeftServo), s_stickPreset[EFrontLeftServo]);
 			TStickPosition motorsFront = Sum(DecodeStickData(EFrontLeftMotor), s_stickPreset[EFrontLeftMotor]);
-			TStickPosition servosBack  =	Sum(DecodeStickData(EBackRightServo), s_stickPreset[EBackRightServo]);
-			TStickPosition motorsBack  =	Sum(DecodeStickData(EBackRightMotor), s_stickPreset[EBackRightMotor]);
+			TStickPosition servosBack  = Sum(DecodeStickData(EBackRightServo), s_stickPreset[EBackRightServo]);
+			TStickPosition motorsBack  = Sum(DecodeStickData(EBackRightMotor), s_stickPreset[EBackRightMotor]);
 			SetFeatherData(EFrontLeftFeather,	servosFront.x,	motorsFront.x);
 			SetFeatherData(EFrontRightFeather,	servosFront.y,	motorsFront.y);
 			SetFeatherData(EBackLeftFeather,	servosBack.x,	motorsBack.x);
@@ -203,6 +210,7 @@ void UpdateDendrite()
 			{
 				s_stickCurrent[n] = s_stickNext[n];
 			}
+			break;
 			case EStickThresheld:
 			{
 				if(0 == IsStickNearPrevious(n))
