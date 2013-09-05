@@ -146,7 +146,7 @@ void SetFeathers();
 // Save all feather calibration values
 void SaveFeatherCalibrationValues();
 // Load all feather calibration values
-void LoadCalibrationValues();
+void LoadFeatherCalibrationValues();
 
 void SaveStickCalibrationValues();
 void LoadStickCalibrationValues();

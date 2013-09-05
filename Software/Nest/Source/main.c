@@ -55,10 +55,6 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 	s_spiPackage[2] = dcSpeed;
 	s_spiPackage[3] = servo;
 	s_spiPackage[4] = CRC(s_spiPackage, 4);
-	for(uint8_t a = 0; a < 0; ++a)
-	{
-		WriteStream(&s_stream, s_spiPackage[a]);
-	}
 }
 
 void Transmit()
@@ -67,6 +63,10 @@ void Transmit()
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
 	{
 		CreateSpiPacket(sc_secondaryLetters[a], GetMotor(a), GetServo(a));
+		for(uint8_t a = 0; a < 5; ++a)
+		{
+			WriteStream(&s_stream, s_spiPackage[a]);
+		}
 	}
 
 	// Fill the rest with zeros

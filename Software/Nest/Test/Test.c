@@ -21,11 +21,14 @@ uint8_t s_y;
 
 int main()
 {
-	
 	InitializeStream(&s_stream);
 	Configure();
 	DendriteInit();
 	AxonInit();
+	
+	volatile float foo = 1.0f;
+	float bar = 0.001f;
+	foo += bar;
 	
 	s_y = 0;
 	s_x = 0;

@@ -35,12 +35,14 @@ uint8_t e_mode = EFrontBack;
 
 void DendriteInit()
 {
-	s_dendriteMode = eeprom_read_byte(&e_mode);	
+	s_dendriteMode = eeprom_read_byte(&e_mode);
+	LoadFeatherCalibrationValues();
+	LoadStickCalibrationValues();
 }
 
 void SaveFeatherCalibrationValues()
 {
-	/*uint8_t* data = (uint8_t*)values;
+	/*uint8_t* data = (uint8_t*)s_featherCalibration;
 	for(uint8_t a = 0; a < (sizeof(TFeatherCalibration) * FEATHER_NUM); ++a)
 	{
 		eeprom_write_byte(e_featherCalibration + a, data[a]);
@@ -48,14 +50,22 @@ void SaveFeatherCalibrationValues()
 	eeprom_write_block(s_featherCalibration, e_featherCalibration, sizeof(TFeatherCalibration) * FEATHER_NUM);
 }
 
-void LoadCalibrationValues()
+void LoadFeatherCalibrationValues()
 {
-	/*uint8_t* data = (uint8_t*)values;
+	/*uint8_t* data = (uint8_t*)s_featherCalibration;
 	for(uint8_t a = 0; a < (sizeof(TFeatherCalibration) * FEATHER_NUM); ++a)
 	{
 		data[a] = eeprom_read_byte(e_featherCalibration + a);
 	}*/
+#ifdef TEST
+	uint8_t* data = (uint8_t*)s_featherCalibration;
+	for(uint8_t a = 0; a < (sizeof(TFeatherCalibration) * FEATHER_NUM); ++a)
+	{
+		data[a] = *(e_featherCalibration + a);
+	}
+#else
 	eeprom_read_block(e_featherCalibration, s_featherCalibration, sizeof(TFeatherCalibration) * FEATHER_NUM);
+#endif
 }
 
 void SwitchMode()
@@ -247,7 +257,15 @@ void SaveStickCalibrationValues()
 
 void LoadStickCalibrationValues()
 {
+#ifdef TEST
+	uint8_t* data = (uint8_t*)s_stickCalibration;
+	for(uint8_t a = 0; a < (sizeof(TStickCalibration) * STICK_NUM); ++a)
+	{
+		data[a] = *(e_stickCalibration + a);
+	}
+#else
 	eeprom_read_block(e_stickCalibration, s_stickCalibration, sizeof(TStickCalibration) * STICK_NUM);
+#endif
 }
 
 void DendriteStickButtonPressed( uint8_t btn )

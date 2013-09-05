@@ -7,7 +7,7 @@
 #define CSN		PB4
 #define MOSI	PB1
 
-#define STREAM_BUFFER_SIZE  32
+#define STREAM_BUFFER_SIZE  33
 
 #define PORTA_ 0x1B
 #define PORTB_ 0x18
