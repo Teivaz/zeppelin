@@ -1,6 +1,7 @@
 #include "Dendrite.h"
 
 TEMode s_dendriteMode;
+TFeatherData s_featherResult[FEATHER_NUM];
 
 uint8_t e_featherCalibration[sizeof(TFeatherCalibration) * FEATHER_NUM] =\
 {
@@ -244,4 +245,12 @@ void LoadStickCalibrationValues()
 void DendriteStickButtonPressed( uint8_t btn )
 {
 	s_dendriteState[btn] = EStickShouldSet;
+}
+
+void DendriteReadSticks()
+{
+	for(uint8_t a = 0; a < STICK_NUM; ++a)
+	{
+		ReadStickData(a);
+	}
 }

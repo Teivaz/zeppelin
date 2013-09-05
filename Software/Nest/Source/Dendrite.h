@@ -119,7 +119,7 @@ extern uint8_t e_mode EEMEM;
 
 void DendriteInit();
 void DendriteStickButtonPressed(uint8_t btn);
-
+void DendriteReadSticks();
 
 void ReadStickRawData(TEStics num, uint8_t *x, uint8_t *y);
 
@@ -158,6 +158,16 @@ inline TStickPosition Sum(TStickPosition a, TStickPosition b)
 	ret.x = a.x + b.x;
 	ret.y = a.y + b.y;
 	return ret;
+}
+
+inline uint8_t GetServo(uint8_t num)
+{
+	return s_featherResult[num].servo;
+}
+
+inline int8_t GetMotor(uint8_t num)
+{
+	return s_featherResult[num].motor;
 }
 
 #endif //_DENDRITE_H_

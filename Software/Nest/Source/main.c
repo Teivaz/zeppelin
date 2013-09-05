@@ -25,9 +25,12 @@ const char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
 signed char s_speed = 0;
 char s_spiPackage[5] = {0};
 
-int main(void)
+#ifdef TEST
+int main_()
+#else
+int main()
+#endif
 {
-	char a = PORTB;
 	InitializeStream(&s_stream);
 	Configure();
 	DendriteInit();
@@ -58,14 +61,12 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 	}
 }
 
-
-
 void Transmit()
 {
 	// This will fill 20 bytes out of 32 that will be sent.
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
 	{
-		CreateSpiPacket(sc_secondaryLetters[a], s_featherResult[a].motor, s_featherResult[a].servo);
+		CreateSpiPacket(sc_secondaryLetters[a], GetMotor(a), GetServo(a));
 	}
 
 	// Fill the rest with zeros
@@ -82,7 +83,7 @@ void ReadButtons()
 	{
 		if(1 == s_stickButtonsState[a] && 0 == ReadStickButton(a))
 		{
-			
+			DendriteStickButtonPressed(a);
 		}
 	}
 }
