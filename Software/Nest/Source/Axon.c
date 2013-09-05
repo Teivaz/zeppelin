@@ -67,7 +67,7 @@ void AxonAdvanceState()
 }
 
 void AxonAdvanceToState(char state)
-{
+{/*
 	switch (state)
 	{
 		case EAxonInit:
@@ -107,14 +107,14 @@ void AxonAdvanceToState(char state)
 			s_dendrideActivePool.pointer = sk_denditeFinishReadingSequence;
 			s_dendrideActivePool.size = 2;
 		break;
-	}
+	}*/
 }
 
 void OnAxonInterrupt()
 {
 	if(s_axonState == EAxonIdle)
 	{
-		AxonAdvanceToState(EAxonSendingRequest);
+		//AxonAdvanceToState(EAxonSendingRequest);
 	}
 }
 
@@ -125,7 +125,7 @@ void OnAxonSpiReady()
 	{
 		return;
 	}
-	else if(s_axonState == EAxonInit || s_axonState == EAxonSendingRequest || s_axonState == EAxonFinish)
+	else if(s_axonState == EAxonInit || s_axonState == EAxonSending || s_axonState == EAxonFinish)
 	{
 		if(IsDone(&s_dendrideActivePool))
 		{
@@ -136,7 +136,7 @@ void OnAxonSpiReady()
 			AxonPrepareNextByte();
 		}
 	}
-	else if(s_axonState >= EAxonReadFirst && s_axonState <= EAxonReadLast)
+	else if(s_axonState >= EAxonSendFirst && s_axonState <= EAxonSendLast)
 	{
 		AxonAdvanceState();
 	}

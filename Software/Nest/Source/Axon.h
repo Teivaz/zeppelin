@@ -1,7 +1,7 @@
 #ifndef _AXON_H_
 #define _AXON_H_
 
-#define AXON_PACKAGE_SIZE 32
+#define AXON_PACKAGE_SIZE 33
 
 // Call this once after initializations is done
 void AxonInit();
@@ -20,11 +20,11 @@ void AxonSaveByte();
 
 typedef enum
 {
-	EAxonInit			= 0,	// Receiver is not ready
-	EAxonIdle			= 1,	// Can check if data is ready to 
-	EAxonSendingRequest = 2,	// Send request to receive data
-	EAxonReadFirst		= 3,	// Data is being read
-	EAxonReadLast		= 3 + AXON_PACKAGE_SIZE,
+	EAxonInit			= 0,	// Transmitter is not ready
+	EAxonIdle			= 1,	// Does nothing
+	EAxonSending		= 2,	// Send data
+	EAxonSendFirst		= 3,	// Data is being read
+	EAxonSendLast		= 3 + AXON_PACKAGE_SIZE,
 	EAxonFinish,
 }	EAxonState;
 extern char s_axonState;

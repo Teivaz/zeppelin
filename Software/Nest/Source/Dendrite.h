@@ -93,15 +93,6 @@ typedef struct
 	int8_t motorC;	// Motor stop
 } TFeatherCalibration;
 
-
-inline TStickPosition Sum(TStickPosition a, TStickPosition b)
-{
-	TStickPosition c;
-	c.x = a.x + b.x;
-	c.y = a.y + b.y;
-	return c;
-}
-
 /**************************************
 * Variables
 **************************************/
@@ -127,6 +118,8 @@ extern uint8_t e_mode EEMEM;
 **************************************/
 
 void DendriteInit();
+void DendriteStickButtonPressed(uint8_t btn);
+
 
 void ReadStickRawData(TEStics num, uint8_t *x, uint8_t *y);
 
@@ -157,5 +150,14 @@ void LoadCalibrationValues();
 
 void SaveStickCalibrationValues();
 void LoadStickCalibrationValues();
+
+
+inline TStickPosition Sum(TStickPosition a, TStickPosition b)
+{
+	TStickPosition ret;
+	ret.x = a.x + b.x;
+	ret.y = a.y + b.y;
+	return ret;
+}
 
 #endif //_DENDRITE_H_

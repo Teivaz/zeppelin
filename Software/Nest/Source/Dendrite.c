@@ -1,5 +1,6 @@
 #include "Dendrite.h"
-#include <avr/eeprom.h>
+
+TEMode s_dendriteMode;
 
 uint8_t e_featherCalibration[sizeof(TFeatherCalibration) * FEATHER_NUM] =\
 {
@@ -238,4 +239,9 @@ void SaveStickCalibrationValues()
 void LoadStickCalibrationValues()
 {
 	eeprom_read_block(e_stickCalibration, s_stickCalibration, sizeof(TStickCalibration) * STICK_NUM);
+}
+
+void DendriteStickButtonPressed( uint8_t btn )
+{
+	s_dendriteState[btn] = EStickShouldSet;
 }

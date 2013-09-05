@@ -6,8 +6,11 @@
 // Letters to identify device is stored in EEPROM memory
 // To access them in runtime on initialization phase
 // InitLetters should be called
-char e_primaryLetter EEMEM = 'Z';
-char e_secondaryLetter EEMEM = '1';
+
+#ifndef STORE_LETTERS_IN_FLASH
+	uint8_t e_primaryLetter EEMEM = 'Z';
+	uint8_t e_secondaryLetter EEMEM = '1';
+#endif //STORE_LETTERS_IN_FLASH
 
 #define SPI_WORD_SIZE 8
 
@@ -16,8 +19,14 @@ char e_secondaryLetter EEMEM = '1';
 char PRIMARY_LETTER;
 char SECONDARY_LETTER;
 
+#ifdef STORE_LETTERS_IN_FLASH
+#define InitLetters() \
+	PRIMARY_LETTER = 'Z';\
+	SECONDARY_LETTER = '1';
+#else //STORE_LETTERS_IN_FLASH
 #define InitLetters() \
 	PRIMARY_LETTER = eeprom_read_byte(&e_primaryLetter);\
 	SECONDARY_LETTER = eeprom_read_byte(&e_secondaryLetter);
+#endif //STORE_LETTERS_IN_FLASH
 
 #endif /* _SYSTEM_CONFIG_H */
