@@ -10,6 +10,6 @@ void Transmit();
 void ReadButtons();
 void ReadSticks();
 
-char ReadStickButton(char btn);
+char ReadStickButton(unsigned char btn);
 
 #endif //_MAIN_H_

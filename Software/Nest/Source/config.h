@@ -9,7 +9,12 @@
 
 #define STREAM_BUFFER_SIZE  32
 
-#define STICK_BTN_PORTS   {PORTB,	PORTB,	PORTB,	PORTB}
+#define PORTA_ 0x1B
+#define PORTB_ 0x18
+#define PORTC_ 0x15
+#define PORTD_ 0x12
+
+#define STICK_BTN_PORTS   {PORTB_,	PORTB_,	PORTB_,	PORTB_}
 #define STICK_BTN_PINS    {PB0,		PB1,	PB2,	PB3}
 
 #endif //_CONFIG_H_

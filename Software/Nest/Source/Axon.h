@@ -21,7 +21,7 @@ void AxonSaveByte();
 typedef enum
 {
 	EAxonInit			= 0,	// Transmitter is not ready
-	EAxonIdle			= 1,	// Does nothing
+	EAxonIdle			= 1,	// Transmitter is ready
 	EAxonSending		= 2,	// Send data
 	EAxonSendFirst		= 3,	// Data is being read
 	EAxonSendLast		= 3 + AXON_PACKAGE_SIZE,

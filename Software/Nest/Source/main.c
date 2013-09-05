@@ -27,9 +27,11 @@ char s_spiPackage[5] = {0};
 
 int main(void)
 {
+	char a = PORTB;
 	InitializeStream(&s_stream);
 	Configure();
 	DendriteInit();
+	AxonInit();
 	while(1)
     {
 		;
@@ -85,7 +87,7 @@ void ReadButtons()
 	}
 }
 
-char ReadStickButton(char btn)
+char ReadStickButton(unsigned char btn)
 {
 	return READ_BIT(sc_stickButtonPorts[btn], sc_stickButtonPins[btn]);
 }
