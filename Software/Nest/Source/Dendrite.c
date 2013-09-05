@@ -1,8 +1,62 @@
 #include "Dendrite.h"
+#include <avr/eeprom.h>
+
+uint8_t e_featherCalibration[sizeof(TFeatherCalibration) * FEATHER_NUM] =\
+{
+	0,		128,	255,
+	0,		128,	255,
+	0,		128,	255,
+	0,		128,	255,
+	-128,	0,		127,
+	-128,	0,		127,
+	-128,	0,		127,
+	-128,	0,		127
+};
+
+uint8_t e_stickCalibration[sizeof(TStickCalibration) * STICK_NUM] = \
+{
+	0,	255,
+	0,	255,
+	0,	255,
+	0,	255
+};
+
+uint8_t e_mode = EFrontBack;
+
+void DendriteInit()
+{
+	s_dendriteMode = eeprom_read_byte(&e_mode);	
+}
+
+
+void SaveFeatherCalibrationValues()
+{
+	/*uint8_t* data = (uint8_t*)values;
+	for(uint8_t a = 0; a < (sizeof(TFeatherCalibration) * FEATHER_NUM); ++a)
+	{
+		eeprom_write_byte(e_featherCalibration + a, data[a]);
+	}*/
+	eeprom_write_block(s_featherCalibration, e_featherCalibration, sizeof(TFeatherCalibration) * FEATHER_NUM);
+}
+
+void LoadCalibrationValues()
+{
+	/*uint8_t* data = (uint8_t*)values;
+	for(uint8_t a = 0; a < (sizeof(TFeatherCalibration) * FEATHER_NUM); ++a)
+	{
+		data[a] = eeprom_read_byte(e_featherCalibration + a);
+	}*/
+	eeprom_read_block(e_featherCalibration, s_featherCalibration, sizeof(TFeatherCalibration) * FEATHER_NUM);
+}
 
 void SwitchMode()
 {
-	s_DendriteMode = (s_DendriteMode == EFrontBack) ? ELeftRight : EFrontBack;
+	s_dendriteMode = (s_dendriteMode == EFrontBack) ? ELeftRight : EFrontBack;
+	for(uint8_t a = 0; a < STICK_NUM; ++a)
+	{
+		ResetStick(a);
+	}
+	eeprom_write_byte(&e_mode, s_dendriteMode);
 }
 
 void ReadStickData(TEStics num)
@@ -10,100 +64,98 @@ void ReadStickData(TEStics num)
 	uint8_t stickX, stickY;
 	ReadStickRawData(num, &stickX, &stickY);
 	
-	s_stickCurrent[num].x = (stickX - s_stickCalibration[num].xCenter)/s_stickCalibration[num].xRange;
-	s_stickCurrent[num].y = (stickY - s_stickCalibration[num].yCenter)/s_stickCalibration[num].yRange;
+	s_stickNext[num].x = (stickX - s_stickCalibration[num].xCenter)/s_stickCalibration[num].xRange;
+	s_stickNext[num].y = (stickY - s_stickCalibration[num].yCenter)/s_stickCalibration[num].yRange;
 }
 
-TVector2f DecodeStickData(TEStics num)
+TStickPosition DecodeStickData(TEStics num)
 {
-	TVector2f decoded;
-	decoded.a = s_stickPrevious[num].y - s_stickPrevious[num].x;
-	decoded.b = s_stickPrevious[num].y + s_stickCurrent[num].x;
-	if(abs(decoded.a) > 1.0f)
+	TStickPosition decoded;
+	decoded.x = s_stickCurrent[num].y - s_stickCurrent[num].x;
+	decoded.y = s_stickCurrent[num].y + s_stickCurrent[num].x;
+	if(abs(decoded.x) > 1.0f)
 	{
-		decoded.a = (decoded.a > 0) ? 1.0f : -1.0f;
+		decoded.x = (decoded.x > 0) ? 1.0f : -1.0f;
 	}
-	if(abs(decoded.b) > 1.0f)
+	if(abs(decoded.y) > 1.0f)
 	{
-		decoded.b = (decoded.b > 0) ? 1.0f : -1.0f;
+		decoded.y = (decoded.y > 0) ? 1.0f : -1.0f;
 	}
 	return decoded;
 }
 
-void PresetFeather(TEFeathers num)
+void PresetStick(TEStics num)
 {
-	s_FeatherPreset[num].servo = s_FeatherResult[num].servo;
-	s_FeatherPreset[num]. motor = s_FeatherResult[num].motor;
+	s_stickPreset[num].x = s_stickCurrent[num].x;
+	s_stickPreset[num].y = s_stickCurrent[num].y;
 }
 
-void ResetFeather(TEFeathers num)
+void ResetStick(TEStics num)
 {
-	s_FeatherPreset[num].servo = 0;
-	s_FeatherPreset[num].motor = 0;
+	s_stickPreset[num].x = 0;
+	s_stickPreset[num].y = 0;
 }
 
 void SetFeatherData(TEFeathers num, float servo, float motor)
 {
 	if(servo > 0)
 	{
-		s_FeatherResult[num].servo = servo * (s_FeatherCalibration[num].servoB - s_FeatherCalibration[num].servoC);
-		s_FeatherResult[num].servo += s_FeatherCalibration[num].servoC;
+		s_featherResult[num].servo = servo * (s_featherCalibration[num].servoB - s_featherCalibration[num].servoC);
+		s_featherResult[num].servo += s_featherCalibration[num].servoC;
 	}
 	else if(servo < 0)
 	{
-		s_FeatherResult[num].servo = s_FeatherCalibration[num].servoC;
-		s_FeatherResult[num].servo = -servo * (s_FeatherCalibration[num].servoC - s_FeatherCalibration[num].servoA);
+		s_featherResult[num].servo = s_featherCalibration[num].servoC;
+		s_featherResult[num].servo = -servo * (s_featherCalibration[num].servoC - s_featherCalibration[num].servoA);
 	}
 	else
 	{
-		s_FeatherResult[num].servo = 0;
+		s_featherResult[num].servo = 0;
 	}
-	s_FeatherResult[num].servo += s_FeatherPreset[num].servo;
 	
 	if(motor > 0)
 	{
-		s_FeatherResult[num].motor = motor * (s_FeatherCalibration[num].motorB - s_FeatherCalibration[num].motorC);
-		s_FeatherResult[num].motor += s_FeatherCalibration[num].motorC;
+		s_featherResult[num].motor = motor * (s_featherCalibration[num].motorB - s_featherCalibration[num].motorC);
+		s_featherResult[num].motor += s_featherCalibration[num].motorC;
 	}
 	else if(motor < 0)
 	{
-		s_FeatherResult[num].motor = s_FeatherCalibration[num].motorC;
-		s_FeatherResult[num].motor = -motor * (s_FeatherCalibration[num].motorC - s_FeatherCalibration[num].motorA);
+		s_featherResult[num].motor = s_featherCalibration[num].motorC;
+		s_featherResult[num].motor = -motor * (s_featherCalibration[num].motorC - s_featherCalibration[num].motorA);
 	}
 	else
 	{
-		s_FeatherResult[num].motor = 0;
+		s_featherResult[num].motor = 0;
 	}
-	s_FeatherResult[num].motor += s_FeatherPreset[num].motor;
 }
 
 void SetFeathers()
 {
-	switch(s_DendriteMode)
+	switch(s_dendriteMode)
 	{
 		case EFrontBack:
 		{
-			TVector2f servosFront = DecodeStickData(EFrontLeftServo);
-			TVector2f motorsFront = DecodeStickData(EFrontLeftMotor);
-			TVector2f servosBack  =	DecodeStickData(EBackRightServo);
-			TVector2f motorsBack  =	DecodeStickData(EBackRightMotor);
-			SetFeatherData(EFrontLeftFeather,	servosFront.a,	motorsFront.a);
-			SetFeatherData(EFrontRightFeather,	servosFront.b,	motorsFront.b);
-			SetFeatherData(EBackLeftFeather,	servosBack.a,	motorsBack.a);
-			SetFeatherData(EBackRightFeather,	servosBack.b,	motorsBack.b);
+			TStickPosition servosFront = Sum(DecodeStickData(EFrontLeftServo), s_stickPreset[EFrontLeftServo]);
+			TStickPosition motorsFront = Sum(DecodeStickData(EFrontLeftMotor), s_stickPreset[EFrontLeftMotor]);
+			TStickPosition servosBack  =	Sum(DecodeStickData(EBackRightServo), s_stickPreset[EBackRightServo]);
+			TStickPosition motorsBack  =	Sum(DecodeStickData(EBackRightMotor), s_stickPreset[EBackRightMotor]);
+			SetFeatherData(EFrontLeftFeather,	servosFront.x,	motorsFront.x);
+			SetFeatherData(EFrontRightFeather,	servosFront.y,	motorsFront.y);
+			SetFeatherData(EBackLeftFeather,	servosBack.x,	motorsBack.x);
+			SetFeatherData(EBackRightFeather,	servosBack.y,	motorsBack.y);
 		}
 		break;
 		
 		case ELeftRight:
 		{
-			TVector2f servosLeft  = DecodeStickData(EFrontLeftServo);
-			TVector2f motorsLeft  = DecodeStickData(EFrontLeftMotor);
-			TVector2f servosRight = DecodeStickData(EBackRightServo);
-			TVector2f motorsRight = DecodeStickData(EBackRightMotor);
-			SetFeatherData(EFrontLeftFeather,	servosLeft.a,	motorsLeft.a);
-			SetFeatherData(EFrontRightFeather,	servosRight.a,	motorsRight.a);
-			SetFeatherData(EBackLeftFeather,	servosLeft.b,	motorsLeft.b);
-			SetFeatherData(EBackRightFeather,	servosRight.b,	motorsRight.b);
+			TStickPosition servosLeft  = Sum(DecodeStickData(EFrontLeftServo), s_stickPreset[EFrontLeftServo]);
+			TStickPosition motorsLeft  = Sum(DecodeStickData(EFrontLeftMotor), s_stickPreset[EFrontLeftMotor]);
+			TStickPosition servosRight = Sum(DecodeStickData(EBackRightServo), s_stickPreset[EBackRightServo]);
+			TStickPosition motorsRight = Sum(DecodeStickData(EBackRightMotor), s_stickPreset[EBackRightMotor]);
+			SetFeatherData(EFrontLeftFeather,	servosLeft.x,	motorsLeft.x);
+			SetFeatherData(EFrontRightFeather,	servosRight.x,	motorsRight.x);
+			SetFeatherData(EBackLeftFeather,	servosLeft.y,	motorsLeft.y);
+			SetFeatherData(EBackRightFeather,	servosRight.y,	motorsRight.y);
 		}
 		break;
 	}
@@ -111,15 +163,15 @@ void SetFeathers()
 
 char IsStickNearPrevious(TEStics num)
 {
-	float max = s_stickPrevious[num].x + THRESHOLD;
-	float min = s_stickPrevious[num].x - THRESHOLD;
-	if(	(s_stickCurrent[num].x < max) && (s_stickCurrent[num].x > min) )
+	float max = s_stickCurrent[num].x + THRESHOLD;
+	float min = s_stickCurrent[num].x - THRESHOLD;
+	if(	(s_stickNext[num].x < max) && (s_stickNext[num].x > min) )
 	{
 		return 1;
 	}
-	max = s_stickPrevious[num].y + THRESHOLD;
-	min = s_stickPrevious[num].y - THRESHOLD;
-	if(	(s_stickCurrent[num].y < max) && (s_stickCurrent[num].y > min) )
+	max = s_stickCurrent[num].y + THRESHOLD;
+	min = s_stickCurrent[num].y - THRESHOLD;
+	if(	(s_stickNext[num].y < max) && (s_stickNext[num].y > min) )
 	{
 		return 1;
 	}
@@ -128,34 +180,62 @@ char IsStickNearPrevious(TEStics num)
 
 char IsStickNearZero(TEStics num)
 {
-	
+	if( (s_stickCurrent[num].x < THRESHOLD) && (s_stickCurrent[num].x > -THRESHOLD) )
+	{
+		return 1;
+	}
+	if( (s_stickCurrent[num].y < THRESHOLD) && (s_stickCurrent[num].y > -THRESHOLD) )
+	{
+		return 1;
+	}
+	return 0;
 }
 
 void UpdateDendrite()
 {
 	for(uint8_t n = 0; n < STICK_NUM; ++n)
 	{
-		switch(s_DendriteState[n])
+		switch(s_dendriteState[n])
 		{
+			case EStickIdle:
+			{
+				s_stickCurrent[n] = s_stickNext[n];
+			}
 			case EStickThresheld:
 			{
-				if(IsStickNearPrevious(n))
+				if(0 == IsStickNearPrevious(n))
 				{
-					return;
-				}
-				else
-				{
-					s_stickPrevious[n] = s_stickCurrent[n];
+					s_stickCurrent[n] = s_stickNext[n];
+					s_dendriteState[n] = EStickIdle;
 				}
 			}
 			break;
 			case EStickShouldSet:
 			{
 				if(IsStickNearZero(n))
-				// Next state will not change data while stick is near
-				s_DendriteState[n] = EStickThresheld;
+				{
+					ResetStick(n);
+				}
+				else
+				{
+					PresetStick(n);
+					// Next state will not change data while stick is near
+					s_dendriteState[n] = EStickThresheld;
+				}
 			}
 			break;
 		}
 	}
+	
+	SetFeathers();
+}
+
+void SaveStickCalibrationValues()
+{
+	eeprom_write_block(s_stickCalibration, e_stickCalibration, sizeof(TStickCalibration) * STICK_NUM);
+}
+
+void LoadStickCalibrationValues()
+{
+	eeprom_read_block(e_stickCalibration, s_stickCalibration, sizeof(TStickCalibration) * STICK_NUM);
 }

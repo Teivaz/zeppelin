@@ -1,6 +1,9 @@
 #ifndef _DENDRITE_H_
 #define _DENDRITE_H_
+
 #include <stdint.h>
+#include <avr/eeprom.h>
+
 /**************************************
 * This module collects data from controls and converts it
 **************************************/
@@ -46,7 +49,6 @@ typedef enum
 	EStickIdle = 0,		// Basic Working state
 	EStickShouldSet,	// Stick button is pressed so we should save position to preset
 	EStickThresheld,	// Stick button is within threshold and should not change coordinates
-	EStick
 	
 } TEStickState;
 
@@ -63,9 +65,9 @@ typedef struct
 typedef struct 
 {
 	int8_t xCenter;
-	int8_t xRange;
+	uint8_t xRange;
 	int8_t yCenter;
-	int8_t yRange;
+	uint8_t yRange;
 } TStickCalibration;
 
 typedef struct
@@ -91,39 +93,55 @@ typedef struct
 	int8_t motorC;	// Motor stop
 } TFeatherCalibration;
 
+
+inline TStickPosition Sum(TStickPosition a, TStickPosition b)
+{
+	TStickPosition c;
+	c.x = a.x + b.x;
+	c.y = a.y + b.y;
+	return c;
+}
+
 /**************************************
 * Variables
 **************************************/
 
 extern TStickCalibration	s_stickCalibration[STICK_NUM];
+extern TStickPosition		s_stickNext[STICK_NUM];
 extern TStickPosition		s_stickCurrent[STICK_NUM];
-extern TStickPosition		s_stickPrevious[STICK_NUM];
+extern TStickPosition		s_stickPreset[STICK_NUM];
 
-extern TFeatherCalibration	s_FeatherCalibration[FEATHER_NUM];
-extern TFeatherData			s_FeatherPreset[FEATHER_NUM];
-extern TFeatherData			s_FeatherResult[FEATHER_NUM];
+extern TFeatherCalibration	s_featherCalibration[FEATHER_NUM];
+extern TFeatherData			s_featherResult[FEATHER_NUM];
 
-extern TEMode				s_DendriteMode;
-extern TEStickState			s_DendriteState[STICK_NUM];
+extern TEMode				s_dendriteMode;
+extern TEStickState			s_dendriteState[STICK_NUM];
+
+// EEPROM
+extern uint8_t e_featherCalibration[sizeof(TFeatherCalibration) * FEATHER_NUM] EEMEM;
+extern uint8_t e_stickCalibration[sizeof(TStickCalibration) * STICK_NUM] EEMEM;
+extern uint8_t e_mode EEMEM;
 
 /**************************************
 * Functions
 **************************************/
+
+void DendriteInit();
 
 void ReadStickRawData(TEStics num, uint8_t *x, uint8_t *y);
 
 // Front-Back or Left-Right mode
 void SwitchMode();
 
-// Reads raw data, scales and stores to s_stickCurrent
+// Reads raw data, scales and stores to s_stickNext
 void ReadStickData(TEStics num);
 // Returns two symmetric floats basing on value and balance of stick
-TVector2f DecodeStickData(TEStics num);
+TStickPosition DecodeStickData(TEStics num);
+
+void PresetStick(TEStics num);
 
 // Write current feather value to preset
-void PresetFeather(TEFeathers num);
-// Write current feather value to preset
-void ResetFeather(TEFeathers num);
+void ResetStick(TEStics num);
 
 void SetFeatherData(TEFeathers num, float servo, float motor);
 void UpdateDendrite();
@@ -132,11 +150,12 @@ char IsStickNearZero(TEStics num);
 
 void SetFeathers();
 
-
 // Save all feather calibration values
-void SaveCalibrationValues(TFeatherCalibration values[FEATHER_NUM]);
+void SaveFeatherCalibrationValues();
 // Load all feather calibration values
-void LoadCalibrationValues(TFeatherCalibration values[FEATHER_NUM]);
+void LoadCalibrationValues();
 
+void SaveStickCalibrationValues();
+void LoadStickCalibrationValues();
 
 #endif //_DENDRITE_H_
