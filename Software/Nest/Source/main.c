@@ -19,7 +19,9 @@ TStreamBuffer s_stream;
 const char sc_secondaryLetters[FEATHER_NUM] =\
 {'1', '2', '3', '4'};
 
-char s_stickButtonsState[STICK_NUM] = {0};
+char s_stickButtonsState[STICK_NUM] = {1};
+char s_modeBtnState = 1;
+char s_calBtnState = 1;
 
 char s_stickBuffer[STICK_NUM * 2] = {0};
 char s_stickBuffer2[STICK_NUM * 2] = {127};
@@ -123,14 +125,19 @@ void ReadButtons()
 {
 	for(uint8_t a = 0; a < STICK_NUM; ++a)
 	{
-		// Trigger on button pressed
-		if( (1 == s_stickButtonsState[a]) && (0 == ReadStickButton(a)) )
+		// Trigger on button change
+		if(ReadStickButton(a) != s_stickButtonsState[a])
 		{
-			DendriteStickButtonPressed(a);
+			if(1 == ReadStickButton(a))
+				DendriteStickButtonPressed(a);
 		}
 		s_stickButtonsState[a] = ReadStickButton(a); 
 	}
-	
+	if(READ_BIT(MODE_BTN_PORT, MODE_BTN_PIN) != s_modeBtnState)
+	{
+		
+	}
+	s_modeBtnState = READ_BIT(MODE_BTN_PORT, MODE_BTN_PIN);
 }
 
 char ReadStickButton(unsigned char btn)
