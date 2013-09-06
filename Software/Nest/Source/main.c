@@ -12,6 +12,8 @@
 #include "Dendrite.h"
 #include "SystemConfig.h"
 
+#include <util/delay.h>
+
 TStreamBuffer s_stream;
 
 const char sc_secondaryLetters[FEATHER_NUM] =\
@@ -19,11 +21,18 @@ const char sc_secondaryLetters[FEATHER_NUM] =\
 
 char s_stickButtonsState[STICK_NUM] = {0};
 
+char s_stickBuffer[STICK_NUM * 2] = {0};
+char s_stickBuffer2[STICK_NUM * 2] = {0};
+char s_stickBuffer3[STICK_NUM * 2] = {0};
+
 const char sc_stickButtonPins[STICK_NUM] = STICK_BTN_PINS;
 const char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
+const char sc_stickMux[STICK_NUM * 2] = STICK_ADC_PORTS;
 
 signed char s_speed = 0;
 char s_spiPackage[5] = {0};
+
+TEMainMode s_mode;
 
 #ifdef TEST
 int main_()
@@ -37,7 +46,33 @@ int main()
 	AxonInit();
 	while(1)
     {
-		;
+		if(s_mode == EModeBase)
+		{
+			ReadSticks();
+			DendriteReadSticks();
+			UpdateDendrite();
+			Transmit();
+		}
+		else if(s_mode == EModeCalStick_Center)
+		{
+			ReadSticks();
+			for(uint8_t a = 0; a < STICK_NUM; ++a)
+			{
+				s_stickCalibration[a].xCenter = s_stickBuffer[a * 2];
+				s_stickCalibration[a].yCenter = s_stickBuffer[a * 2 + 1];
+			}
+		}
+		else if(s_mode == EModeCalStick_MinMax)
+		{
+			for(uint8_t a = 0; a < STICK_NUM; ++a)
+			{
+				s_stickCalibration[a].xCenter = s_stickBuffer[a * 2];
+				s_stickCalibration[a].yCenter = s_stickBuffer[a * 2 + 1];
+			}
+		}
+		
+		
+	_delay_ms(QUERY_PERIOD);
     }
 }
 
@@ -81,14 +116,85 @@ void ReadButtons()
 {
 	for(uint8_t a = 0; a < STICK_NUM; ++a)
 	{
-		if(1 == s_stickButtonsState[a] && 0 == ReadStickButton(a))
+		// Trigger on button pressed
+		if( (1 == s_stickButtonsState[a]) && (0 == ReadStickButton(a)) )
 		{
 			DendriteStickButtonPressed(a);
 		}
+		s_stickButtonsState[a] = ReadStickButton(a); 
 	}
 }
 
 char ReadStickButton(unsigned char btn)
 {
 	return READ_BIT(sc_stickButtonPorts[btn], sc_stickButtonPins[btn]);
+}
+
+void ReadSticks()
+{
+	for(int8_t n = 0; n < sizeof(s_stickBuffer); ++n)
+	{
+		// Set ADC multiplexer
+		char mux = READ_REG(ADMUX);
+		mux &= 0b11100000;
+		mux |= 0b00000111 & sc_stickMux[n];
+		WRITE_REG(ADMUX, mux);
+		
+		// ADC start conversion
+		SET_BIT(ADCSRA, ADSC); 
+		
+		// Wait for conversion to complete
+		while(READ_BIT(ADCSRA, ADIF) == 0);
+		CLEAR_BIT(ADCSRA, ADIF);
+		
+		s_stickBuffer[n] = READ_REG(ADCH);
+	}
+}
+
+#ifndef TEST
+void ReadStickRawData(TEStics num, uint8_t *x, uint8_t *y)
+{
+	*x = s_stickBuffer[num * 2];
+	*y = s_stickBuffer[num * 2 + 1];
+}
+#endif
+
+void AdvanceMode()
+{
+	switch(s_mode)
+	{
+		case EModeBase:
+		
+		break;
+		case EModeCalStick_Center:
+			s_mode = EModeCalStick_MinMax;
+		break;
+		case EModeCalStick_MinMax:
+			s_mode = EModeBase;
+			SaveStickCalibrationValues();
+		break;
+		case EModeCalFeather:
+			s_mode = EModeBase;
+		break;
+	}
+}
+
+void StartStickCal()
+{
+	switch(s_mode)
+	{
+		case EModeBase:
+			s_mode = EModeCalStick_Center;
+		break;
+		
+		case EModeCalStick_Center:
+		case EModeCalStick_MinMax:
+			s_mode = EModeBase;
+			LoadStickCalibrationValues();
+		break;
+		
+		case EModeCalFeather:
+			s_mode = EModeBase;
+		break;
+	}
 }

@@ -27,4 +27,11 @@ inline char CRC(char* data, uint8_t size)
 	return ret;
 }
 
+#ifdef _USE_ABS
+inline float abs(float val)
+{
+	return val > 0 ? val : -val;
+}
+#endif
+
 #endif /* _UTILS_H_ */
