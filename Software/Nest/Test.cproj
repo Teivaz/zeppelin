@@ -93,6 +93,7 @@
       <Value>DEBUG</Value>
       <Value>STORE_LETTERS_IN_FLASH</Value>
       <Value>TEST</Value>
+      <Value>_USE_MINMAX</Value>
     </ListValues>
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>

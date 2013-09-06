@@ -34,4 +34,9 @@ inline float abs(float val)
 }
 #endif
 
+#ifdef _USE_MINMAX
+#define min(x, y) (x > y ? y : x)
+#define max(x, y) (x < y ? y : x)
+#endif
+
 #endif /* _UTILS_H_ */

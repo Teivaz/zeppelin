@@ -22,8 +22,8 @@ const char sc_secondaryLetters[FEATHER_NUM] =\
 char s_stickButtonsState[STICK_NUM] = {0};
 
 char s_stickBuffer[STICK_NUM * 2] = {0};
-char s_stickBuffer2[STICK_NUM * 2] = {0};
-char s_stickBuffer3[STICK_NUM * 2] = {0};
+char s_stickBuffer2[STICK_NUM * 2] = {127};
+char s_stickBuffer3[STICK_NUM * 2] = {127};
 
 const char sc_stickButtonPins[STICK_NUM] = STICK_BTN_PINS;
 const char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
@@ -64,10 +64,17 @@ int main()
 		}
 		else if(s_mode == EModeCalStick_MinMax)
 		{
+			ReadSticks();
+			for(uint8_t a = 0; a < STICK_NUM * 2; ++a)
+			{
+				s_stickBuffer2[a] = min(s_stickBuffer2[a], s_stickBuffer[a]);
+				s_stickBuffer3[a] = max(s_stickBuffer3[a], s_stickBuffer[a]);
+			}
+
 			for(uint8_t a = 0; a < STICK_NUM; ++a)
 			{
-				s_stickCalibration[a].xCenter = s_stickBuffer[a * 2];
-				s_stickCalibration[a].yCenter = s_stickBuffer[a * 2 + 1];
+				s_stickCalibration[a].xRange = abs(s_stickBuffer3[a * 2] - s_stickBuffer2[a * 2]);
+				s_stickCalibration[a].xRange = abs(s_stickBuffer3[a * 2 + 1] - s_stickBuffer2[a * 2 + 1]);
 			}
 		}
 		
@@ -123,6 +130,7 @@ void ReadButtons()
 		}
 		s_stickButtonsState[a] = ReadStickButton(a); 
 	}
+	
 }
 
 char ReadStickButton(unsigned char btn)

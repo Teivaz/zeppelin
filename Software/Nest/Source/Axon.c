@@ -14,17 +14,13 @@ char s_axonState = EAxonIdle;
 unsigned short s_rxInitState = 0;
 TPool s_dendrideActivePool = {0, 0};
 
-#define AXON_INIT_SEQUENCE_SIZE 11
+#define AXON_INIT_SEQUENCE_SIZE 7
 const char sk_axonInitSequence[AXON_INIT_SEQUENCE_SIZE] =
 {
 	0,
 	// Power Up
 	W_REGISTER | CONFIG,	
 	1 << PWR_UP | 1 << EN_CRC,
-	
-	// Enable interrupts
-	W_REGISTER | CONFIG,
-	1 << PWR_UP | 1 << EN_CRC | 1 << MASK_RX_DR,
 	
 	// Set frequency
 	W_REGISTER | RF_CH,
@@ -33,10 +29,6 @@ const char sk_axonInitSequence[AXON_INIT_SEQUENCE_SIZE] =
 	// Set data rate to 1 MHz
 	W_REGISTER | RF_SETUP,
 	0b00000111,	
-	
-	// Enable receiver
-	W_REGISTER | CONFIG,
-	1 << PWR_UP | 1 << EN_CRC | 1 << MASK_RX_DR | 1 << PRIM_RX
 };
 
 const char sk_axonReadRequest[1] = 
@@ -44,11 +36,6 @@ const char sk_axonReadRequest[1] =
 	R_RX_PAYLOAD
 };
 
-const char sk_denditeFinishReadingSequence[2] = 
-{
-	W_REGISTER | STATUS,
-	0
-};
 
 void AxonInit()
 {
