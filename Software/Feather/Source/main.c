@@ -8,6 +8,8 @@
 #define SERVO_MIN_IMPULSE	100	// This value should be around 0.5 ms. 1 equals to 0.005 ms
 #define SERVO_PAUSE			80	// This value should be around 20 ms. 1 equals 0.25 ms 
 
+char CRC(char* data, uint8_t size);
+
 volatile char s_spiBuffer[4] = {0};
 // s_spiBuffer[0] - primary letter
 // s_spiBuffer[1] - secondary letter
