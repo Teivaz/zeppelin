@@ -61,6 +61,10 @@ int main()
 			{
 				s_stickCalibration[a].xCenter = s_stickBuffer[a * 2];
 				s_stickCalibration[a].yCenter = s_stickBuffer[a * 2 + 1];
+				s_stickBuffer2[a * 2] = s_stickBuffer[a * 2];
+				s_stickBuffer2[a * 2 + 1] = s_stickBuffer[a * 2 + 1];
+				s_stickBuffer3[a * 2] = s_stickBuffer[a * 2];
+				s_stickBuffer3[a * 2 + 1] = s_stickBuffer[a * 2 + 1];
 			}
 		}
 		else if(s_mode == EModeCalStick_MinMax)
