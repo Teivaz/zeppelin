@@ -18,6 +18,8 @@ char ReadStickButton(unsigned char btn);
 void AdvanceMode();
 void StartStickCal();
 
+void UpdateIndicators();
+
 typedef enum
 {
 	EModeBase = 0,

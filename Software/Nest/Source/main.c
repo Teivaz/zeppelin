@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #include "nRF24L01.h"
 #include "config.h"
@@ -11,8 +12,6 @@
 #include "Axon.h"
 #include "Dendrite.h"
 #include "SystemConfig.h"
-
-#include <util/delay.h>
 
 TStreamBuffer s_stream;
 
@@ -79,9 +78,9 @@ int main()
 				s_stickCalibration[a].xRange = abs(s_stickBuffer3[a * 2 + 1] - s_stickBuffer2[a * 2 + 1]);
 			}
 		}
-		
-		
-	_delay_ms(QUERY_PERIOD);
+	
+		UpdateIndicators();
+		_delay_ms(QUERY_PERIOD);
     }
 }
 
@@ -128,16 +127,45 @@ void ReadButtons()
 		// Trigger on button change
 		if(ReadStickButton(a) != s_stickButtonsState[a])
 		{
-			if(1 == ReadStickButton(a))
+			// When changed to pressed
+			if(0 == ReadStickButton(a))
+			{
 				DendriteStickButtonPressed(a);
+			}
 		}
 		s_stickButtonsState[a] = ReadStickButton(a); 
 	}
+	
+	// Trigger on button change
 	if(READ_BIT(MODE_BTN_PORT, MODE_BTN_PIN) != s_modeBtnState)
 	{
-		
+		// When changed to released
+		if(1 == READ_BIT(MODE_BTN_PORT, MODE_BTN_PIN))
+		{
+			SwitchMode();
+		}
 	}
 	s_modeBtnState = READ_BIT(MODE_BTN_PORT, MODE_BTN_PIN);
+	
+	// If button is released
+	if(READ_BIT(CAL_BTN_PORT, CAL_BTN_PIN) == 1)
+	{
+		// If released after enough time
+		if(s_calBtnState >= CAL_BTN_TIME)
+		{
+			StartStickCal();
+		}
+		else if(s_calBtnState > 0)
+		{
+			// If button was just released then advance calibration state
+			AdvanceMode();
+		}
+		s_calBtnState = 0;
+	}
+	else // If pressed start counting
+	{
+		++s_calBtnState;
+	}
 }
 
 char ReadStickButton(unsigned char btn)
@@ -211,5 +239,42 @@ void StartStickCal()
 		case EModeCalFeather:
 			s_mode = EModeBase;
 		break;
+	}
+}
+
+void UpdateIndicators()
+{
+	if(s_mode == EModeBase)
+	{
+		HasPreset(EFrontLeftServo) ? CLEAR_BIT(STICK_FLS_LED_PORT, STICK_FLS_LED_PIN) : SET_BIT(STICK_FLS_LED_PORT, STICK_FLS_LED_PIN);
+		HasPreset(EFrontLeftMotor) ? CLEAR_BIT(STICK_FLM_LED_PORT, STICK_FLM_LED_PIN) : SET_BIT(STICK_FLM_LED_PORT, STICK_FLM_LED_PIN);
+		HasPreset(EBackRightServo) ? CLEAR_BIT(STICK_BRS_LED_PORT, STICK_BRS_LED_PIN) : SET_BIT(STICK_BRS_LED_PORT, STICK_BRS_LED_PIN);
+		HasPreset(EBackRightMotor) ? CLEAR_BIT(STICK_BRM_LED_PORT, STICK_BRM_LED_PIN) : SET_BIT(STICK_BRM_LED_PORT, STICK_BRM_LED_PIN);
+		SET_BIT(CAL_LED_PORT, CAL_LED_PIN);
+	}
+	else if(s_mode == EModeCalStick_MinMax)
+	{
+		CLEAR_BIT(CAL_LED_PORT, CAL_LED_PIN);
+		CLEAR_BIT(STICK_FLS_LED_PORT, STICK_FLS_LED_PIN);
+		CLEAR_BIT(STICK_FLM_LED_PORT, STICK_FLM_LED_PIN);
+		SET_BIT(STICK_BRS_LED_PORT, STICK_BRS_LED_PIN);
+		SET_BIT(STICK_BRM_LED_PORT, STICK_BRM_LED_PIN);
+	}
+	else if(s_mode == EModeCalStick_Center)
+	{
+		CLEAR_BIT(CAL_LED_PORT, CAL_LED_PIN);
+		CLEAR_BIT(STICK_FLS_LED_PORT, STICK_FLS_LED_PIN);
+		CLEAR_BIT(STICK_FLM_LED_PORT, STICK_FLM_LED_PIN);
+		CLEAR_BIT(STICK_BRS_LED_PORT, STICK_BRS_LED_PIN);
+		CLEAR_BIT(STICK_BRM_LED_PORT, STICK_BRM_LED_PIN);
+	}
+	
+	if(s_dendriteMode == EFrontBack)
+	{
+		CLEAR_BIT(CAL_LED_PORT, CAL_LED_PIN);
+	}
+	else
+	{
+		SET_BIT(CAL_LED_PORT, CAL_LED_PIN);
 	}
 }

@@ -1,4 +1,5 @@
 #include "Dendrite.h"
+#include "utils.h"
 
 TStickCalibration	s_stickCalibration[STICK_NUM];
 TStickPosition		s_stickNext[STICK_NUM];

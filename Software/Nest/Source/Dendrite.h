@@ -170,4 +170,9 @@ inline int8_t GetMotor(uint8_t num)
 	return s_featherResult[num].motor;
 }
 
+inline char HasPreset(uint8_t num)
+{
+	return !((s_stickPreset[num].x == 0) && (s_stickPreset[num].y == 0));
+}
+
 #endif //_DENDRITE_H_

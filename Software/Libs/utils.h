@@ -28,10 +28,7 @@ inline char CRC(char* data, uint8_t size)
 }
 
 #ifdef _USE_ABS
-inline float abs(float val)
-{
-	return val > 0 ? val : -val;
-}
+#define abs(val) (val > 0 ? val : -val)
 #endif
 
 #ifdef _USE_MINMAX
