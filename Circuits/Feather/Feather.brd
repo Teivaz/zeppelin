@@ -12,16 +12,16 @@
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
@@ -32,19 +32,19 @@
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
 <layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
-<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
-<layer number="40" name="bKeepout" color="1" fill="11" visible="yes" active="yes"/>
-<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
-<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
-<layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
+<layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
+<layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
-<layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="yes"/>
 <layer number="53" name="tPadExt" color="7" fill="1" visible="no" active="no"/>
 <layer number="54" name="bPadExt" color="1" fill="1" visible="no" active="no"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="no" active="no"/>
@@ -1511,19 +1511,19 @@ design rules under a new name.</description>
 </autorouter>
 <elements>
 <element name="SERVO" library="pinhead" package="1X03" value="" x="5.95" y="-0.695" smashed="yes" rot="R270">
-<attribute name="NAME" x="7.7788" y="3.1912" size="1.27" layer="25" ratio="10" rot="R270"/>
+<attribute name="NAME" x="8.4038" y="1.9412" size="1.27" layer="25" ratio="10" rot="R270"/>
 <attribute name="VALUE" x="2.775" y="3.115" size="1.27" layer="27" rot="R270"/>
 </element>
 <element name="DCM" library="pinhead" package="1X02" value="" x="-0.4" y="13.91" smashed="yes">
-<attribute name="NAME" x="1.5812" y="12.0812" size="1.27" layer="25" ratio="10" rot="SR180"/>
+<attribute name="NAME" x="-2.2062" y="15.4188" size="1.27" layer="25" ratio="10" rot="SR0"/>
 <attribute name="VALUE" x="-2.94" y="10.735" size="1.27" layer="27"/>
 </element>
 <element name="U$1" library="irf-2" package="SO8-2" value="IRF7105" x="-5.48" y="10.1" smashed="yes">
-<attribute name="NAME" x="-7.639" y="10.1508" size="1.27" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="-7.639" y="15.1508" size="1.27" layer="25" font="vector" ratio="10"/>
 <attribute name="VALUE" x="-9.29" y="6.671" size="1.27" layer="27" font="vector" ratio="10" rot="R90"/>
 </element>
 <element name="U$2" library="irf-2" package="SO8-2" value="IRF7105" x="5.95" y="10.1" smashed="yes">
-<attribute name="NAME" x="3.791" y="10.1508" size="1.27" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="3.791" y="15.1508" size="1.27" layer="25" font="vector" ratio="10"/>
 <attribute name="VALUE" x="9.76" y="7.306" size="1.27" layer="27" font="vector" ratio="10" rot="R90"/>
 </element>
 <element name="R1" library="rcl" package="R1206" value="" x="-1.3525" y="7.2425" smashed="yes" rot="R90">
@@ -1535,30 +1535,32 @@ design rules under a new name.</description>
 <attribute name="VALUE" x="3.7275" y="5.9725" size="1.27" layer="27" rot="R90"/>
 </element>
 <element name="R3" library="rcl" package="R1206" value="" x="5.315" y="4.385" rot="R180"/>
-<element name="IC2" library="atmel" package="8S2" value="TINY13V-10SU" x="-0.0825" y="-0.06" rot="R180">
+<element name="IC2" library="atmel" package="8S2" value="TINY13V-10SU" x="-0.0825" y="-0.06" smashed="yes" rot="R180">
 <attribute name="OC_NEWARK" value="96K6524" x="-0.0825" y="-0.06" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MPN" value="ATTINY13V-10SU" x="-0.0825" y="-0.06" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MF" value="" x="-0.0825" y="-0.06" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="OC_FARNELL" value="9171584" x="-0.0825" y="-0.06" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="NAME" x="-1.474" y="-2.225" size="1.27" layer="25" ratio="10"/>
+<attribute name="VALUE" x="-2.724" y="-7.2715" size="1.27" layer="27" ratio="10"/>
 </element>
 <element name="V2" library="pinhead" package="1X01" value="" x="-8.02" y="-4.505" smashed="yes">
-<attribute name="NAME" x="-16.91" y="-4.505" size="1.27" layer="25" ratio="10" rot="R45"/>
+<attribute name="NAME" x="-8.125" y="-6.25" size="1.27" layer="25" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="-9.29" y="-7.68" size="1.27" layer="27"/>
 </element>
 <element name="V1" library="pinhead" package="1X01" value="" x="-5.48" y="-3.87" smashed="yes">
-<attribute name="NAME" x="-14.37" y="-3.87" size="1.27" layer="25" ratio="10" rot="R45"/>
+<attribute name="NAME" x="-4.375" y="-5.625" size="1.27" layer="25" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="-6.75" y="-7.045" size="1.27" layer="27"/>
 </element>
 <element name="MO" library="pinhead" package="1X01" value="" x="-8.02" y="-1.965" smashed="yes">
-<attribute name="NAME" x="-16.91" y="-1.965" size="1.27" layer="25" ratio="10" rot="R45"/>
+<attribute name="NAME" x="-9.375" y="-1.25" size="1.27" layer="25" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="-9.29" y="-5.14" size="1.27" layer="27"/>
 </element>
 <element name="CLK" library="pinhead" package="1X01" value="" x="-5.48" y="-0.06" smashed="yes">
-<attribute name="NAME" x="-14.37" y="-0.695" size="1.27" layer="25" ratio="10" rot="R45"/>
+<attribute name="NAME" x="-6.875" y="1.875" size="1.27" layer="25" ratio="10"/>
 <attribute name="VALUE" x="-6.75" y="-3.235" size="1.27" layer="27"/>
 </element>
 <element name="GND" library="pinhead" package="1X01" value="" x="-8.02" y="0.575" smashed="yes">
-<attribute name="NAME" x="-16.91" y="0.575" size="1.27" layer="25" ratio="10" rot="R45"/>
+<attribute name="NAME" x="-11.12704375" y="2.67245" size="1.27" layer="25" ratio="10"/>
 <attribute name="VALUE" x="-9.29" y="-2.6" size="1.27" layer="27"/>
 </element>
 </elements>
