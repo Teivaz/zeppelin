@@ -5,6 +5,7 @@
 
 int main();
 void Configure();
+void ConfigureMcu();
 void ConfigureLeds();
 void ConifugeureBtnPullups();
 void ConfigureTx();

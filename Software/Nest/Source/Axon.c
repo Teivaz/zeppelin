@@ -73,7 +73,7 @@ void OnAxonByteSent()
 
 void AxonWriteByteToSend(char data)
 {
-	
+	WRITE_REG(SPDR, data);
 }
 
 void AxonStartCsn()

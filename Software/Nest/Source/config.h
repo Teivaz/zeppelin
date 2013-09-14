@@ -1,11 +1,11 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define CLK		PB2
+#define CLK		PB7 // Will be driven via hardware
+#define CSN		PB4	// do not change
+#define MOSI	PB5 // Will be driven via hardware
+#define INT		PB3 // Do we need this?
 #define DBG		PB3
-#define INT		PB3
-#define CSN		PB4
-#define MOSI	PB1
 
 #define STREAM_BUFFER_SIZE  64
 

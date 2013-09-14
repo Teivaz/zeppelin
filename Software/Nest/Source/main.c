@@ -43,6 +43,7 @@ int main()
 	
 	while(1)
     {
+		continue;
 		if(s_mode == EModeBase)
 		{
 			ReadSticks();
@@ -87,6 +88,7 @@ int main()
 void Configure()
 {
 	InitLetters();
+	ConfigureMcu();
 	DendriteInit();
 	AxonInit();
 	ConfigureLeds();
@@ -322,4 +324,37 @@ void ConifugeureBtnPullups()
 	SET_BIT(sc_stickButtonPorts[1], sc_stickButtonPins[1]);
 	SET_BIT(sc_stickButtonPorts[2], sc_stickButtonPins[2]);
 	SET_BIT(sc_stickButtonPorts[3], sc_stickButtonPins[3]);
+}
+
+void ConfigureMcu()
+{
+	/* ADC */
+	// AVCC with external capacitor at AREF pin
+	SET_BIT(ADMUX, REFS0);
+	CLEAR_BIT(ADMUX, REFS1);
+	
+	// Set storing format
+	SET_BIT(ADMUX, ADLAR);
+	
+	// Enable ADC
+	SET_BIT(ADCSRA, ADEN);
+	
+	/* SPI */
+	// Interrupts
+	SET_BIT(SPCR, SPIE);
+	SET_BIT(SPCR, MSTR);
+	
+	SET_BIT(PORTB, PB7); // SCK
+	SET_BIT(PORTB, PB5); // MOSI
+	SET_BIT(PORTB, CSN);
+	SET_BIT(DDRB, PB7); // SCK
+	SET_BIT(DDRB, PB5); // MOSI
+	SET_BIT(DDRB, CSN);
+		
+	SET_BIT(SPCR, SPE);
+}
+
+ISR(SPI_STC_vect)
+{
+	OnAxonByteSent();
 }
