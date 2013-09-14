@@ -7,8 +7,10 @@ Desktop="Desktop"
 
 [Globals]
 AutoSaveProject=1
+UsedLibrary="C:/Program Files D/EAGLE-6.4.0/lbr/atmel.lbr"
 UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/irf-2.lbr"
 UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/jt9s-1p.lbr"
+UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/pinhead.lbr"
 
 [Win_1]
 Type="Control Panel"
