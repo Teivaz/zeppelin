@@ -5,6 +5,9 @@
 
 int main();
 void Configure();
+void ConfigureLeds();
+void ConifugeureBtnPullups();
+void ConfigureTx();
 
 void CreateSpiPacket(char letter, signed char dcSpeed, char servo);
 void Transmit();
@@ -19,7 +22,6 @@ void AdvanceMode();
 void StartStickCal();
 
 void UpdateIndicators();
-
 typedef enum
 {
 	EModeBase = 0,

@@ -13,8 +13,6 @@
 #include "Dendrite.h"
 #include "SystemConfig.h"
 
-TStreamBuffer s_stream;
-
 const char sc_secondaryLetters[FEATHER_NUM] =\
 {'1', '2', '3', '4'};
 
@@ -26,8 +24,8 @@ char s_stickBuffer[STICK_NUM * 2] = {0};
 char s_stickBuffer2[STICK_NUM * 2] = {127};
 char s_stickBuffer3[STICK_NUM * 2] = {127};
 
+char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
 const char sc_stickButtonPins[STICK_NUM] = STICK_BTN_PINS;
-const char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
 const char sc_stickMux[STICK_NUM * 2] = STICK_ADC_PORTS;
 
 signed char s_speed = 0;
@@ -41,10 +39,8 @@ int main_()
 int main()
 #endif
 {
-	InitializeStream(&s_stream);
 	Configure();
-	DendriteInit();
-	AxonInit();
+	
 	while(1)
     {
 		if(s_mode == EModeBase)
@@ -91,8 +87,13 @@ int main()
 void Configure()
 {
 	InitLetters();
-
+	DendriteInit();
+	AxonInit();
+	ConfigureLeds();
+	ConifugeureBtnPullups();
 	sei();
+	
+	ConfigureTx();
 }
 
 void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
@@ -106,22 +107,23 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 
 void Transmit()
 {
+	AxonCommand(W_TX_PAYLOAD);
+	
 	// This will fill 20 bytes out of 32 that will be sent.
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
 	{
 		CreateSpiPacket(sc_secondaryLetters[a], GetMotor(a), GetServo(a));
 		for(uint8_t a = 0; a < 5; ++a)
 		{
-			WriteStream(&s_stream, s_spiPackage[a]);
+			AxonCommand(s_spiPackage[a]);
 		}
 	}
 
 	// Fill the rest with zeros
 	for(uint8_t a = 0; a < 12; ++a)
 	{
-		WriteStream(&s_stream, 0);
+		AxonCommand(0);
 	}
-	AxonAdvanceToState(EAxonSending);
 }
 
 void ReadButtons()
@@ -281,4 +283,43 @@ void UpdateIndicators()
 	{
 		SET_BIT(CAL_LED_PORT, CAL_LED_PIN);
 	}
+}
+
+void ConfigureTx()
+{
+	AxonCommandWriteRegister(CONFIG, 1 << PWR_UP | 1 << EN_CRC); // Enable
+	AxonCommand(R_REGISTER | RF_SETUP);
+	AxonCommand(0);
+	AxonCommandWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
+	AxonCommand(R_REGISTER | RF_SETUP);
+	AxonCommand(0);
+}
+
+void ConfigureLeds()
+{
+	// Prepare to switch port direction
+	SET_BIT(STICK_FLS_LED_PORT, STICK_FLS_LED_PIN);
+	SET_BIT(STICK_FLM_LED_PORT, STICK_FLM_LED_PIN);
+	SET_BIT(STICK_BRS_LED_PORT, STICK_BRS_LED_PIN);
+	SET_BIT(STICK_BRM_LED_PORT, STICK_BRM_LED_PIN);
+	SET_BIT(MODE_LED_PORT, MODE_LED_PIN);
+	SET_BIT(CAL_LED_PORT, CAL_LED_PIN);
+	
+	// Pin directions
+	SET_BIT( *(&STICK_FLS_LED_PORT - 1), STICK_FLS_LED_PIN);
+	SET_BIT( *(&STICK_FLM_LED_PORT - 1), STICK_FLM_LED_PIN);
+	SET_BIT( *(&STICK_BRS_LED_PORT - 1), STICK_BRS_LED_PIN);
+	SET_BIT( *(&STICK_BRM_LED_PORT - 1), STICK_BRM_LED_PIN);
+	SET_BIT( *(&MODE_LED_PORT - 1), MODE_LED_PIN);
+	SET_BIT( *(&CAL_LED_PORT - 1), CAL_LED_PIN);
+}
+
+void ConifugeureBtnPullups()
+{
+	SET_BIT(CAL_BTN_PORT, CAL_BTN_PIN);
+	SET_BIT(MODE_BTN_PORT, MODE_BTN_PIN);
+	SET_BIT(sc_stickButtonPorts[0], sc_stickButtonPins[0]);
+	SET_BIT(sc_stickButtonPorts[1], sc_stickButtonPins[1]);
+	SET_BIT(sc_stickButtonPorts[2], sc_stickButtonPins[2]);
+	SET_BIT(sc_stickButtonPorts[3], sc_stickButtonPins[3]);
 }

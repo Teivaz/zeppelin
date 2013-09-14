@@ -7,7 +7,7 @@
 #define CSN		PB4
 #define MOSI	PB1
 
-#define STREAM_BUFFER_SIZE  33
+#define STREAM_BUFFER_SIZE  64
 
 #define QUERY_PERIOD 20	// time in ms
 
