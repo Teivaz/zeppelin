@@ -43,7 +43,12 @@ int main()
 	
 	while(1)
     {
+		//AxonEndCsn();
+		//AxonStartCsn();
+		_delay_ms(QUERY_PERIOD);
+	    ConfigureTx();
 		continue;
+		
 		if(s_mode == EModeBase)
 		{
 			ReadSticks();
@@ -87,12 +92,12 @@ int main()
 
 void Configure()
 {
-	InitLetters();
 	ConfigureMcu();
-	DendriteInit();
+	InitLetters();
+	//DendriteInit();
 	AxonInit();
-	ConfigureLeds();
-	ConifugeureBtnPullups();
+	//ConfigureLeds();
+	//ConifugeureBtnPullups();
 	sei();
 	
 	ConfigureTx();
@@ -289,12 +294,8 @@ void UpdateIndicators()
 
 void ConfigureTx()
 {
-	AxonCommandWriteRegister(CONFIG, 1 << PWR_UP | 1 << EN_CRC); // Enable
-	AxonCommand(R_REGISTER | RF_SETUP);
-	AxonCommand(0);
-	AxonCommandWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
-	AxonCommand(R_REGISTER | RF_SETUP);
-	AxonCommand(0);
+	AxonWriteRegister(CONFIG, 1 << PWR_UP | 1 << EN_CRC); // Enable
+	AxonWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
 }
 
 void ConfigureLeds()
@@ -340,9 +341,9 @@ void ConfigureMcu()
 	SET_BIT(ADCSRA, ADEN);
 	
 	/* SPI */
-	// Interrupts
-	SET_BIT(SPCR, SPIE);
 	SET_BIT(SPCR, MSTR);
+	SET_BIT(SPCR, SPR1);
+	
 	
 	SET_BIT(PORTB, PB7); // SCK
 	SET_BIT(PORTB, PB5); // MOSI
@@ -352,9 +353,4 @@ void ConfigureMcu()
 	SET_BIT(DDRB, CSN);
 		
 	SET_BIT(SPCR, SPE);
-}
-
-ISR(SPI_STC_vect)
-{
-	OnAxonByteSent();
 }

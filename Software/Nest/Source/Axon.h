@@ -4,11 +4,10 @@
 // Call this once after initializations is done
 void AxonInit();
 
+void AxonSend(char* data, char size);
+void AxonWriteRegister(char reg, char val);
+void AxonReadRegister(char reg);
 void AxonCommand(char command);
-void AxonCommandWriteRegister(char reg, char val);
-
-// Call this when SPI is ready
-void OnAxonByteSent();
 
 // Do not call these methods
 void AxonProceed();
@@ -16,7 +15,6 @@ void AxonUpdate();
 void AxonWriteByteToSend(char data);
 void AxonStartCsn();
 void AxonEndCsn();
-
 typedef enum
 {
 	EAxonIdle = 0,	// Transmitter is ready

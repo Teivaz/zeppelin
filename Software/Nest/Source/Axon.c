@@ -3,11 +3,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "StreamBuffer.h"
 #include "nRF24L01.h"
 #include "config.h"
 #include "types.h"
 #include "utils.h"
-#include "StreamBuffer.h"
 
 TStreamBuffer s_axonCommandStream;
 char s_axonState = EAxonIdle;
@@ -19,21 +19,33 @@ void AxonInit()
 	InitializeStream(&s_axonCommandStream);
 }
 
-void AxonCommandWriteRegister(char reg, char val)
+void AxonReadRegister( char reg )
 {
-	cli();
+	WriteStream(&s_axonCommandStream, R_REGISTER | reg);
+	WriteStream(&s_axonCommandStream, 0);
+	AxonProceed();
+}
+
+void AxonWriteRegister(char reg, char val)
+{
 	WriteStream(&s_axonCommandStream, W_REGISTER | reg);
 	WriteStream(&s_axonCommandStream, val);
-	AxonUpdate();
-	sei();
+	AxonProceed();
 }
 
 void AxonCommand(char command)
 {
-	cli();
 	WriteStream(&s_axonCommandStream, command);
-	AxonUpdate();
-	sei();
+	AxonProceed();
+}
+
+void AxonSend(char* data, char size)
+{
+	for(uint8_t a = 0; a < size; ++a)
+	{
+		WriteStream(&s_axonCommandStream, data[a]);
+	}
+	AxonProceed();
 }
 
 void AxonUpdate()
@@ -46,29 +58,14 @@ void AxonUpdate()
 
 void AxonProceed()
 {
-	switch (s_axonState)
+	AxonStartCsn();
+	while(GetStreamBufferSize(&s_axonCommandStream))
 	{
-		case EAxonIdle:
-			if(GetStreamBufferSize(&s_axonCommandStream))
-			{
-				AxonStartCsn();
-				AxonWriteByteToSend(ReadStream(&s_axonCommandStream));
-			}
-			else
-			{
-				AxonEndCsn();
-			}
-		break;
-		case EAxonBusy:
-			;
-		break;
+		AxonWriteByteToSend(ReadStream(&s_axonCommandStream));
+		while(!READ_BIT(SPSR, SPIF));
 	}
-}
-
-void OnAxonByteSent()
-{
-	s_axonState = EAxonIdle;
-	AxonProceed();
+	AxonEndCsn();
+	
 }
 
 void AxonWriteByteToSend(char data)
@@ -78,6 +75,7 @@ void AxonWriteByteToSend(char data)
 
 void AxonStartCsn()
 {
+	while(READ_BIT(PINB, CLK)); // Wait for CLK to lower
 	CLEAR_BIT(PORTB, CSN);
 }
 

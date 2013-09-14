@@ -2,8 +2,6 @@
 #define STREAMBUFFER_H_
 #include "config.h"
 
-// Something is wrong with it
-
 typedef struct 
 {
 	char buffer[STREAM_BUFFER_SIZE];
