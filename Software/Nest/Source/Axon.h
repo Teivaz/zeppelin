@@ -12,6 +12,7 @@ void AxonProceed();
 void AxonWriteRegister(char reg, char val);
 void AxonReadRegister(char reg);
 void AxonCommand(char command);
+void AxonCommand2(char command, char data);
 
 // Do not call these methods
 void AxonWriteByteToSend(char data);

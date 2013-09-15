@@ -111,6 +111,7 @@
 #define FLUSH_RX      0xE2
 #define REUSE_TX_PL   0xE3
 #define NOP           0xFF
+#define W_TX_PAYLOAD_NOACK 0x58
 
 /* Non-P omissions */
 #define LNA_HCURR   0

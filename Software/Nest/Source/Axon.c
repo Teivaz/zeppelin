@@ -22,10 +22,16 @@ void AxonInit()
 	InitializeStream(&s_axonCommandStream);
 }
 
+void AxonCommand2(char cmnd, char data)
+{
+	WriteStream(&s_axonCommandStream, cmnd);
+	WriteStream(&s_axonCommandStream, data);
+}
+
 void AxonReadRegister( char reg )
 {
 	WriteStream(&s_axonCommandStream, R_REGISTER | reg);
-	WriteStream(&s_axonCommandStream, 0);
+	WriteStream(&s_axonCommandStream, 0xFF);
 	AxonProceed();
 }
 

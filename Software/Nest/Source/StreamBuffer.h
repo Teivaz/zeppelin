@@ -36,13 +36,6 @@ inline void IncrementLast(TStreamBuffer* stream)
 inline char GetStreamBufferSize(TStreamBuffer* stream)
 {
 	return (stream->first != stream->last);
-	/*
-	if(stream->last >= stream->first)
-	{
-		return (stream->last - stream->first);
-	}
-	
-	return (stream->buffer + STREAM_BUFFER_SIZE - stream->first) + (stream->last - stream->buffer);*/
 }
 
 inline void WriteStream(TStreamBuffer* stream, char data)

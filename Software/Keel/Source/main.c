@@ -19,7 +19,7 @@ int main(void)
 	Configure();
 	while(1)
     {
-		if(!READ_BIT(PORTB, INT))
+		if(!READ_BIT(PINB, INT))
 		{
 			DendriteInterrupt();
 		}
@@ -40,10 +40,10 @@ void Configure()
 	SET_BIT(GTCCR, TSM);
 	{
 		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
-		//SET_BIT(TCCR0B, CS01);
+		SET_BIT(TCCR0B, CS01);
 			
-		SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
-		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
+		//SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
+		//SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
 		//SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
 			
 		WRITE_REG(OCR0A, 128);
@@ -53,18 +53,20 @@ void Configure()
 	CLEAR_BIT(GTCCR, TSM);
 	
 	SET_BIT(USICR, USIWM0); // Three wire USI mode
+	//SET_BIT(USICR, USICLK);
 	
 	SET_BIT(PORTB,	CLK);
-	SET_BIT(DDRB,	CLK);
 	SET_BIT(PORTB,	CSN);
+	SET_BIT(PORTB,	PB1);
+	SET_BIT(DDRB,	CLK);
 	SET_BIT(DDRB,	CSN);
 	SET_BIT(DDRB,	PB1);
-	SET_BIT(PORTB,	PB1);
+	CLEAR_BIT(PORTB,	CLK);
 	
 	// Wait for clients to start
+	sei();
 	Sleep();
 	// Finish configure
-	sei();
 	DendriteInit();
 }
 
@@ -76,7 +78,7 @@ void Sleep()
 		{
 			//for(uint8_t c = 0; c < 0xff; ++c)
 			{
-				asm("nop");
+				;//asm("nop");
 			}
 		}
 	}
@@ -85,19 +87,21 @@ void Sleep()
 ISR(TIM0_COMPA_vect)
 {
 	// Generate CLK fall
-	CLEAR_BIT(PORTB, CLK);
+	//CLEAR_BIT(PORTB, CLK);
 	
 	// === SPI ===
 	// Prepare data to send through
-	SET_BIT(USICR, USICLK);
+	//DendriteToggle(0);
 }
 
 ISR(TIM0_COMPB_vect)
 {
 	// Generate CLK rise
-	SET_BIT(PORTB, CLK);
+	//SET_BIT(PORTB, CLK);
+	//DendriteToggle(1);
 	//SET_BIT(USICR, USITC);
 	
 	// === SPI ===
 	// Read data
+	DendriteReadReg(STATUS);
 }
