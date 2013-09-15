@@ -43,12 +43,6 @@ int main()
 	
 	while(1)
     {
-		//AxonEndCsn();
-		//AxonStartCsn();
-		_delay_ms(QUERY_PERIOD);
-	    ConfigureTx();
-		continue;
-		
 		if(s_mode == EModeBase)
 		{
 			ReadSticks();
@@ -94,10 +88,10 @@ void Configure()
 {
 	ConfigureMcu();
 	InitLetters();
-	//DendriteInit();
+	DendriteInit();
 	AxonInit();
-	//ConfigureLeds();
-	//ConifugeureBtnPullups();
+	ConfigureLeds();
+	ConifugeureBtnPullups();
 	sei();
 	
 	ConfigureTx();
@@ -114,7 +108,7 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 
 void Transmit()
 {
-	AxonCommand(W_TX_PAYLOAD);
+	AxonStreamWrite(W_TX_PAYLOAD);
 	
 	// This will fill 20 bytes out of 32 that will be sent.
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
@@ -122,15 +116,16 @@ void Transmit()
 		CreateSpiPacket(sc_secondaryLetters[a], GetMotor(a), GetServo(a));
 		for(uint8_t a = 0; a < 5; ++a)
 		{
-			AxonCommand(s_spiPackage[a]);
+			AxonStreamWrite(s_spiPackage[a]);
 		}
 	}
 
 	// Fill the rest with zeros
 	for(uint8_t a = 0; a < 12; ++a)
 	{
-		AxonCommand(0);
+		AxonStreamWrite(0);
 	}
+	AxonProceed();
 }
 
 void ReadButtons()

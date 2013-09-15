@@ -10,8 +10,11 @@
 #include "utils.h"
 
 TStreamBuffer s_axonCommandStream;
-char s_axonState = EAxonIdle;
 	
+void AxonStreamWrite(char data)
+{
+	WriteStream(&s_axonCommandStream, data);
+}
 
 void AxonInit()
 {
@@ -46,14 +49,6 @@ void AxonSend(char* data, char size)
 		WriteStream(&s_axonCommandStream, data[a]);
 	}
 	AxonProceed();
-}
-
-void AxonUpdate()
-{
-	if(s_axonState == EAxonIdle)
-	{
-		AxonProceed();
-	}
 }
 
 void AxonProceed()
