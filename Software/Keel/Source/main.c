@@ -8,24 +8,20 @@
 #include "types.h"
 #include "utils.h"
 
-#include "Axon.h"
 #include "Dendrite.h"
 #include "SystemConfig.h"
-
-TStreamBuffer s_stream;
 
 signed char s_speed = 0;
 char s_spiPackage[5] = {0};
 
 int main(void)
 {
-	InitializeStream(&s_stream);
 	Configure();
 	while(1)
     {
 		if(!READ_BIT(PORTB, INT))
 		{
-			OnDendriteInterrupt();
+			DendriteInterrupt();
 		}
     }
 }
@@ -65,14 +61,11 @@ void Configure()
 	SET_BIT(DDRB,	PB1);
 	SET_BIT(PORTB,	PB1);
 	
-	
-	
 	// Wait for clients to start
 	Sleep();
 	// Finish configure
 	sei();
 	DendriteInit();
-	OnDendriteSpiReady();
 }
 
 void Sleep()
@@ -83,41 +76,20 @@ void Sleep()
 		{
 			//for(uint8_t c = 0; c < 0xff; ++c)
 			{
-				volatile char f = 0;
+				asm("nop");
 			}
 		}
 	}
-}
-
-void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
-{
-	s_spiPackage[0] = PRIMARY_LETTER;
-	s_spiPackage[1] = letter;
-	s_spiPackage[2] = dcSpeed;
-	s_spiPackage[3] = servo;
-	s_spiPackage[4] = CRC(s_spiPackage, 4);
 }
 
 ISR(TIM0_COMPA_vect)
 {
 	// Generate CLK fall
 	CLEAR_BIT(PORTB, CLK);
-	//SET_BIT(USICR, USITC);
 	
 	// === SPI ===
 	// Prepare data to send through
 	SET_BIT(USICR, USICLK);
-	
-	char counter = READ_REG(USISR) & (1<<USICNT0 | 1<<USICNT1 | 1<<USICNT2 | 1<<USICNT3);
-	if(counter > 7)
-	{
-		CLEAR_BIT(USISR, USICNT0);
-		CLEAR_BIT(USISR, USICNT1);
-		CLEAR_BIT(USISR, USICNT2);
-		CLEAR_BIT(USISR, USICNT3);
-		OnDendriteSpiReady();
-	}
-	//AxonIncrementBit();
 }
 
 ISR(TIM0_COMPB_vect)
@@ -126,7 +98,6 @@ ISR(TIM0_COMPB_vect)
 	SET_BIT(PORTB, CLK);
 	//SET_BIT(USICR, USITC);
 	
-	//WRITE_REG(TCNT0, 0);
 	// === SPI ===
 	// Read data
 }
