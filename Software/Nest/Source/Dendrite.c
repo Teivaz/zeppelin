@@ -65,7 +65,7 @@ void LoadFeatherCalibrationValues()
 		data[a] = *(e_featherCalibration + a);
 	}
 #else
-	eeprom_read_block(e_featherCalibration, s_featherCalibration, sizeof(TFeatherCalibration) * FEATHER_NUM);
+	eeprom_read_block(s_featherCalibration, e_featherCalibration, sizeof(TFeatherCalibration) * FEATHER_NUM);
 #endif
 }
 
@@ -265,7 +265,7 @@ void LoadStickCalibrationValues()
 		data[a] = *(e_stickCalibration + a);
 	}
 #else
-	eeprom_read_block(e_stickCalibration, s_stickCalibration, sizeof(TStickCalibration) * STICK_NUM);
+	eeprom_read_block(s_stickCalibration, e_stickCalibration, sizeof(TStickCalibration) * STICK_NUM);
 #endif
 }
 

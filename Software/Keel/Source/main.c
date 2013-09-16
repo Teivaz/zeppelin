@@ -8,24 +8,20 @@
 #include "types.h"
 #include "utils.h"
 
-#include "Axon.h"
 #include "Dendrite.h"
 #include "SystemConfig.h"
-
-TStreamBuffer s_stream;
 
 signed char s_speed = 0;
 char s_spiPackage[5] = {0};
 
 int main(void)
 {
-	InitializeStream(&s_stream);
 	Configure();
 	while(1)
     {
-		if(!READ_BIT(PORTB, INT))
+		if(!READ_BIT(PINB, INT))
 		{
-			OnDendriteInterrupt();
+			DendriteInterrupt();
 		}
     }
 }
@@ -44,10 +40,10 @@ void Configure()
 	SET_BIT(GTCCR, TSM);
 	{
 		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
-		//SET_BIT(TCCR0B, CS01);
+		SET_BIT(TCCR0B, CS01);
 			
-		SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
-		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
+		//SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
+		//SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
 		//SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
 			
 		WRITE_REG(OCR0A, 128);
@@ -57,22 +53,21 @@ void Configure()
 	CLEAR_BIT(GTCCR, TSM);
 	
 	SET_BIT(USICR, USIWM0); // Three wire USI mode
+	//SET_BIT(USICR, USICLK);
 	
 	SET_BIT(PORTB,	CLK);
-	SET_BIT(DDRB,	CLK);
 	SET_BIT(PORTB,	CSN);
+	SET_BIT(PORTB,	PB1);
+	SET_BIT(DDRB,	CLK);
 	SET_BIT(DDRB,	CSN);
 	SET_BIT(DDRB,	PB1);
-	SET_BIT(PORTB,	PB1);
-	
-	
+	CLEAR_BIT(PORTB,	CLK);
 	
 	// Wait for clients to start
+	sei();
 	Sleep();
 	// Finish configure
-	sei();
 	DendriteInit();
-	OnDendriteSpiReady();
 }
 
 void Sleep()
@@ -83,50 +78,30 @@ void Sleep()
 		{
 			//for(uint8_t c = 0; c < 0xff; ++c)
 			{
-				volatile char f = 0;
+				;//asm("nop");
 			}
 		}
 	}
 }
 
-void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
-{
-	s_spiPackage[0] = PRIMARY_LETTER;
-	s_spiPackage[1] = letter;
-	s_spiPackage[2] = dcSpeed;
-	s_spiPackage[3] = servo;
-	s_spiPackage[4] = CRC(s_spiPackage, 4);
-}
-
 ISR(TIM0_COMPA_vect)
 {
 	// Generate CLK fall
-	CLEAR_BIT(PORTB, CLK);
-	//SET_BIT(USICR, USITC);
+	//CLEAR_BIT(PORTB, CLK);
 	
 	// === SPI ===
 	// Prepare data to send through
-	SET_BIT(USICR, USICLK);
-	
-	char counter = READ_REG(USISR) & (1<<USICNT0 | 1<<USICNT1 | 1<<USICNT2 | 1<<USICNT3);
-	if(counter > 7)
-	{
-		CLEAR_BIT(USISR, USICNT0);
-		CLEAR_BIT(USISR, USICNT1);
-		CLEAR_BIT(USISR, USICNT2);
-		CLEAR_BIT(USISR, USICNT3);
-		OnDendriteSpiReady();
-	}
-	//AxonIncrementBit();
+	//DendriteToggle(0);
 }
 
 ISR(TIM0_COMPB_vect)
 {
 	// Generate CLK rise
-	SET_BIT(PORTB, CLK);
+	//SET_BIT(PORTB, CLK);
+	//DendriteToggle(1);
 	//SET_BIT(USICR, USITC);
 	
-	//WRITE_REG(TCNT0, 0);
 	// === SPI ===
 	// Read data
+	DendriteReadReg(STATUS);
 }

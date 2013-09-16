@@ -13,8 +13,6 @@
 #include "Dendrite.h"
 #include "SystemConfig.h"
 
-TStreamBuffer s_stream;
-
 const char sc_secondaryLetters[FEATHER_NUM] =\
 {'1', '2', '3', '4'};
 
@@ -26,8 +24,8 @@ char s_stickBuffer[STICK_NUM * 2] = {0};
 char s_stickBuffer2[STICK_NUM * 2] = {127};
 char s_stickBuffer3[STICK_NUM * 2] = {127};
 
+char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
 const char sc_stickButtonPins[STICK_NUM] = STICK_BTN_PINS;
-const char sc_stickButtonPorts[STICK_NUM] = STICK_BTN_PORTS;
 const char sc_stickMux[STICK_NUM * 2] = STICK_ADC_PORTS;
 
 signed char s_speed = 0;
@@ -41,10 +39,8 @@ int main_()
 int main()
 #endif
 {
-	InitializeStream(&s_stream);
 	Configure();
-	DendriteInit();
-	AxonInit();
+	
 	while(1)
     {
 		if(s_mode == EModeBase)
@@ -90,9 +86,15 @@ int main()
 
 void Configure()
 {
+	ConfigureMcu();
 	InitLetters();
-
+	DendriteInit();
+	AxonInit();
+	ConfigureLeds();
+	ConifugeureBtnPullups();
 	sei();
+	
+	ConfigureTx();
 }
 
 void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
@@ -106,22 +108,28 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 
 void Transmit()
 {
+	
+	AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
+	AxonStreamWrite(W_TX_PAYLOAD);
+	
 	// This will fill 20 bytes out of 32 that will be sent.
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
 	{
 		CreateSpiPacket(sc_secondaryLetters[a], GetMotor(a), GetServo(a));
 		for(uint8_t a = 0; a < 5; ++a)
 		{
-			WriteStream(&s_stream, s_spiPackage[a]);
+			AxonStreamWrite(s_spiPackage[a]);
 		}
 	}
 
 	// Fill the rest with zeros
 	for(uint8_t a = 0; a < 12; ++a)
 	{
-		WriteStream(&s_stream, 0);
+		AxonStreamWrite(0);
 	}
-	AxonAdvanceToState(EAxonSending);
+	AxonProceed();
+	AxonCommand(FLUSH_TX);
+	
 }
 
 void ReadButtons()
@@ -281,4 +289,73 @@ void UpdateIndicators()
 	{
 		SET_BIT(CAL_LED_PORT, CAL_LED_PIN);
 	}
+}
+
+void ConfigureTx()
+{
+	AxonWriteRegister(CONFIG, 1 << PWR_UP | 0 << EN_CRC); // Enable
+	AxonWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
+	AxonWriteRegister(SETUP_RETR, 0); // Disable retransmit
+	
+	AxonCommand2(ACTIVATE, 0x73);
+	AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
+	
+	
+}
+
+void ConfigureLeds()
+{
+	// Prepare to switch port direction
+	SET_BIT(STICK_FLS_LED_PORT, STICK_FLS_LED_PIN);
+	SET_BIT(STICK_FLM_LED_PORT, STICK_FLM_LED_PIN);
+	SET_BIT(STICK_BRS_LED_PORT, STICK_BRS_LED_PIN);
+	SET_BIT(STICK_BRM_LED_PORT, STICK_BRM_LED_PIN);
+	SET_BIT(MODE_LED_PORT, MODE_LED_PIN);
+	SET_BIT(CAL_LED_PORT, CAL_LED_PIN);
+	
+	// Pin directions
+	SET_BIT( *(&STICK_FLS_LED_PORT - 1), STICK_FLS_LED_PIN);
+	SET_BIT( *(&STICK_FLM_LED_PORT - 1), STICK_FLM_LED_PIN);
+	SET_BIT( *(&STICK_BRS_LED_PORT - 1), STICK_BRS_LED_PIN);
+	SET_BIT( *(&STICK_BRM_LED_PORT - 1), STICK_BRM_LED_PIN);
+	SET_BIT( *(&MODE_LED_PORT - 1), MODE_LED_PIN);
+	SET_BIT( *(&CAL_LED_PORT - 1), CAL_LED_PIN);
+}
+
+void ConifugeureBtnPullups()
+{
+	SET_BIT(CAL_BTN_PORT, CAL_BTN_PIN);
+	SET_BIT(MODE_BTN_PORT, MODE_BTN_PIN);
+	SET_BIT(sc_stickButtonPorts[0], sc_stickButtonPins[0]);
+	SET_BIT(sc_stickButtonPorts[1], sc_stickButtonPins[1]);
+	SET_BIT(sc_stickButtonPorts[2], sc_stickButtonPins[2]);
+	SET_BIT(sc_stickButtonPorts[3], sc_stickButtonPins[3]);
+}
+
+void ConfigureMcu()
+{
+	/* ADC */
+	// AVCC with external capacitor at AREF pin
+	SET_BIT(ADMUX, REFS0);
+	CLEAR_BIT(ADMUX, REFS1);
+	
+	// Set storing format
+	SET_BIT(ADMUX, ADLAR);
+	
+	// Enable ADC
+	SET_BIT(ADCSRA, ADEN);
+	
+	/* SPI */
+	SET_BIT(SPCR, MSTR);
+	SET_BIT(SPCR, SPR1);
+	
+	
+	SET_BIT(PORTB, PB7); // SCK
+	SET_BIT(PORTB, PB5); // MOSI
+	SET_BIT(PORTB, CSN);
+	SET_BIT(DDRB, PB7); // SCK
+	SET_BIT(DDRB, PB5); // MOSI
+	SET_BIT(DDRB, CSN);
+		
+	SET_BIT(SPCR, SPE);
 }
