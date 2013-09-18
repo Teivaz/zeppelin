@@ -294,8 +294,9 @@ void UpdateIndicators()
 void ConfigureTx()
 {
 	AxonWriteRegister(CONFIG, 1 << PWR_UP); // Enable
-	//AxonWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
+	AxonWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
 	//AxonWriteRegister(SETUP_RETR, 0); // Disable retransmit
+	AxonWriteRegister(EN_AA, 0);
 	
 	//AxonCommand2(ACTIVATE, 0x73);
 	//AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
@@ -353,11 +354,9 @@ void ConfigureMcu()
 	SET_BIT(PORTB, PB7); // SCK
 	SET_BIT(PORTB, PB5); // MOSI
 	SET_BIT(PORTB, CSN);
-	SET_BIT(PORTB, CE);
 	SET_BIT(DDRB, PB7); // SCK
 	SET_BIT(DDRB, PB5); // MOSI
 	SET_BIT(DDRB, CSN);
-	SET_BIT(DDRB, CE);
 		
 	SET_BIT(SPCR, SPE);
 }
