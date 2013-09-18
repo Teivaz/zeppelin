@@ -6,10 +6,11 @@
 #define MOSI	PB5 // Will be driven via hardware
 #define INT		PB3 // Do we need this?
 #define DBG		PB3
+#define CE		PB2
 
 #define STREAM_BUFFER_SIZE  64
 
-#define QUERY_PERIOD 20	// time in ms
+#define QUERY_PERIOD 100	// time in ms
 
 #define PORTA_ 0x1B
 #define PORTB_ 0x18

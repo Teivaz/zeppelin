@@ -40,10 +40,10 @@ void Configure()
 	SET_BIT(GTCCR, TSM);
 	{
 		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
-		SET_BIT(TCCR0B, CS01);
+		SET_BIT(TCCR0B, CS02);
 			
 		//SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
-		//SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
+		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
 		//SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
 			
 		WRITE_REG(OCR0A, 128);
@@ -103,5 +103,6 @@ ISR(TIM0_COMPB_vect)
 	
 	// === SPI ===
 	// Read data
-	DendriteReadReg(STATUS);
+			DendriteInterrupt();
+//	DendriteReadReg(STATUS);
 }

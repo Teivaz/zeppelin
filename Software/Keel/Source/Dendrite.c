@@ -49,12 +49,17 @@ void DendriteClearRegBit(char reg, char bit)
 
 void DendriteInitRx()
 {
-	//DendriteWriteReg(CONFIG, (1 << PWR_UP) | (1 << EN_CRC) | (1 << MASK_RX_DR) | (1 << MASK_TX_DS) | (1 << MASK_MAX_RT) | (1 << PRIM_RX));
-	DendriteSetRegBit(CONFIG, PWR_UP);
-	DendriteSetRegBit(CONFIG, PRIM_RX);
-	DendriteSetRegBit(CONFIG, MASK_TX_DS);
+	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (0 << MASK_RX_DR) | (0 << MASK_TX_DS) | (0 << MASK_MAX_RT) | (0 << PRIM_RX));
+	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (0 << MASK_RX_DR) | (0 << MASK_TX_DS) | (0 << MASK_MAX_RT) | (1 << PRIM_RX));
+//	DendriteSetRegBit(CONFIG, PWR_UP);
+//	DendriteSetRegBit(CONFIG, PRIM_RX);
+//	DendriteSetRegBit(CONFIG, MASK_TX_DS);
+	DendriteWriteReg(RX_PW_P0, 32);
+//	DendriteWriteReg(RX_PW_P1, 32);
+	FlushRx();
 	
-	
+	return;
+	//---------------------------------
 	DendriteWriteReg(RF_SETUP, 0b00000111);
 	
 	DendriteWriteReg(EN_AA, 0);
@@ -80,8 +85,10 @@ void DendriteRead()
 
 void DendriteFinishReading()
 {
-	char data[2] = {W_REGISTER | STATUS, 0};
+	// Reset interrupt flags
+	char data[2] = {W_REGISTER | STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT)};
 	DendriteWrite(data, 2);
+	DendriteReadReg(FIFO_STATUS);
 }
 
 void DendriteInit()
