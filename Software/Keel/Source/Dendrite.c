@@ -49,46 +49,26 @@ void DendriteClearRegBit(char reg, char bit)
 
 void DendriteInitRx()
 {
-	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (0 << MASK_RX_DR) | (0 << MASK_TX_DS) | (0 << MASK_MAX_RT) | (0 << PRIM_RX));
-	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (0 << MASK_RX_DR) | (0 << MASK_TX_DS) | (0 << MASK_MAX_RT) | (1 << PRIM_RX));
-//	DendriteSetRegBit(CONFIG, PWR_UP);
-//	DendriteSetRegBit(CONFIG, PRIM_RX);
-//	DendriteSetRegBit(CONFIG, MASK_TX_DS);
-	DendriteWriteReg(RX_PW_P0, 32);
-//	DendriteWriteReg(RX_PW_P1, 32);
-	FlushRx();
-	
-	return;
-	//---------------------------------
-	DendriteWriteReg(RF_SETUP, 0b00000111);
-	
-	DendriteWriteReg(EN_AA, 0);
-	DendriteWriteReg(RX_PW_P0, 32);
-	DendriteWriteReg(EN_RXADDR, 1 << ERX_P0);
-	char addr[6] = {W_REGISTER | RX_ADDR_P0, 0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
-	DendriteWrite(addr, 6);
-	
-	DendriteWriteReg(SETUP_RETR, 0);
-	
-	//DendriteWriteReg(CONFIG, (1 << PWR_UP) | (1 << EN_CRC) | (1 << MASK_RX_DR) | (1 << MASK_TX_DS) | (1 << MASK_MAX_RT) | (1 << PRIM_RX));
-	
-	FlushRx();
-	FlushTx();
+	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (0 << PRIM_RX));
+	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (1 << PRIM_RX));
+	DendriteWriteReg(RX_PW_P0, 32); // Data pipe 0
+	DendriteWriteReg(RF_SETUP, 0b00000111); // 1 Mbps
+	DendriteWriteReg(EN_AA, 0);	// No acknoledge
 }
 
 void DendriteRead()
 {
-	char data[33] = {0xff};
+	char data[33] = {0};
 	data[0] = R_RX_PAYLOAD;
 	DendriteWrite(data, 33);
 }
 
 void DendriteFinishReading()
 {
-	// Reset interrupt flags
-	char data[2] = {W_REGISTER | STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT)};
-	DendriteWrite(data, 2);
-	DendriteReadReg(FIFO_STATUS);
+	// Reset all interrupt flags
+	DendriteWriteReg(STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
+	FlushRx();
+	FlushTx();
 }
 
 void DendriteInit()
@@ -109,8 +89,6 @@ void DendriteWrite( char* data, char size )
 			DendriteToggle(1);
 			DendriteToggle(0);
 		}
-		//while(!READ_BIT(USISR, USIOIF));
-		//CLEAR_BIT(USISR, USIOIF);
 	}
 	DendriteEnd();
 }
@@ -140,13 +118,11 @@ void DendriteToggle(char front)
 	{
 		if(front == 0)
 		{
-			asm("nop");
 			CLEAR_BIT(PORTB, CLK);
 			SET_BIT(USICR, USICLK);
 		}
 		else
 		{
-			asm("nop");
 			SET_BIT(PORTB, CLK);
 		}
 	}

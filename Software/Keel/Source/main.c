@@ -30,30 +30,15 @@ void Configure()
 {
 	InitLetters();
 	//Clock
-	uint8_t clkpr = (0 & CLKPS0)|
-					(0 & CLKPS1)|
-					(0 & CLKPS2)|
-					(0 & CLKPS3);
-	WRITE_REG(CLKPR, CLKPCE);
+	uint8_t clkpr = (0 << CLKPS0)|
+					(0 << CLKPS1)|
+					(1 << CLKPS2)|
+					(0 << CLKPS3);
+	WRITE_REG(CLKPR, 1 << CLKPCE);
 	WRITE_REG(CLKPR, clkpr);
 	
-	SET_BIT(GTCCR, TSM);
-	{
-		SET_BIT(TCCR0B, CS00); // Set source Fcpu/64
-		SET_BIT(TCCR0B, CS02);
-			
-		//SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
-		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
-		//SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
-			
-		WRITE_REG(OCR0A, 128);
-		WRITE_REG(OCR0B, 255);
-	}
-	// start timers
-	CLEAR_BIT(GTCCR, TSM);
 	
 	SET_BIT(USICR, USIWM0); // Three wire USI mode
-	//SET_BIT(USICR, USICLK);
 	
 	SET_BIT(PORTB,	CLK);
 	SET_BIT(PORTB,	CSN);
@@ -78,31 +63,9 @@ void Sleep()
 		{
 			//for(uint8_t c = 0; c < 0xff; ++c)
 			{
-				;//asm("nop");
+				asm("nop");
 			}
 		}
 	}
 }
 
-ISR(TIM0_COMPA_vect)
-{
-	// Generate CLK fall
-	//CLEAR_BIT(PORTB, CLK);
-	
-	// === SPI ===
-	// Prepare data to send through
-	//DendriteToggle(0);
-}
-
-ISR(TIM0_COMPB_vect)
-{
-	// Generate CLK rise
-	//SET_BIT(PORTB, CLK);
-	//DendriteToggle(1);
-	//SET_BIT(USICR, USITC);
-	
-	// === SPI ===
-	// Read data
-			DendriteInterrupt();
-//	DendriteReadReg(STATUS);
-}
