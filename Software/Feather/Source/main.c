@@ -38,11 +38,11 @@ void Init()
 	// System frequency = 8.0 MHz
 	
 	/* === Configure prescale here ===	*/
-	uint8_t clkpr = (0 & CLKPS0)|
-					(0 & CLKPS1)|
-					(0 & CLKPS2)|
-					(0 & CLKPS3);
-	WRITE_REG(CLKPR, CLKPCE);
+	uint8_t clkpr = (0 << CLKPS0)|
+					(0 << CLKPS1)|
+					(0 << CLKPS2)|
+					(0 << CLKPS3);
+	WRITE_REG(CLKPR, 1 << CLKPCE);
 	WRITE_REG(CLKPR, clkpr);
 		
 	/* === Configure timer 0 here === */	
