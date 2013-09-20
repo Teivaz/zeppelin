@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.5.0">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -9,6 +9,20 @@
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
@@ -142,8 +156,8 @@
 <wire x1="2.54" y1="-0.635" x2="1.905" y2="-1.27" width="0.1524" layer="21"/>
 <wire x1="1.905" y1="-1.27" x2="0.635" y2="-1.27" width="0.1524" layer="21"/>
 <wire x1="0.635" y1="-1.27" x2="0" y2="-0.635" width="0.1524" layer="21"/>
-<pad name="1" x="-1.27" y="0" drill="1.016" shape="long" rot="R90"/>
-<pad name="2" x="1.27" y="0" drill="1.016" shape="long" rot="R90"/>
+<pad name="1" x="-1.27" y="0" drill="1.016" diameter="1.778" shape="octagon" rot="R90"/>
+<pad name="2" x="1.27" y="0" drill="1.016" diameter="1.778" shape="octagon" rot="R90"/>
 <text x="-2.6162" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-2.54" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
 <rectangle x1="-1.524" y1="-0.254" x2="-1.016" y2="0.254" layer="51"/>
@@ -383,14 +397,14 @@ Source: http://www.atmel.com/dyn/resources/prod_documents/2535S.pdf</description
 <wire x1="-2.6" y1="2.65" x2="-2.6" y2="-2.665" width="0.1524" layer="21"/>
 <wire x1="2.6" y1="-2.675" x2="2.6" y2="2.65" width="0.1524" layer="21"/>
 <circle x="-1.42" y="-1.115" radius="0.5" width="0.0508" layer="21"/>
-<smd name="1" x="-1.905" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="2" x="-0.645" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="3" x="0.625" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="4" x="1.895" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="8" x="-1.905" y="3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="7" x="-0.635" y="3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="6" x="0.635" y="3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="5" x="1.905" y="3.404" dx="0.5" dy="1.4" layer="1"/>
+<smd name="1" x="-1.905" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="2" x="-0.645" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="3" x="0.625" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="4" x="1.895" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="8" x="-1.905" y="3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="7" x="-0.635" y="3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="6" x="0.635" y="3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="5" x="1.905" y="3.404" dx="0.9" dy="1.9" layer="1"/>
 <text x="-2.8575" y="-2.159" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
 <text x="4.064" y="-2.159" size="1.27" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
 <rectangle x1="-2.08" y1="2.95" x2="-1.73" y2="3.85" layer="51"/>

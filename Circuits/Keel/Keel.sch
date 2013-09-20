@@ -499,14 +499,14 @@ Source: http://www.atmel.com/dyn/resources/prod_documents/2535S.pdf</description
 <wire x1="-2.6" y1="2.65" x2="-2.6" y2="-2.665" width="0.1524" layer="21"/>
 <wire x1="2.6" y1="-2.675" x2="2.6" y2="2.65" width="0.1524" layer="21"/>
 <circle x="-1.42" y="-1.115" radius="0.5" width="0.0508" layer="21"/>
-<smd name="1" x="-1.905" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="2" x="-0.645" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="3" x="0.625" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="4" x="1.895" y="-3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="8" x="-1.905" y="3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="7" x="-0.635" y="3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="6" x="0.635" y="3.404" dx="0.5" dy="1.4" layer="1"/>
-<smd name="5" x="1.905" y="3.404" dx="0.5" dy="1.4" layer="1"/>
+<smd name="1" x="-1.905" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="2" x="-0.645" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="3" x="0.625" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="4" x="1.895" y="-3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="8" x="-1.905" y="3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="7" x="-0.635" y="3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="6" x="0.635" y="3.404" dx="0.9" dy="1.9" layer="1"/>
+<smd name="5" x="1.905" y="3.404" dx="0.9" dy="1.9" layer="1"/>
 <text x="-2.8575" y="-2.159" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
 <text x="4.064" y="-2.159" size="1.27" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
 <rectangle x1="-2.08" y1="2.95" x2="-1.73" y2="3.85" layer="51"/>
