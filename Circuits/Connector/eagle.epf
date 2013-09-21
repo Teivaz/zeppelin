@@ -1,0 +1,23 @@
+[Eagle]
+Version="06 04 00"
+Platform="Windows"
+Serial="62191E841E-LSR-WLM-1EL"
+Globals="Globals"
+Desktop="Desktop"
+
+[Globals]
+AutoSaveProject=1
+UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/atmel.lbr"
+UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/irf-2.lbr"
+UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/jt9s-1p.lbr"
+UsedLibrary="D:/Projects/zeppelin/Circuits/Libs/pinhead.lbr"
+
+[Win_1]
+Type="Control Panel"
+Loc="375 165 974 564"
+State=2
+Number=0
+
+[Desktop]
+Screen="1366 768"
+Window="Win_1"
