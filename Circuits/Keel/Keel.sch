@@ -4200,15 +4200,15 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </net>
 <net name="MISO" class="0">
 <segment>
-<pinref part="IC1" gate="G$1" pin="PB1/PCINT1/AIN1/OC0B/INT0/MISO"/>
-<wire x1="71.12" y1="5.08" x2="45.72" y2="5.08" width="0.1524" layer="91"/>
-<wire x1="45.72" y1="5.08" x2="45.72" y2="30.48" width="0.1524" layer="91"/>
+<wire x1="45.72" y1="7.62" x2="45.72" y2="30.48" width="0.1524" layer="91"/>
 <pinref part="RF" gate="A" pin="7"/>
 <wire x1="109.22" y1="30.48" x2="45.72" y2="30.48" width="0.1524" layer="91"/>
 <label x="93.98" y="30.48" size="1.778" layer="95"/>
 <wire x1="45.72" y1="30.48" x2="22.86" y2="30.48" width="0.1524" layer="91"/>
 <junction x="45.72" y="30.48"/>
 <pinref part="JP2" gate="A" pin="4"/>
+<pinref part="IC1" gate="G$1" pin="PB0/PCINT0/AIN0/OC0A/MOSI"/>
+<wire x1="71.12" y1="7.62" x2="45.72" y2="7.62" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -4225,9 +4225,9 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="129.54" y1="33.02" x2="129.54" y2="22.86" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="22.86" x2="63.5" y2="22.86" width="0.1524" layer="91"/>
 <label x="121.92" y="33.02" size="1.778" layer="95"/>
-<wire x1="63.5" y1="22.86" x2="63.5" y2="0" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="G$1" pin="PB3/PCINT3/CLKI/ADC3"/>
-<wire x1="63.5" y1="0" x2="71.12" y2="0" width="0.1524" layer="91"/>
+<wire x1="63.5" y1="22.86" x2="63.5" y2="5.08" width="0.1524" layer="91"/>
+<pinref part="IC1" gate="G$1" pin="PB1/PCINT1/AIN1/OC0B/INT0/MISO"/>
+<wire x1="63.5" y1="5.08" x2="71.12" y2="5.08" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="IRQ" class="0">
@@ -4237,9 +4237,9 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="127" y1="30.48" x2="127" y2="25.4" width="0.1524" layer="91"/>
 <wire x1="127" y1="25.4" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
 <label x="121.92" y="30.48" size="1.778" layer="95"/>
-<pinref part="IC1" gate="G$1" pin="PB0/PCINT0/AIN0/OC0A/MOSI"/>
-<wire x1="71.12" y1="7.62" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="7.62" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="0" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
+<pinref part="IC1" gate="G$1" pin="PB3/PCINT3/CLKI/ADC3"/>
+<wire x1="66.04" y1="0" x2="71.12" y2="0" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="CE" class="0">
