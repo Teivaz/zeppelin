@@ -10,6 +10,7 @@ void SetMotorSpeedUnsigned(unsigned char speed);
 void SetServoPosition(unsigned char position);
 void AdvanceServoState();
  
+void ResetSpiTimer();
 void ReadSpi();
 
 typedef enum

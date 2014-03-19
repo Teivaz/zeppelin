@@ -19,15 +19,30 @@ volatile uint8_t s_servo = 128;	// 1 equals 0.0078 ms
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
-char s_spiState = 0;
-volatile char s_servoState = EServoPause;
+// SPI watchdog timer
+char s_spiTimer = 0;
 
 int main(void)
 {
 	Init();
     while(1)
     {
-		;
+		if(Package_IsValid() == 1)
+		{
+			SetMotorSpeedSigned(Package_GetDataByte(0));
+			SetServoPosition(Package_GetDataByte(1));
+			Package_Reset();
+		}
+		
+		if(s_spiTimer == 0xff)
+		{
+			Package_Reset();
+			ResetSpiTimer();
+		}
+		else
+		{
+			s_spiTimer += 1;
+		}
     }
 }
 
@@ -74,17 +89,15 @@ void Init()
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);	
 	
-#if 0
 	// The rising edge of INT0 generates an interrupt request.
 	SET_BIT(MCUCR, ISC00);
 	SET_BIT(MCUCR, ISC01);
 	SET_BIT(GIMSK, INT0); // Enable INT0 interrupt
-#else	
 	
-#end
+	SET_BIT(USICR, USIWM1);	// Two wire mode
+	SET_BIT(USICR, USICS1); // Clock - external positive edge 
+	SET_BIT(USICR, USIOIE); // Interrupt on counter overflow
 	
-	SET_BIT(USICR, USIWM1);	// two wire mode
-	SET_BIT(USICR, USICS1); // clock - external positive edge 
 	
 	SET_BIT(PORTB, MOTOR_PIN_A);
 	SET_BIT(PORTB, MOTOR_PIN_B);
@@ -98,75 +111,27 @@ void Init()
 }
 
 #pragma mark "SPI"
-ISR(INT0_vect)
+ISR(INT0_vect) // When we have activity on clock input
 {
-	ReadSpi();
+	ResetSpiTimer();
 }
 
-void ReadSpi()
+ISR(USI_OVF_vect) // When SPI buffer is full
 {
-	if(s_spiState == 0)
-	{
-		if(USIDR == PRIMARY_LETTER)
-		{
-			s_spiBuffer[0] = USIDR;
-			++s_spiState;
-		}
-	}
-	else if(s_spiState < SPI_WORD_SIZE * 1)
-	{
-		++s_spiState;
-	}
-	else if(s_spiState == SPI_WORD_SIZE * 1)
-	{
-		if(USIDR == SECONDARY_LETTER)
-		{
-			s_spiBuffer[1] = USIDR;
-			++s_spiState;
-		}
-		else
-		{
-			s_spiState = 0;
-		}
-	}
-	else if(s_spiState < SPI_WORD_SIZE * 2)
-	{
-		++s_spiState;
-	}
-	else if(s_spiState == SPI_WORD_SIZE * 2)
-	{
-		s_spiBuffer[2] = USIDR;
-		++s_spiState;
-	}
-	else if(s_spiState < SPI_WORD_SIZE * 3)
-	{
-		++s_spiState;
-	}
-	else if(s_spiState == SPI_WORD_SIZE * 3)
-	{
-		s_spiBuffer[3] = USIDR;
-		++s_spiState;
-	}
-	else if(s_spiState < SPI_WORD_SIZE * 4)
-	{
-		++s_spiState;
-	}
-	else if(s_spiState == SPI_WORD_SIZE * 4)
-	{
-		if(CRC(s_spiBuffer, 4) == USIDR)
-		{
-			SetMotorSpeedSigned(s_spiBuffer[2]);
-			SetServoPosition(s_spiBuffer[3]);
-		}
-		s_spiState = 0;
-	}
+	Package_AddByte(USIDR);
+	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
+}
+
+void ResetSpiTimer()
+{
+	s_spiTimer = 0;
 }
 
 #pragma mark "Servo"
 void SetServoPosition(unsigned char position)
 {
 	cli();
-	// Doesn't trigger when value is less than 2
+	// Do not trigger when value is less than 2
 	if(position < 2)
 	{
 		position = 2;
