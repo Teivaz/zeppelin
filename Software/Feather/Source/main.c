@@ -72,13 +72,17 @@ void Init()
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);	
 	
+#if 0
 	// The rising edge of INT0 generates an interrupt request.
 	SET_BIT(MCUCR, ISC00);
 	SET_BIT(MCUCR, ISC01);
 	SET_BIT(GIMSK, INT0); // Enable INT0 interrupt
+#else	
 	
-	SET_BIT(USICR, USIWM1);
-	SET_BIT(USICR, USICS1);
+#end
+	
+	SET_BIT(USICR, USIWM1);	// two wire mode
+	SET_BIT(USICR, USICS1); // clock - external positive edge 
 	
 	SET_BIT(PORTB, MOTOR_PIN_A);
 	SET_BIT(PORTB, MOTOR_PIN_B);
