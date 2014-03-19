@@ -106,6 +106,24 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 	s_spiPackage[4] = CRC(s_spiPackage, 4);
 }
 
+uint8_t __temp = 0;
+
+inline uint8_t GetServo1(uint8_t num)
+{
+	if(num != 1)
+		return 0;
+	__temp += 1;
+	return __temp;
+}
+
+inline int8_t GetMotor1(uint8_t num)
+{
+	if(num != 1)
+		return 0;
+	
+	return 127 - __temp;
+}
+
 void Transmit()
 {
 	
@@ -115,7 +133,7 @@ void Transmit()
 	// This will fill 20 bytes out of 32 that will be sent.
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
 	{
-		CreateSpiPacket(sc_secondaryLetters[a], GetMotor(a), GetServo(a));
+		CreateSpiPacket(sc_secondaryLetters[a], GetMotor1(a), GetServo1(a));
 		for(uint8_t a = 0; a < 5; ++a)
 		{
 			AxonStreamWrite(s_spiPackage[a]);

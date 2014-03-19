@@ -36,4 +36,6 @@ inline char CRC(char* data, uint8_t size)
 #define max(x, y) (x < y ? y : x)
 #endif
 
+#define nop() asm("nop")
+
 #endif /* _UTILS_H_ */
