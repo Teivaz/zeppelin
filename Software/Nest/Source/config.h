@@ -9,7 +9,7 @@
 
 #define STREAM_BUFFER_SIZE  64
 
-#define QUERY_PERIOD 20	// time in ms
+#define QUERY_PERIOD 50	// time in ms
 
 #define PORTA_ 0x1B
 #define PORTB_ 0x18

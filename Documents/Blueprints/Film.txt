@@ -1,0 +1,3 @@
+﻿PVC
+thickness 50-60 um
+width 205 * 2 mm

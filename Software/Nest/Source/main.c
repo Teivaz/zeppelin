@@ -43,6 +43,7 @@ int main()
 	
 	while(1)
     {
+	    _delay_ms(QUERY_PERIOD);
 		if(s_mode == EModeBase)
 		{
 			ReadSticks();
@@ -80,7 +81,6 @@ int main()
 		}
 	
 		UpdateIndicators();
-		_delay_ms(QUERY_PERIOD);
     }
 }
 
@@ -109,7 +109,7 @@ void CreateSpiPacket(char letter, signed char dcSpeed, char servo)
 void Transmit()
 {
 	
-	AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
+	//AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
 	AxonStreamWrite(W_TX_PAYLOAD);
 	
 	// This will fill 20 bytes out of 32 that will be sent.
@@ -128,7 +128,7 @@ void Transmit()
 		AxonStreamWrite(0);
 	}
 	AxonProceed();
-	AxonCommand(FLUSH_TX);
+	//AxonCommand(FLUSH_TX);
 	
 }
 
@@ -293,12 +293,13 @@ void UpdateIndicators()
 
 void ConfigureTx()
 {
-	AxonWriteRegister(CONFIG, 1 << PWR_UP | 0 << EN_CRC); // Enable
+	AxonWriteRegister(CONFIG, 1 << PWR_UP); // Enable
 	AxonWriteRegister(RF_SETUP, 0b00000111); // Set data rate 1 MHz
-	AxonWriteRegister(SETUP_RETR, 0); // Disable retransmit
+	//AxonWriteRegister(SETUP_RETR, 0); // Disable retransmit
+	AxonWriteRegister(EN_AA, 0);
 	
-	AxonCommand2(ACTIVATE, 0x73);
-	AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
+	//AxonCommand2(ACTIVATE, 0x73);
+	//AxonWriteRegister(W_TX_PAYLOAD_NOACK, 0xFF);
 	
 	
 }
