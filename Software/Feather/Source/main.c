@@ -95,7 +95,7 @@ void Init()
 	SET_BIT(MCUCR, ISC00);
 	SET_BIT(MCUCR, ISC01);
 	SET_BIT(GIMSK, INT0); // Enable INT0 interrupt
-#else	
+#endif
 	
 	SET_BIT(USICR, USIWM1);	// Two wire mode
 	SET_BIT(USICR, USICS1); // Clock - external positive edge 
