@@ -23,6 +23,7 @@ int main(void)
 		{
 			DendriteInterrupt();
 		}
+		asm("nop");
     }
 }
 
