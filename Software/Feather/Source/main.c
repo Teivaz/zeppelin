@@ -258,6 +258,7 @@ ISR(TIM0_COMPB_vect)
 
 ISR(TIM0_OVF_vect)
 {
+	Package_Ping();
 	if(s_motorA != 0)
 		SET_BIT(PORTB, MOTOR_PIN_A);
 	if(s_motorB != 0)
