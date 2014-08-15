@@ -21,6 +21,7 @@ volatile uint8_t s_motorB = 0;
 
 // SPI watchdog timer
 char s_spiTimer = 0;
+volatile char s_servoState = EServoPause;
 
 int main(void)
 {
@@ -89,10 +90,12 @@ void Init()
 	// start timers
 	CLEAR_BIT(GTCCR, TSM);	
 	
+#if 0
 	// The rising edge of INT0 generates an interrupt request.
 	SET_BIT(MCUCR, ISC00);
 	SET_BIT(MCUCR, ISC01);
 	SET_BIT(GIMSK, INT0); // Enable INT0 interrupt
+#else	
 	
 	SET_BIT(USICR, USIWM1);	// Two wire mode
 	SET_BIT(USICR, USICS1); // Clock - external positive edge 
