@@ -4,6 +4,7 @@
 #include "types.h"
 #include "utils.h"
 #include "SystemConfig.h"
+#include "package.h"
 
 #define SERVO_MIN_IMPULSE	100	// This value should be around 0.5 ms. 1 equals to 0.005 ms
 #define SERVO_PAUSE			80	// This value should be around 20 ms. 1 equals 0.25 ms 
@@ -19,9 +20,14 @@ volatile uint8_t s_servo = 128;	// 1 equals 0.0078 ms
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
+void S_ServoPause();
+void S_ServoFirst();
+void S_ServoSecond();
+
 // SPI watchdog timer
 char s_spiTimer = 0;
 volatile char s_servoState = EServoPause;
+void(*s_servoStatePtr)() = S_ServoPause;
 
 int main(void)
 {
@@ -143,50 +149,58 @@ void SetServoPosition(unsigned char position)
 	sei();
 }
 
+
 void AdvanceServoState()
 {
-	if(s_servoState == EServoPause)
-	{
-		s_servoState = EServoFirst;
-		SET_BIT(PORTB, SERVO_PIN);
-		// PCK/4
-		CLEAR_BIT(TCCR1, CS13);
-		CLEAR_BIT(TCCR1, CS12);
-		SET_BIT(TCCR1, CS11);
-		SET_BIT(TCCR1, CS10);
-		
-		CLEAR_REG(TCNT1);
-		WRITE_REG(OCR1A, SERVO_MIN_IMPULSE);
-		return;
-	}
-	else if(s_servoState == EServoFirst)
-	{
-		s_servoState = EServoSecond;
-		SET_BIT(PORTB, SERVO_PIN);
-		// PCK/8
-		CLEAR_BIT(TCCR1, CS13);
-		SET_BIT(TCCR1, CS12);
-		CLEAR_BIT(TCCR1, CS11);
-		CLEAR_BIT(TCCR1, CS10);
-		
-		CLEAR_REG(TCNT1);
-		WRITE_REG(OCR1A, s_servo);
-		return;
-	}
-	else if(s_servoState == EServoSecond)
-	{
-		s_servoState = EServoPause;
-		CLEAR_BIT(PORTB, SERVO_PIN);
-		// PCK/256
-		SET_BIT(TCCR1, CS13);
-		CLEAR_BIT(TCCR1, CS12);
-		CLEAR_BIT(TCCR1, CS11);
-		SET_BIT(TCCR1, CS10);
-		
-		CLEAR_REG(TCNT1);
-		WRITE_REG(OCR1A, SERVO_PAUSE);
-		return;
-	}	
+	s_servoStatePtr();
+}
+
+void S_ServoPause()
+{
+	SET_BIT(PORTB, SERVO_PIN);
+	// PCK/4
+	uint8_t tmp = TCCR1;
+	CLEAR_BIT(tmp, CS13);
+	CLEAR_BIT(tmp, CS12);
+	SET_BIT(tmp, CS11);
+	SET_BIT(tmp, CS10);
+	TCCR1 = tmp;
+	
+	CLEAR_REG(TCNT1);
+	WRITE_REG(OCR1A, SERVO_MIN_IMPULSE);
+	s_servoStatePtr = S_ServoFirst;
+}
+
+void S_ServoFirst()
+{
+	SET_BIT(PORTB, SERVO_PIN);
+	// PCK/8
+	uint8_t tmp = TCCR1;
+	CLEAR_BIT(tmp, CS13);
+	SET_BIT(tmp, CS12);
+	CLEAR_BIT(tmp, CS11);
+	CLEAR_BIT(tmp, CS10);
+	TCCR1 = tmp;
+	
+	CLEAR_REG(TCNT1);
+	WRITE_REG(OCR1A, s_servo);
+	s_servoStatePtr = S_ServoSecond;
+}
+
+void S_ServoSecond()
+{
+	CLEAR_BIT(PORTB, SERVO_PIN);
+	// PCK/256
+	uint8_t tmp = TCCR1;
+	SET_BIT(tmp, CS13);
+	CLEAR_BIT(tmp, CS12);
+	CLEAR_BIT(tmp, CS11);
+	SET_BIT(tmp, CS10);
+	TCCR1 = tmp;
+	
+	CLEAR_REG(TCNT1);
+	WRITE_REG(OCR1A, SERVO_PAUSE);
+	s_servoStatePtr = S_ServoPause;
 }
 
 #pragma mark "DC Motor"
