@@ -3,13 +3,13 @@
 
 char Package_GetDataByte(uint8_t num);
 char Package_IsValid();
-void Package_Reset();
+inline void Package_Reset();
 void Package_AddByte(char byte);
 
+void Package_Ping(); // Resets dead time
+
+#define c_maxDeadTicks 3
 #define c_packageLength 5
-char s_packageValid;
-char s_packageLength;
-char s_package[c_packageLength];
 
 #include "package.cpp"
 
