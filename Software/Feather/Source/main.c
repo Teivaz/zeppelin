@@ -9,14 +9,7 @@
 #define SERVO_MIN_IMPULSE	100	// This value should be around 0.5 ms. 1 equals to 0.005 ms
 #define SERVO_PAUSE			80	// This value should be around 20 ms. 1 equals 0.25 ms 
 
-volatile char s_spiBuffer[4] = {0};
-// s_spiBuffer[0] - primary letter
-// s_spiBuffer[1] - secondary letter
-// s_spiBuffer[2] - DC motor speed
-// s_spiBuffer[3] - servo position
-// 5th byte corresponds CRC
-
-volatile uint8_t s_servo = 128;	// 1 equals 0.0078 ms
+volatile uint8_t s_servo = 128;	// 1 equals 0.0078 ms (78 us) + 0.5 ms
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
 
