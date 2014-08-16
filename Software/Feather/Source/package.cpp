@@ -1,107 +1,118 @@
 #include "package.h"
 
-void Pack0(char b);
-void Pack1(char b);
-void Pack2(char b);
-void Pack3(char b);
-void Pack4(char b);
+char checkBuffer(char* buf);
+inline void storeBuffer(char* in, char* out);
 
-char s_packageValid = 0;
-char s_packageLength = 0;
-void(*s_packagePtr)(char) = Pack0;
-char s_package[c_packageLength - 1] = {0};
+char s_pack1[5] = {0};
+char s_id1 = 0;
+char s_pack2[5] = {0};
+char s_id2 = 1;
+char s_pack3[5] = {0};
+char s_id3 = 2;
+char s_pack4[5] = {0};
+char s_id4 = 3;
+char s_pack5[5] = {0};
+char s_id5 = 4;
+
+char s_tmp[5] = {0};
+char s_tmpIdx = 0;
+char si_tmpIdx = 0;
+char si_tmp[5] = {0};
+
 char s_data[2] = {0};
-char s_fastCrc[2] = {0};
-char s_deadCounter = 0;
+char s_payloadDetected = 0;
 
-
-void Pack0(char b)
+void Package_Init()
 {
-	s_fastCrc[0] = b;
-	if(b == PRIMARY_LETTER)
+	
+}
+
+void PackageI_OnReceived(char b)
+{
+	si_tmp[si_tmpIdx++] = b;
+}
+
+char Package_IsDirty()
+{
+	return si_tmpIdx;
+}
+
+void Package_Process()
+{
+	cli();
+	if(si_tmpIdx == 0)
 	{
-		s_package[0] = b;
-		s_packagePtr = Pack1;
+		sei();
+		return;
+	}
+	memcpy(s_tmp, si_tmp, si_tmpIdx);
+	s_tmpIdx = si_tmpIdx;
+	si_tmpIdx = 0;
+	sei();
+	
+	while(--s_tmpIdx > 0)
+	{
+		char data = s_tmp[s_tmpIdx - 1];
+		s_pack1[s_id1] = data;
+		s_id1 = (++s_id1) % 5;
+		s_pack2[s_id2] = data;
+		s_id2 = (++s_id2) % 5;
+		s_pack3[s_id3] = data;
+		s_id3 = (++s_id3) % 5;
+		s_pack4[s_id4] = data;
+		s_id4 = (++s_id4) % 5;
+		s_pack5[s_id5] = data;
+		s_id5 = (++s_id5) % 5;
+	}
+	
+	if(1 == checkBuffer(s_pack1))
+	{
+		storeBuffer(s_pack1, s_data);
+	}
+	if(1 == checkBuffer(s_pack2))
+	{
+		storeBuffer(s_pack2, s_data);
+	}
+	if(1 == checkBuffer(s_pack3))
+	{
+		storeBuffer(s_pack3, s_data);
+	}
+	if(1 == checkBuffer(s_pack4))
+	{
+		storeBuffer(s_pack4, s_data);
+	}
+	if(1 == checkBuffer(s_pack5))
+	{
+		storeBuffer(s_pack5, s_data);
 	}
 }
 
-void Pack1(char b)
+char Package_PayloadDetected()
 {
-	s_fastCrc[1] = b;
-	s_fastCrc[0] = CRC(s_fastCrc, 2);
-	if(b == SECONDARY_LETTER)
-	{
-		s_package[1] = b;
-		s_packagePtr = Pack2;
-	}
-	else
-	{
-		Package_Reset();
-	}
+	return s_payloadDetected;
 }
 
-void Pack2(char b)
+char Package_GetData(char b)
 {
-	s_deadCounter = 0;
-	s_fastCrc[1] = b;
-	s_fastCrc[0] = CRC(s_fastCrc, 2);
-	s_package[2] = b;
-	s_packagePtr = Pack3;
+	s_payloadDetected = 0;
+	return s_data[b];
 }
 
-void Pack3(char b)
+char checkBuffer(char* buf)
 {
-	s_deadCounter = 0;
-	s_fastCrc[1] = b;
-	s_fastCrc[0] = CRC(s_fastCrc, 2);
-	s_package[3] = b;
-	s_packagePtr = Pack4;
+	if(buf[0] != PRIMARY_LETTER)
+		return 0;
+	if(buf[1] != SECONDARY_LETTER)
+		return 0;		
+	char crc = CRC(buf, 4);
+	if(buf[4] != crc)
+		return 0;
+	return 1;
 }
 
-void Pack4(char b)
+inline void storeBuffer(char* in, char* out)
 {
-	if(s_fastCrc[0] == b)
-	{
-		// CRC match
-		s_deadCounter = 0;
-		s_packageValid = 1;
-		s_data[0] = s_package[2];
-		s_data[1] = s_package[3];
-	}
-	s_packagePtr = Pack0;
-}
-
-void Package_AddByte(char b)
-{
-	if(s_packageValid)
-	{
-		Package_Reset();
-	}
-	s_packagePtr(b);
-}
-
-void Package_Reset()
-{
-	s_packageValid = 0;
-	s_packagePtr = Pack0;
-}
-
-char Package_IsValid()
-{
-	return s_packageValid;
-}
-
-char Package_GetDataByte(uint8_t num)
-{
-	return s_data[num];
-}
-
-void Package_Ping()
-{
-	++s_deadCounter;
-	if(s_deadCounter > c_maxDeadTicks)
-	{
-		Package_Reset();
-		s_deadCounter = 0;
-	}
+	out[0] = in[2];
+	out[1] = in[3];
+	s_payloadDetected = 1;
 }

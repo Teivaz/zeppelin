@@ -24,8 +24,6 @@ void S_ServoPause();
 void S_ServoFirst();
 void S_ServoSecond();
 
-// SPI watchdog timer
-char s_spiTimer = 0;
 volatile char s_servoState = EServoPause;
 void(*s_servoStatePtr)() = S_ServoPause;
 
@@ -34,22 +32,16 @@ int main(void)
 	Init();
     while(1)
     {
-		if(Package_IsValid() == 1)
+		if(Package_IsDirty() == 1)
 		{
-			SetMotorSpeedSigned(Package_GetDataByte(0));
-			SetServoPosition(Package_GetDataByte(1));
-			Package_Reset();
+			Package_Process();
+		}
+		if(Package_PayloadDetected() == 1)
+		{
+			SetMotorSpeedSigned(Package_GetData(0));
+			SetServoPosition(Package_GetData(1));
 		}
 		
-		if(s_spiTimer == 0xff)
-		{
-			Package_Reset();
-			ResetSpiTimer();
-		}
-		else
-		{
-			s_spiTimer += 1;
-		}
     }
 }
 
@@ -122,18 +114,12 @@ void Init()
 #pragma mark "SPI"
 ISR(INT0_vect) // When we have activity on clock input
 {
-	ResetSpiTimer();
 }
 
 ISR(USI_OVF_vect) // When SPI buffer is full
 {
-	Package_AddByte(USIDR);
+	PackageI_OnReceived(USIDR);
 	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
-}
-
-void ResetSpiTimer()
-{
-	s_spiTimer = 0;
 }
 
 #pragma mark "Servo"
@@ -258,7 +244,6 @@ ISR(TIM0_COMPB_vect)
 
 ISR(TIM0_OVF_vect)
 {
-	Package_Ping();
 	if(s_motorA != 0)
 		SET_BIT(PORTB, MOTOR_PIN_A);
 	if(s_motorB != 0)
