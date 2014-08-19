@@ -7,6 +7,7 @@ char Package_IsDirty();
 void Package_Process();
 char Package_PayloadDetected();
 char Package_GetData(char b);
+void Package_ResetAllBuffers();
 
 #include "package.cpp"
 

@@ -14,7 +14,7 @@
 
 
 extern int main_();
-extern TStreamBuffer s_stream;
+TStreamBuffer s_stream;
 
 uint8_t s_x;
 uint8_t s_y;

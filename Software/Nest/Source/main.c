@@ -36,8 +36,8 @@ TEMainMode s_mode;
 #ifdef TEST
 int main_()
 #else
-int main()
 #endif
+int main()
 {
 	Configure();
 	
@@ -133,7 +133,8 @@ void Transmit()
 	// This will fill 20 bytes out of 32 that will be sent.
 	for(uint8_t a = 0; a < FEATHER_NUM; ++a)
 	{
-		CreateSpiPacket(sc_secondaryLetters[a], GetMotor1(a), GetServo1(a));
+		//CreateSpiPacket(sc_secondaryLetters[a], GetMotor1(a), GetServo(a));
+		CreateSpiPacket(sc_secondaryLetters[a], GetMotor1(a), ADCH);
 		for(uint8_t a = 0; a < 5; ++a)
 		{
 			AxonStreamWrite(s_spiPackage[a]);

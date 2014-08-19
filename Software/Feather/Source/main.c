@@ -9,9 +9,12 @@
 #define SERVO_MIN_IMPULSE	100	// This value should be around 0.5 ms. 1 equals to 0.005 ms
 #define SERVO_PAUSE			80	// This value should be around 20 ms. 1 equals 0.25 ms 
 
-volatile uint8_t s_servo = 128;	// 1 equals 0.0078 ms (78 us) + 0.5 ms
+volatile uint8_t s_servo = 63;	// 1 equals 0.0078 ms (78 us) + 0.5 ms
 volatile uint8_t s_motorA = 0;
 volatile uint8_t s_motorB = 0;
+
+unsigned char s_spiWatchdog = 1;
+unsigned char s_spiWatchdogPrev = 0;
 
 void S_ServoPause();
 void S_ServoFirst();
@@ -20,12 +23,29 @@ void S_ServoSecond();
 volatile char s_servoState = EServoPause;
 void(*s_servoStatePtr)() = S_ServoPause;
 
+void _dbg()
+{
+	#if 1 // Spokes
+	char a = READ_BIT(PORTB, SERVO_PIN) != 0;
+	if(a)
+	{
+		CLEAR_BIT(PORTB, SERVO_PIN);
+		SET_BIT(PORTB, SERVO_PIN);
+	}
+	else
+	{
+		SET_BIT(PORTB, SERVO_PIN);
+		CLEAR_BIT(PORTB, SERVO_PIN);
+	}
+	#endif
+}
+
 int main(void)
 {
 	Init();
     while(1)
     {
-		if(Package_IsDirty() == 1)
+		if(Package_IsDirty() > 0)
 		{
 			Package_Process();
 		}
@@ -40,6 +60,8 @@ int main(void)
 
 void Init()
 {
+	s_servoStatePtr = S_ServoPause;
+	Package_Init();
 	InitLetters();
 	// Default frequency is 8.0 MHz divided by 1
 	// System frequency = 8.0 MHz
@@ -107,27 +129,26 @@ void Init()
 #pragma mark "SPI"
 ISR(INT0_vect) // When we have activity on clock input
 {
+	//++s_spiWatchdog;
 }
 
 ISR(USI_OVF_vect) // When SPI buffer is full
 {
-	PackageI_OnReceived(USIDR);
+	++s_spiWatchdog;
+	PackageI_OnReceived(USIBR);
 	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
 }
 
 #pragma mark "Servo"
 void SetServoPosition(unsigned char position)
 {
+	char tmp = max(2, position);
+	tmp = min(200, tmp);
 	cli();
-	// Do not trigger when value is less than 2
-	if(position < 2)
-	{
-		position = 2;
-	}
-	s_servo = position;
+	// clamp 2...200
+	s_servo = tmp;
 	sei();
 }
-
 
 void AdvanceServoState()
 {
@@ -136,7 +157,7 @@ void AdvanceServoState()
 
 void S_ServoPause()
 {
-	SET_BIT(PORTB, SERVO_PIN);
+	//SET_BIT(PORTB, SERVO_PIN);
 	// PCK/4
 	uint8_t tmp = TCCR1;
 	CLEAR_BIT(tmp, CS13);
@@ -152,7 +173,7 @@ void S_ServoPause()
 
 void S_ServoFirst()
 {
-	SET_BIT(PORTB, SERVO_PIN);
+	//SET_BIT(PORTB, SERVO_PIN);
 	// PCK/8
 	uint8_t tmp = TCCR1;
 	CLEAR_BIT(tmp, CS13);
@@ -168,7 +189,7 @@ void S_ServoFirst()
 
 void S_ServoSecond()
 {
-	CLEAR_BIT(PORTB, SERVO_PIN);
+	//CLEAR_BIT(PORTB, SERVO_PIN);
 	// PCK/256
 	uint8_t tmp = TCCR1;
 	SET_BIT(tmp, CS13);
@@ -180,6 +201,14 @@ void S_ServoSecond()
 	CLEAR_REG(TCNT1);
 	WRITE_REG(OCR1A, SERVO_PAUSE);
 	s_servoStatePtr = S_ServoPause;
+	if(s_spiWatchdogPrev == s_spiWatchdog)
+	{
+		// Reset USI counter if it's taking a while
+		unsigned char bt = USISR;
+		USISR = bt & ~((1 << USICNT0) | (1 << USICNT1) | (1 << USICNT2) | (1 << USICNT3));
+		Package_ResetAllBuffers();
+	}
+	s_spiWatchdogPrev = s_spiWatchdog;
 }
 
 #pragma mark "DC Motor"
@@ -248,5 +277,19 @@ ISR(TIM0_OVF_vect)
 
 ISR(TIM1_COMPA_vect)
 {
+	
+#if 0 // Spokes for debug timing
+	char a = READ_BIT(PORTB, SERVO_PIN) != 0;
+	if(a)
+	{
+		CLEAR_BIT(PORTB, SERVO_PIN);
+		SET_BIT(PORTB, SERVO_PIN);
+	}
+	else
+	{
+		SET_BIT(PORTB, SERVO_PIN);
+		CLEAR_BIT(PORTB, SERVO_PIN);
+	}
+#endif
 	AdvanceServoState();
 }
