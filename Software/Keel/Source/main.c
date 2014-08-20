@@ -29,7 +29,6 @@ int main(void)
 
 void Configure()
 {
-	InitLetters();
 	//Clock
 	uint8_t clkpr = (0 << CLKPS0)|
 					(0 << CLKPS1)|
