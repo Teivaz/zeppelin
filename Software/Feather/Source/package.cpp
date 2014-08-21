@@ -1,141 +1,172 @@
 #include "package.h"
 
-char checkBuffer(char* buf);
-inline void storeBuffer(char* in, char* out);
+#define BUFFER_SIZE 33
+char si_buffer[BUFFER_SIZE];
+char si_bufferLen = 0;
+char s_buffer[BUFFER_SIZE];
+char s_bufferLen = 0;
 
-char s_pack1[5] = {0};
-char s_id1 = 0;
-char s_pack2[5] = {0};
-char s_id2 = 1;
-char s_pack3[5] = {0};
-char s_id3 = 2;
-char s_pack4[5] = {0};
-char s_id4 = 3;
-char s_pack5[5] = {0};
-char s_id5 = 4;
+char s_pipe0[4];
+char s_pipe1[4];
+char s_pipe2[4];
+char s_pipeState0 = 0;
+char s_pipeState1 = 0;
+char s_pipeState2 = 0;
 
-char s_tmp[5] = {0};
-char s_tmpIdx = 0;
-char si_tmpIdx = 0;
-char si_tmp[5] = {0};
-
-char s_data[2] = {0};
-char s_payloadDetected = 0;
+char s_payload[2];
+char s_hasPayload = 0;
 
 void Package_Init()
 {
-	s_id1 = 0;
-	s_id2 = 1;
-	s_id3 = 2;
-	s_id4 = 3;
-	s_id5 = 4;
+	s_pipeState0 = 0;
+	s_pipeState1 = 0;
+	s_pipeState2 = 0;
+	s_hasPayload = 0;
+	s_bufferLen = 0;
+	si_bufferLen = 0;
 }
 
 void PackageI_OnReceived(char b)
 {
-	si_tmp[si_tmpIdx++] = b;
+	si_buffer[si_bufferLen] = b;
+	++si_bufferLen;
 }
 
 char Package_IsDirty()
 {
-	return si_tmpIdx;
+	return si_bufferLen;
 }
 
 void Package_Process()
 {
 	cli();
-	if(si_tmpIdx == 0)
-	{
-		sei();
-		return;
-	}
-	for(char i = 0; i < si_tmpIdx; ++i)
-	{
-		s_tmp[i] = si_tmp[i];
-	}
-	s_tmpIdx = si_tmpIdx;
-	si_tmpIdx = 0;
+	memcpy(s_buffer, si_buffer, si_bufferLen);
+	s_bufferLen = si_bufferLen;
+	si_bufferLen = 0;
 	sei();
-	for(char i = 0; i < s_tmpIdx; ++i)
+	
+	for(char i = 0; i < s_bufferLen; ++i)
+	{
+	char data = s_buffer[i];
+	
+	char advance =	(s_pipeState0 == 0 && data == PRIMARY_LETTER) || 
+					(s_pipeState0 == 1 && data == SECONDARY_LETTER) || 
+					(s_pipeState0 > 1);
+	char skip1 = (s_pipeState0 == 0) && (s_pipeState1 == 0);
+	char skip2 = (s_pipeState0 == 0) && (s_pipeState2 == 0);
+	if(advance)
 	{
 		_dbg();
-		char data = s_tmp[i];
-		s_pack1[s_id1] = data;
-		s_id1 = (1+s_id1) % 5;
-		s_pack2[s_id2] = data;
-		s_id2 = (1+s_id2) % 5;
-		s_pack3[s_id3] = data;
-		s_id3 = (1+s_id3) % 5;
-		s_pack4[s_id4] = data;
-		s_id4 = (1+s_id4) % 5;
-		s_pack5[s_id5] = data;
-		s_id5 = (1+s_id5) % 5;
-		_dbg();
-		//if(data == 'Z')
-		//	_dbg();
+		s_pipe0[s_pipeState0] = data;
+		++s_pipeState0;
 	}
-	if(1 == checkBuffer(s_pack1))
+	else
 	{
-		storeBuffer(s_pack1, s_data);
+		s_pipeState0 = 0;
 	}
-	if(1 == checkBuffer(s_pack2))
+	
+	if(!skip1)
 	{
-		storeBuffer(s_pack2, s_data);
+		advance =	(s_pipeState1 == 0 && data == PRIMARY_LETTER) ||
+					(s_pipeState1 == 1 && data == SECONDARY_LETTER) ||
+					(s_pipeState1 > 1);
+		skip2 = skip2 || (s_pipeState1 == 0);
+		if(advance)
+		{
+			_dbg();
+			s_pipe1[s_pipeState1] = data;
+			++s_pipeState1;
+		}
+		else
+		{
+			s_pipeState1 = 0;
+		}
 	}
-	if(1 == checkBuffer(s_pack3))
+
+	if(!skip2)
 	{
-		storeBuffer(s_pack3, s_data);
+		advance =	(s_pipeState2 == 0 && data == PRIMARY_LETTER) ||
+					(s_pipeState2 == 1 && data == SECONDARY_LETTER) ||
+					(s_pipeState2 > 1);
+		if(advance)
+		{
+			_dbg();
+			s_pipe2[s_pipeState2] = data;
+			++s_pipeState2;
+		}
+		else
+		{
+			s_pipeState2 = 0;
+		}
 	}
-	if(1 == checkBuffer(s_pack4))
+
+	if(s_pipeState0 > 4)
 	{
-		storeBuffer(s_pack4, s_data);
+		if(CRC4(s_pipe0) == data)
+		{
+			Package_Store(s_pipe0);
+		}
+		else
+		{
+			s_pipeState0 = 0;
+		}
 	}
-	if(1 == checkBuffer(s_pack5))
+
+	if(s_pipeState1 > 4)
 	{
-		storeBuffer(s_pack5, s_data);
+		if(CRC4(s_pipe1) == data)
+		{
+			Package_Store(s_pipe1);
+		}
+		else
+		{
+			s_pipeState1 = 0;
+		}
 	}
+	
+	if(s_pipeState2 > 4)
+	{
+		if(CRC4(s_pipe2) == data)
+		{
+			Package_Store(s_pipe2);
+		}
+		else
+		{
+			s_pipeState2 = 0;
+		}
+	}
+	}
+	
+	
 }
 
-char Package_PayloadDetected()
+void Package_Store(char* a)
 {
-	return s_payloadDetected;
+	_dbg();
+	_dbg();
+	_dbg();
+	_dbg();
+	s_payload[0] = a[2];
+	s_payload[1] = a[3];
+	s_hasPayload = 1;
 }
 
 char Package_GetData(char b)
 {
-	s_payloadDetected = 0;
-	return s_data[b];
+	s_hasPayload = 0;
+	return s_payload[b];
+};
+
+Package_ResetAllBuffers()
+{
+	s_pipeState0 = 0;
+	s_pipeState1 = 0;
+	s_pipeState2 = 0;
+	s_bufferLen = 0;
+	si_bufferLen = 0;
 }
 
-char checkBuffer(char* buf)
+char Package_PayloadDetected()
 {
-	if(buf[0] != PRIMARY_LETTER)
-		return 0;
-		
-		_dbg();
-		
-		
-	if(buf[1] != SECONDARY_LETTER)
-		return 0;
-	char crc = CRC(buf, 4);
-	if(buf[4] != crc)
-		return 0;
-	return 1;
-}
-
-void Package_ResetAllBuffers()
-{
-	Package_Init();
-	memset(s_pack1, 0, 5);
-	memset(s_pack2, 0, 5);
-	memset(s_pack3, 0, 5);
-	memset(s_pack4, 0, 5);
-	memset(s_pack5, 0, 5);
-}
-
-inline void storeBuffer(char* in, char* out)
-{
-	out[0] = in[2];
-	out[1] = in[3];
-	s_payloadDetected = 1;
+	return s_hasPayload;
 }
