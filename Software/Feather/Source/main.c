@@ -136,7 +136,7 @@ ISR(INT0_vect) // When we have activity on clock input
 ISR(USI_OVF_vect) // When SPI buffer is full
 {
 	++s_spiWatchdog;
-	PackageI_OnReceived(USIBR);
+	PackageI_OnReceived(USIDR);
 	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
 	SET_BIT(USISR, USICNT0); // 
 }

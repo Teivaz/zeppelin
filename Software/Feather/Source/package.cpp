@@ -56,7 +56,6 @@ void Package_Process()
 	char skip2 = (s_pipeState0 == 0) && (s_pipeState2 == 0);
 	if(advance)
 	{
-		_dbg();
 		s_pipe0[s_pipeState0] = data;
 		++s_pipeState0;
 	}
@@ -73,7 +72,6 @@ void Package_Process()
 		skip2 = skip2 || (s_pipeState1 == 0);
 		if(advance)
 		{
-			_dbg();
 			s_pipe1[s_pipeState1] = data;
 			++s_pipeState1;
 		}
@@ -90,7 +88,6 @@ void Package_Process()
 					(s_pipeState2 > 1);
 		if(advance)
 		{
-			_dbg();
 			s_pipe2[s_pipeState2] = data;
 			++s_pipeState2;
 		}
@@ -99,7 +96,6 @@ void Package_Process()
 			s_pipeState2 = 0;
 		}
 	}
-
 	if(s_pipeState0 > 4)
 	{
 		if(CRC4(s_pipe0) == data)
@@ -142,10 +138,6 @@ void Package_Process()
 
 void Package_Store(char* a)
 {
-	_dbg();
-	_dbg();
-	_dbg();
-	_dbg();
 	s_payload[0] = a[2];
 	s_payload[1] = a[3];
 	s_hasPayload = 1;
@@ -159,10 +151,10 @@ char Package_GetData(char b)
 
 Package_ResetAllBuffers()
 {
+	return;
 	s_pipeState0 = 0;
 	s_pipeState1 = 0;
 	s_pipeState2 = 0;
-	s_bufferLen = 0;
 	si_bufferLen = 0;
 }
 
