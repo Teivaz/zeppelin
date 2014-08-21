@@ -27,6 +27,11 @@ inline char CRC(char* data, uint8_t size)
 	return ret;
 }
 
+inline char CRC4(char* data)
+{
+	return data[0] + data[1] + data[2] + data[3];
+}
+
 #ifdef _USE_ABS
 #define abs(val) (val > 0 ? val : -val)
 #endif
