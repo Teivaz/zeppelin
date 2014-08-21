@@ -25,7 +25,7 @@ void(*s_servoStatePtr)() = S_ServoPause;
 
 void _dbg()
 {
-	#if 1 // Spokes
+	#if 0 // Spokes
 	char a = READ_BIT(PORTB, SERVO_PIN) != 0;
 	if(a)
 	{
@@ -113,6 +113,7 @@ void Init()
 	SET_BIT(USICR, USIWM1);	// Two wire mode
 	SET_BIT(USICR, USICS1); // Clock - external positive edge 
 	SET_BIT(USICR, USIOIE); // Interrupt on counter overflow
+	SET_BIT(USISR, USICNT0); //
 	
 	
 	SET_BIT(PORTB, MOTOR_PIN_A);
@@ -137,6 +138,7 @@ ISR(USI_OVF_vect) // When SPI buffer is full
 	++s_spiWatchdog;
 	PackageI_OnReceived(USIBR);
 	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
+	SET_BIT(USISR, USICNT0); // 
 }
 
 #pragma mark "Servo"
@@ -157,7 +159,7 @@ void AdvanceServoState()
 
 void S_ServoPause()
 {
-	//SET_BIT(PORTB, SERVO_PIN);
+	SET_BIT(PORTB, SERVO_PIN);
 	// PCK/4
 	uint8_t tmp = TCCR1;
 	CLEAR_BIT(tmp, CS13);
@@ -173,7 +175,7 @@ void S_ServoPause()
 
 void S_ServoFirst()
 {
-	//SET_BIT(PORTB, SERVO_PIN);
+	SET_BIT(PORTB, SERVO_PIN);
 	// PCK/8
 	uint8_t tmp = TCCR1;
 	CLEAR_BIT(tmp, CS13);
@@ -189,7 +191,7 @@ void S_ServoFirst()
 
 void S_ServoSecond()
 {
-	//CLEAR_BIT(PORTB, SERVO_PIN);
+	CLEAR_BIT(PORTB, SERVO_PIN);
 	// PCK/256
 	uint8_t tmp = TCCR1;
 	SET_BIT(tmp, CS13);
