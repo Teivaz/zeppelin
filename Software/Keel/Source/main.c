@@ -30,15 +30,20 @@ int main(void)
 void Configure()
 {
 	//Clock
+	
+	// No prescale
 	uint8_t clkpr = (0 << CLKPS0)|
 					(0 << CLKPS1)|
-					(1 << CLKPS2)|
+					(0 << CLKPS2)|
 					(0 << CLKPS3);
 	WRITE_REG(CLKPR, 1 << CLKPCE);
 	WRITE_REG(CLKPR, clkpr);
 	
 	
-	SET_BIT(USICR, USIWM0); // Three wire USI mode
+	// Fuses CKSEL0...CKSEL3 set to 1111 for crystal osc	
+	
+	
+	SET_BIT(USICR, USIWM1); // Two wire USI mode
 	
 	SET_BIT(PORTB,	CLK);
 	SET_BIT(PORTB,	CSN);
@@ -69,3 +74,103 @@ void Sleep()
 	}
 }
 
+char s_spiCounter = 0;
+char s_spiByteIn = 0;
+char s_spiByteOut = 0;
+#define SPI_QUEUE_SIZE 1 + 33 + 2
+char s_spiQueue[SPI_QUEUE_SIZE];
+char* s_spiQueuePtrOut = s_spiQueue;
+char* s_spiQueuePtrIn = s_spiQueue;
+
+void SetUpSPI()
+{
+	// Set clock timer
+	// Set ddr for MOSI
+	// Set ddr for MISO
+	// Set ddr for CE
+	// Set ddr for CLK
+	// Set ddr for CSN
+	// Set ddr for IRQ (INT0)
+	
+	// Set interrupt on timer clock
+	// Set interrupt INT0 on fall
+	// Enable clock timer
+}
+
+void transmitByte(char data)
+{
+	*s_spiQueuePtrIn = data;
+	++s_spiQueuePtrIn;
+}
+
+inline char hasByteToTransmitt()
+{
+	return s_spiQueuePtrOut > s_spiQueuePtrIn;
+}
+
+void onByteRecieved(char data)
+{
+	
+}
+
+void onByteSent()
+{
+	if(hasByteToTransmitt())
+		
+}
+
+inline char popByte()
+{
+	if(hasByteToTransmitt())
+	{
+		--s_spiQueuePtr;
+		return *(s_spiQueuePtr + 1);
+	}
+	return 0;
+}
+
+inline char popBit()
+{
+	char ret = (s_spiByteOut & 0x80) != 0;
+	s_spiByteOut << 1;
+	return ret;
+}
+
+inline void pushBit(char b)
+{
+	s_spiByteIn << 1;
+	s_spiByteIn |= b;
+}
+
+TIMER1_COMPA_vect()
+{
+	if(READ_BIT(PORTD, CLK))
+	{
+		// high to low
+		// write MOSI
+	}
+	else
+	{
+		// low to high
+		// read MISO
+		// increment data counter
+		++s_spiCounter;
+		pushBit(READ_REG(PORTD, MISO) != 0);
+		
+		// check data counter
+		if(s_spiCounter >= 8)
+		{
+			s_spiCounter = 0;
+			onByteSent();
+			onByteRecieved(s_spiByteIn);
+			s_spiByteIn = 0;
+		}
+	}
+}
+
+INT0_vect()
+{
+	// Read buffer
+	// Store data
+	// Reset buffer
+}
