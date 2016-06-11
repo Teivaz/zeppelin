@@ -2,7 +2,7 @@
 ###Airship project with all electrical circuits, PCBs, blueprints, software sources and calculations
 
 ###Intended result
-First version of this zeppelin should be able to keep itself up in the sky for a decent amount of time. It will be controled remotely (probably via iphone).
+First version of this zeppelin should be able to keep itself up in the sky for a decent amount of time. It will be controled remotely (probably via iphone). Total length of airship 168.13cm. Volume 0.46 litres.
 In the end it should look like this:
 ![zeppelin in all its glory](https://raw.githubusercontent.com/Teivaz/zeppelin/master/Blueprints/Renders/zeppelin_full.png)
 ###Progress
@@ -16,6 +16,8 @@ In the end it should look like this:
  - [ ] Assemble aerostat
  - [ ] Field tests
 
+###Calculations
+Here is the [link](https://docs.google.com/spreadsheets/d/1KFVUaK0Eav1PAXg2VrwWtU-BHmDxbaWGcJfdvVmI2J4/edit?usp=sharing) to spreadsheet with calculation I made for the lifting force and mass of the airship 
 ###Mechanics
 Most parts used here were thoroughly measured and calculated. Like these cases for motors and servos (feather module)   
 <img alt="preview" src="https://raw.githubusercontent.com/Teivaz/zeppelin/master/Blueprints/Renders/Balloon%20Assembled%20bot.png" width="50%"><img alt="feather" src="https://raw.githubusercontent.com/Teivaz/zeppelin/master/Blueprints/Renders/DC%20Motor%20And%20Servo%20Cover.png" width="50%">
