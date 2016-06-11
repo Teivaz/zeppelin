@@ -1,27 +1,16 @@
 #include "main.h"
-#include <avr/io.h>
 #include <avr/interrupt.h>
 #include "types.h"
 #include "utils.h"
 #include "SystemConfig.h"
 #include "package.h"
+#include "servo.h"
+#include "config.h"
 
-#define SERVO_MIN_IMPULSE	100	// This value should be around 0.5 ms. 1 equals to 0.005 ms
-#define SERVO_PAUSE			80	// This value should be around 20 ms. 1 equals 0.25 ms 
-
-volatile uint8_t s_servo = 63;	// 1 equals 0.0078 ms (78 us) + 0.5 ms
-volatile uint8_t s_motorA = 0;
-volatile uint8_t s_motorB = 0;
-
-unsigned char s_spiWatchdog = 1;
-unsigned char s_spiWatchdogPrev = 0;
-
-void S_ServoPause();
-void S_ServoFirst();
-void S_ServoSecond();
-
-volatile char s_servoState = EServoPause;
-void(*s_servoStatePtr)() = S_ServoPause;
+#ifndef STORE_LETTERS_IN_FLASH
+	uint8_t e_primaryLetter EEMEM = 'Z';
+	uint8_t e_secondaryLetter EEMEM = '1';
+#endif //STORE_LETTERS_IN_FLASH
 
 void _dbg()
 {
@@ -51,8 +40,8 @@ int main(void)
 		}
 		if(Package_PayloadDetected() == 1)
 		{
-			SetMotorSpeedSigned(Package_GetData(0));
-			SetServoPosition(Package_GetData(1));
+			Motor_SetSpeedSigned(Package_GetData(0));
+			Servo_SetPosition(Package_GetData(1));
 		}
 		
     }
@@ -60,7 +49,7 @@ int main(void)
 
 void Init()
 {
-	s_servoStatePtr = S_ServoPause;
+	Servo_Init();
 	Package_Init();
 	InitLetters();
 	// Default frequency is 8.0 MHz divided by 1
@@ -86,14 +75,12 @@ void Init()
 		SET_BIT(TIMSK, OCIE0A); // Interrupt on compare match A
 		SET_BIT(TIMSK, OCIE0B); // Interrupt on compare match B
 		SET_BIT(TIMSK, TOV0); // Interrupt on timer overflow
-			
-		WRITE_REG(OCR0A, s_motorA);
-		WRITE_REG(OCR0B, s_motorB);
-		
+
+		Motor_InitTimer();
 
 		SET_BIT(TCCR1, CS13);
 		SET_BIT(TCCR1, CS10);
-		WRITE_REG(OCR1A, SERVO_PAUSE);
+		Servo_InitTimer();
 		
 		SET_BIT(TIMSK, OCIE1A);
 		SET_BIT(PLLCSR, LSM);
@@ -127,7 +114,7 @@ void Init()
 	sei();
 }
 
-#pragma mark "SPI"
+// SPI
 ISR(INT0_vect) // When we have activity on clock input
 {
 	//++s_spiWatchdog;
@@ -135,127 +122,13 @@ ISR(INT0_vect) // When we have activity on clock input
 
 ISR(USI_OVF_vect) // When SPI buffer is full
 {
-	++s_spiWatchdog;
+	Servo_WDTick();
 	PackageI_OnReceived(USIDR);
 	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
 	SET_BIT(USISR, USICNT0); // 
 }
 
-#pragma mark "Servo"
-void SetServoPosition(unsigned char position)
-{
-	char tmp = max(2, position);
-	tmp = min(200, tmp);
-	cli();
-	// clamp 2...200
-	s_servo = tmp;
-	sei();
-}
 
-void AdvanceServoState()
-{
-	s_servoStatePtr();
-}
-
-void S_ServoPause()
-{
-	SET_BIT(PORTB, SERVO_PIN);
-	// PCK/4
-	uint8_t tmp = TCCR1;
-	CLEAR_BIT(tmp, CS13);
-	CLEAR_BIT(tmp, CS12);
-	SET_BIT(tmp, CS11);
-	SET_BIT(tmp, CS10);
-	TCCR1 = tmp;
-	
-	CLEAR_REG(TCNT1);
-	WRITE_REG(OCR1A, SERVO_MIN_IMPULSE);
-	s_servoStatePtr = S_ServoFirst;
-}
-
-void S_ServoFirst()
-{
-	SET_BIT(PORTB, SERVO_PIN);
-	// PCK/8
-	uint8_t tmp = TCCR1;
-	CLEAR_BIT(tmp, CS13);
-	SET_BIT(tmp, CS12);
-	CLEAR_BIT(tmp, CS11);
-	CLEAR_BIT(tmp, CS10);
-	TCCR1 = tmp;
-	
-	CLEAR_REG(TCNT1);
-	WRITE_REG(OCR1A, s_servo);
-	s_servoStatePtr = S_ServoSecond;
-}
-
-void S_ServoSecond()
-{
-	CLEAR_BIT(PORTB, SERVO_PIN);
-	// PCK/256
-	uint8_t tmp = TCCR1;
-	SET_BIT(tmp, CS13);
-	CLEAR_BIT(tmp, CS12);
-	CLEAR_BIT(tmp, CS11);
-	SET_BIT(tmp, CS10);
-	TCCR1 = tmp;
-	
-	CLEAR_REG(TCNT1);
-	WRITE_REG(OCR1A, SERVO_PAUSE);
-	s_servoStatePtr = S_ServoPause;
-	if(s_spiWatchdogPrev == s_spiWatchdog)
-	{
-		// Reset USI counter if it's taking a while
-		unsigned char bt = USISR;
-		USISR = bt & ~((1 << USICNT0) | (1 << USICNT1) | (1 << USICNT2) | (1 << USICNT3));
-		Package_ResetAllBuffers();
-	}
-	s_spiWatchdogPrev = s_spiWatchdog;
-}
-
-#pragma mark "DC Motor"
-// -128 - max CCW, 0 - stop, 127 - max CW
-void SetMotorSpeedSigned(signed char speed)
-{
-	cli();
-	if (speed == 0)
-	{
-		s_motorA = 0;
-		s_motorB = 0;
-	}
-	else if(speed > 0)
-	{
-		uint8_t newSpeed = speed;
-		s_motorA = newSpeed << 1;
-		s_motorB = 0;
-	}
-	else
-	{
-		uint8_t newSpeed = -speed;
-		s_motorA = 0;
-		s_motorB = newSpeed << 1;
-	}
-	sei();
-}
-
-// 0 - max CCW, 127 - stop, 255 - max CW
-void SetMotorSpeedUnsigned(unsigned char speed)
-{
-	cli();
-	if(speed > 127)
-	{
-		uint8_t newSpeed = speed - 127;
-		s_motorA = newSpeed << 1;
-		s_motorB = 0;		
-	}
-	else
-	{
-		uint8_t newSpeed = 127 - speed;
-		s_motorA = 0;
-		s_motorB = newSpeed << 1;
-	}
-	sei();
-}
 
 ISR(TIM0_COMPA_vect)
 {
@@ -268,13 +141,7 @@ ISR(TIM0_COMPB_vect)
 
 ISR(TIM0_OVF_vect)
 {
-	if(s_motorA != 0)
-		SET_BIT(PORTB, MOTOR_PIN_A);
-	if(s_motorB != 0)
-		SET_BIT(PORTB, MOTOR_PIN_B);
-	
-	WRITE_REG(OCR0A, s_motorA);
-	WRITE_REG(OCR0B, s_motorB);
+	Motor_Tick();
 }
 
 ISR(TIM1_COMPA_vect)
@@ -293,5 +160,5 @@ ISR(TIM1_COMPA_vect)
 		CLEAR_BIT(PORTB, SERVO_PIN);
 	}
 #endif
-	AdvanceServoState();
+	Servo_AdvanceState();
 }

@@ -7,10 +7,12 @@
 // To access them in runtime on initialization phase
 // InitLetters should be called
 
+#if 0
 #ifndef STORE_LETTERS_IN_FLASH
 	uint8_t e_primaryLetter EEMEM = 'Z';
 	uint8_t e_secondaryLetter EEMEM = '1';
 #endif //STORE_LETTERS_IN_FLASH
+#endif
 
 #define SPI_WORD_SIZE 8
 
@@ -22,11 +24,11 @@ char SECONDARY_LETTER;
 #ifdef STORE_LETTERS_IN_FLASH
 #define InitLetters() \
 	PRIMARY_LETTER = 'Z';\
-	SECONDARY_LETTER = '1';
+	SECONDARY_LETTER = '1'
 #else //STORE_LETTERS_IN_FLASH
 #define InitLetters() \
 	PRIMARY_LETTER = eeprom_read_byte(&e_primaryLetter);\
-	SECONDARY_LETTER = eeprom_read_byte(&e_secondaryLetter);
+	SECONDARY_LETTER = eeprom_read_byte(&e_secondaryLetter)
 #endif //STORE_LETTERS_IN_FLASH
 
 #endif /* _SYSTEM_CONFIG_H */

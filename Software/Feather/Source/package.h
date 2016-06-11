@@ -9,6 +9,4 @@ char Package_PayloadDetected();
 char Package_GetData(char b);
 void Package_ResetAllBuffers();
 
-#include "package.cpp"
-
 #endif /* PACKAGE_H_ */
