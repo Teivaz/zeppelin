@@ -7,7 +7,7 @@
 // To access them in runtime on initialization phase
 // InitLetters should be called
 
-#if 0
+#if 0 // Copy to main.cpp
 #ifndef STORE_LETTERS_IN_FLASH
 	uint8_t e_primaryLetter EEMEM = 'Z';
 	uint8_t e_secondaryLetter EEMEM = '1';
