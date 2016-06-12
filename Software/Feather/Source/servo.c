@@ -3,9 +3,6 @@
 #include "utils.h"
 #include <avr/interrupt.h>
 
-unsigned char s_spiWatchdog = 1;
-unsigned char s_spiWatchdogPrev = 0;
-
 typedef enum
 {
 	EServoFirst,
@@ -82,14 +79,4 @@ void ServoSecond()
 	CLEAR_REG(TCNT1);
 	WRITE_REG(OCR1A, SERVO_PAUSE);
 	Servo_AdvanceState = ServoPause;
-	if(s_spiWatchdogPrev == s_spiWatchdog)
-	{
-		// Reset USI counter if it's taking a while
-		unsigned char bt = USISR;
-		USISR = bt & ~((1 << USICNT0) | (1 << USICNT1) | (1 << USICNT2) | (1 << USICNT3));
-		Package_ResetAllBuffers();
-	}
-	s_spiWatchdogPrev = s_spiWatchdog;
 }
-
-

@@ -22,14 +22,19 @@ inline char CRC(char* data, uint8_t size)
 	char ret = 0;
 	for(uint8_t i = 0; i < size; ++i)
 	{
-		ret += data[i];
+		ret ^= data[i];
 	}
 	return ret;
 }
 
 inline char CRC4(char* data)
 {
-	return data[0] + data[1] + data[2] + data[3];
+	return data[0] ^ data[1] ^ data[2] ^ data[3];
+}
+
+inline char CRC2(char* data)
+{
+	return data[0] ^ data[1];
 }
 
 #ifdef _USE_ABS

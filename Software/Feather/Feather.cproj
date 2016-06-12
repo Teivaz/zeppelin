@@ -140,6 +140,9 @@
     <Folder Include="Source" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\buffer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Source\config.h">
       <SubType>compile</SubType>
     </Compile>

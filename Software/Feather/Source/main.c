@@ -5,6 +5,7 @@
 #include "SystemConfig.h"
 #include "package.h"
 #include "servo.h"
+#include "motor.h"
 #include "config.h"
 
 #ifndef STORE_LETTERS_IN_FLASH
@@ -34,16 +35,14 @@ int main(void)
 	Init();
     while(1)
     {
-		if(Package_IsDirty() > 0)
+		Package_Process();
+		char* payload = Package_GetPayload();
+		if(payload)
 		{
-			Package_Process();
+			Motor_SetSpeedSigned(payload[0]);
+			Servo_SetPosition(payload[1]);
+			Package_ClearState();
 		}
-		if(Package_PayloadDetected() == 1)
-		{
-			Motor_SetSpeedSigned(Package_GetData(0));
-			Servo_SetPosition(Package_GetData(1));
-		}
-		
     }
 }
 
@@ -117,18 +116,14 @@ void Init()
 // SPI
 ISR(INT0_vect) // When we have activity on clock input
 {
-	//++s_spiWatchdog;
 }
 
 ISR(USI_OVF_vect) // When SPI buffer is full
 {
-	Servo_WDTick();
 	PackageI_OnReceived(USIDR);
 	SET_BIT(USISR, USIOIF); // Set 1 to clear interrupt
 	SET_BIT(USISR, USICNT0); // 
 }
-
-
 
 ISR(TIM0_COMPA_vect)
 {
