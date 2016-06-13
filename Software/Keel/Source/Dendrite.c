@@ -95,7 +95,7 @@ void DendriteWrite( char* data, char size )
 
 void DendriteEnd()
 {
-	SET_BIT(PORTB, CSN);
+	SET_BIT(PORTB, DENDRITE_CSN);
 	s_dendriteSending = 0;
 }
 
@@ -103,7 +103,7 @@ void DendriteStart()
 {
 	s_dendriteSending = 1;
 	//while(READ_BIT(PINB, CLK));
-	CLEAR_BIT(PORTB, CSN);
+	CLEAR_BIT(PORTB, DENDRITE_CSN);
 }
 
 void DendriteInterrupt()

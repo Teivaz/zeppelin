@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectVersion>6.1</ProjectVersion>
+    <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.C</ToolchainName>
     <ProjectGuid>{b60b783d-bd5b-459d-9690-4cac226e5b56}</ProjectGuid>
     <avrdevice>ATtiny2313A</avrdevice>
@@ -26,14 +26,14 @@
     <UncachedRange />
     <BootSegment>2</BootSegment>
     <AsfFrameworkConfig>
-      <framework-data xmlns="">
+      <framework-data>
         <options />
         <configurations />
         <files />
         <documentation help="" />
         <offline-documentation help="" />
         <dependencies>
-          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.8.1" />
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.22.0" />
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
@@ -53,14 +53,17 @@
         <ssl>False</ssl>
       </Channel>
     </com_atmel_avrdbg_tool_simulator>
+    <preserveEEPROM>true</preserveEEPROM>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <AvrGcc>
+        <avrgcc.common.Device>-mmcu=attiny2313a -B "%24(PackRepoDir)\atmel\ATtiny_DFP\1.0.79\gcc\dev\attiny2313a"</avrgcc.common.Device>
         <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
         <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
         <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
         <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcc.compiler.symbols.DefSymbols>
@@ -72,8 +75,10 @@
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
             <Value>../../Libs</Value>
+            <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.0.79\include</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize more (-O2)</avrgcc.compiler.optimization.level>
         <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
         <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
         <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
@@ -83,17 +88,23 @@
           </ListValues>
         </avrgcc.linker.libraries.Libraries>
         <avrgcc.linker.optimization.GarbageCollectUnusedSections>False</avrgcc.linker.optimization.GarbageCollectUnusedSections>
-        <avrgcc.compiler.optimization.level>Optimize more (-O2)</avrgcc.compiler.optimization.level>
+        <avrgcc.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.0.79\include</Value>
+          </ListValues>
+        </avrgcc.assembler.general.IncludePaths>
       </AvrGcc>
     </ToolchainSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGcc>
+        <avrgcc.common.Device>-mmcu=attiny2313a -B "%24(PackRepoDir)\atmel\ATtiny_DFP\1.0.79\gcc\dev\attiny2313a"</avrgcc.common.Device>
         <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
         <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
         <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
         <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcc.compiler.symbols.DefSymbols>
@@ -105,6 +116,7 @@
         <avrgcc.compiler.directories.IncludePaths>
           <ListValues>
             <Value>../../Libs</Value>
+            <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.0.79\include</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
         <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -118,6 +130,11 @@
           </ListValues>
         </avrgcc.linker.libraries.Libraries>
         <avrgcc.linker.optimization.GarbageCollectUnusedSections>False</avrgcc.linker.optimization.GarbageCollectUnusedSections>
+        <avrgcc.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.0.79\include</Value>
+          </ListValues>
+        </avrgcc.assembler.general.IncludePaths>
         <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
       </AvrGcc>
     </ToolchainSettings>
@@ -139,6 +156,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\main.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\spi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\spi.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

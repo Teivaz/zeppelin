@@ -10,6 +10,7 @@
 
 #include "Dendrite.h"
 #include "SystemConfig.h"
+#include "spi.h"
 
 signed char s_speed = 0;
 char s_spiPackage[5] = {0};
@@ -19,6 +20,7 @@ int main(void)
 	Configure();
 	while(1)
     {
+		// Monitor IRQ of wireless module
 		if(!READ_BIT(PINB, INT))
 		{
 			DendriteInterrupt();
@@ -46,10 +48,10 @@ void Configure()
 	SET_BIT(USICR, USIWM1); // Two wire USI mode
 	
 	SET_BIT(PORTB,	CLK);
-	SET_BIT(PORTB,	CSN);
+	SET_BIT(PORTB,	DENDRITE_CSN);
 	SET_BIT(PORTB,	PB1);
-	SET_BIT(DDRB,	CLK);
-	SET_BIT(DDRB,	CSN);
+	SET_BIT(DDRB,	DENDRITE_CSN);
+	SET_BIT(DDRB,	DENDRITE_CSN);
 	SET_BIT(DDRB,	PB1);
 	CLEAR_BIT(PORTB,	CLK);
 	
@@ -74,8 +76,6 @@ void Sleep()
 	}
 }
 
-char s_spiCounter = 0;
-char s_spiByteIn = 0;
 char s_spiByteOut = 0;
 #define SPI_QUEUE_SIZE 1 + 33 + 2
 char s_spiQueue[SPI_QUEUE_SIZE];
@@ -116,18 +116,18 @@ void onByteRecieved(char data)
 void onByteSent()
 {
 	if(hasByteToTransmitt())
-		
+		;
 }
 
-inline char popByte()
-{
-	if(hasByteToTransmitt())
-	{
-		--s_spiQueuePtr;
-		return *(s_spiQueuePtr + 1);
-	}
-	return 0;
-}
+//inline char popByte()
+//{
+	//if(hasByteToTransmitt())
+	//{
+		//--s_spiQueuePtr;
+		//return *(s_spiQueuePtr + 1);
+	//}
+	//return 0;
+//}
 
 inline char popBit()
 {
@@ -136,35 +136,19 @@ inline char popBit()
 	return ret;
 }
 
-inline void pushBit(char b)
-{
-	s_spiByteIn << 1;
-	s_spiByteIn |= b;
-}
-
 TIMER1_COMPA_vect()
 {
 	if(READ_BIT(PORTD, CLK))
 	{
 		// high to low
 		// write MOSI
+		Spi_IntHToL();
 	}
 	else
 	{
 		// low to high
 		// read MISO
-		// increment data counter
-		++s_spiCounter;
-		pushBit(READ_REG(PORTD, MISO) != 0);
-		
-		// check data counter
-		if(s_spiCounter >= 8)
-		{
-			s_spiCounter = 0;
-			onByteSent();
-			onByteRecieved(s_spiByteIn);
-			s_spiByteIn = 0;
-		}
+		Spi_IntLToH();
 	}
 }
 

@@ -17,10 +17,10 @@
 
 #define MODIFY_REG(REG, CLEARMASK, SETMASK)  WRITE_REG((REG), (((READ_REG(REG)) & (~(CLEARMASK))) | (SETMASK)))
 
-inline char CRC(char* data, uint8_t size)
+inline char CRC(char* data, unsigned char size)
 {
 	char ret = 0;
-	for(uint8_t i = 0; i < size; ++i)
+	for(unsigned char i = 0; i < size; ++i)
 	{
 		ret ^= data[i];
 	}

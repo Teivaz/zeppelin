@@ -1,5 +1,5 @@
-#ifndef _DENDRITE_H_
-#define _DENDRITE_H_
+#ifndef DENDRITE_H_
+#define DENDRITE_H_
 
 // Call this once after initializations is done
 void DendriteInit();
@@ -24,4 +24,4 @@ void DendriteSetRegBit(char reg, char bit);
 void DendriteClearRegBit(char reg, char bit);
 #define PDBG		CLEAR_BIT(PORTB, DBG);SET_BIT(PORTB, DBG);
 
-#endif //_DENDRITE_H_
+#endif //DENDRITE_H_
