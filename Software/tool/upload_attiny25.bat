@@ -27,4 +27,3 @@ if not "%FLASH%"=="" (
 	set FLASH=-U flash:w:%FLASH%:i
 )
 %command% %EEPROM% %FLASH%
-pause

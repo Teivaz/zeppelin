@@ -10,42 +10,33 @@
 #include "main.h"
 #include "Dendrite.h"
 
-#define MANUALLY_MONITOR_IRQ 1
+static void Configure();
+static void Sleep();
 
-signed char s_speed = 0;
-char s_spiPackage[5] = {0};
+void _dbg()
+{
+	SET_BIT(PORTB, DENDRITE_CE);
+	CLEAR_BIT(PORTB, DENDRITE_CE);
+	SET_BIT(PORTB, DENDRITE_CE);
+	CLEAR_BIT(PORTB, DENDRITE_CE);
+}
 
 int main(void)
 {
 	Configure();
 	while(1)
     {
-#if MANUALLY_MONITOR_IRQ
 		// Monitor IRQ of wireless module
 		if(!READ_BIT(PINB, DENDRITE_IRQ))
 		{
-			DendriteInterrupt();
+			Dendrite_Interrupt();
 		}
-#endif
 		nop();
     }
 }
 
-void Configure()
+inline void ConfigureSpi()
 {
-	//Clock
-	
-	// No prescale
-	uint8_t clkpr = (0 << CLKPS0)|
-					(0 << CLKPS1)|
-					(0 << CLKPS2)|
-					(0 << CLKPS3);
-	WRITE_REG(CLKPR, 1 << CLKPCE);
-	WRITE_REG(CLKPR, clkpr);
-	
-	
-	// Fuses CKSEL0...CKSEL3 set to 1111 for crystal osc	
-	
 	/* SPI */
 	SET_BIT(USICR, USIWM0); // Three wire USI mode
 	
@@ -57,7 +48,7 @@ void Configure()
 	// CSN. Output
 	SET_BIT(PORTB, DENDRITE_CSN);
 	SET_BIT(DDRB, DENDRITE_CSN);
-	CLEAR_BIT(PORTB, DENDRITE_CSN);
+	//CLEAR_BIT(PORTB, DENDRITE_CSN); Keep in high state
 	
 	// MOSI. Output
 	SET_BIT(PORTB, DENDRITE_MOSI);
@@ -69,23 +60,31 @@ void Configure()
 	
 	//Input, interrupt
 	//SET_BIT(DDRB, DENDRITE_IRQ); // Default
-#if !MANUALLY_MONITOR_IRQ
-	SET_BIT(EIFR, PCIF0); // Enable interrupt on PCINT7...0
-	SET_BIT(PCMSK, DENDRITE_IRQ_I); // Enable interrupt only on dendrite IRQ
-#endif
 	
 	// CE. Output
 	SET_BIT(PORTB, DENDRITE_CE);
 	SET_BIT(DDRB, DENDRITE_CE);
 	CLEAR_BIT(PORTB, DENDRITE_CE);
-	/* /SPI */
-	
-	sei();
+}
+
+void Configure()
+{	
+	// No prescale
+	uint8_t clkpr = (0 << CLKPS0)|
+					(0 << CLKPS1)|
+					(0 << CLKPS2)|
+					(0 << CLKPS3);
+	WRITE_REG(CLKPR, 1 << CLKPCE);
+	WRITE_REG(CLKPR, clkpr);
+	// With no prescale Fcpu should be 4 MHz
+
+	ConfigureSpi();
 	
 	// Wait for clients to start
 	Sleep();
+	
 	// Finish configure
-	DendriteInit();
+	Dendrite_Init();
 }
 
 void Sleep()
@@ -101,10 +100,3 @@ void Sleep()
 		}
 	}
 }
-
-#if MANUALLY_MONITOR_IRQ
-ISR(PCINT0_vect)
-{
-	DendriteInterrupt();
-}
-#endif

@@ -215,10 +215,17 @@ pip-log.txt
 .mr.developer.cfg
 /UVisionOutput
 *.bak
-*.bak
 /Software/UVisionOutput
 *.bak
 /Software/*.sdf
 /Software/Feather/UVisionOutput
 /Software/Nest/UVisionOutput
 /Software/Feather/*.atsuo
+
+#Eagle temp files
+*.b#*
+*.l#*
+*.s#*
+
+#AVR studio
+*.atsuo

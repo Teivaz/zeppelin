@@ -1,13 +1,25 @@
-#include "Dendrite.h"
-
 #include <avr/io.h>
 
 #include "nRF24L01.h"
+
 #include "config.h"
-#include "types.h"
 #include "utils.h"
 
-#define PIPE_LENGTH 32
+#include "Dendrite.h"
+
+static void DendriteStart();
+static void DendriteEnd();
+static char DendriteReadReg(char reg);
+static void DendriteWriteReg(char reg, char data);
+static void DendriteWrite(char* data, char size);
+static void DendriteRead();
+static void DendriteFinishReading();
+static void DendriteInitRx();
+static void FlushRx();
+static void FlushTx();
+static char DendreiteReadByte();
+static void DendriteSetRegBit(char reg, char bit);
+static void DendriteClearRegBit(char reg, char bit);
 
 void FlushTx()
 {
@@ -52,18 +64,19 @@ void DendriteInitRx()
 	DendriteWriteReg(CONFIG, (1 << PWR_UP)); // Power up
 	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (1 << PRIM_RX)); // Receive mode
 	// Interrupt TX_DS enabled by default
-	DendriteWriteReg(RX_PW_P0, PIPE_LENGTH); // Data pipe 0 enabled. 32 bytes
+	DendriteWriteReg(RX_PW_P0, DENDRITE_PIPE_LENGTH); // Data pipe 0 enabled. 32 bytes
 	DendriteWriteReg(RF_SETUP, 0b00000111); // 1 Mbps
 	DendriteWriteReg(EN_AA, 0);	// No acknowledge
+	SET_BIT(PORTB, DENDRITE_CE); // Activate chip
 }
 
 void DendriteRead()
 {
 	// Will send read request and 32 empty bytes for reading
 	// Feathers will automatically receive this data
-	char data[PIPE_LENGTH+1] = {0};
+	char data[DENDRITE_PIPE_LENGTH+1] = {0};
 	data[0] = R_RX_PAYLOAD;
-	DendriteWrite(data, PIPE_LENGTH+1);
+	DendriteWrite(data, DENDRITE_PIPE_LENGTH+1);
 }
 
 void DendriteFinishReading()
@@ -74,7 +87,7 @@ void DendriteFinishReading()
 	FlushTx();
 }
 
-void DendriteInit()
+void Dendrite_Init()
 {
 	DendriteEnd();
 	DendriteInitRx();
@@ -83,19 +96,15 @@ void DendriteInit()
 void DendriteWrite( char* data, char size )
 {
 	DendriteStart();
-	for(uint8_t a = 0; a < size; ++a)
+	const uint8_t a = (1 << USIWM0) | (1 << USITC);
+	const uint8_t b = (1 << USIWM0) | (1 << USITC) | (1 << USICLK);
+	for(uint8_t i = 0; i < size; ++i)
 	{
-		WRITE_REG(USISR, 0);
-		WRITE_REG(USIDR, data[a]);
-		for(uint8_t b = 0; b < 8; ++b)
+		WRITE_REG(USIDR, data[i]);
+		for(uint8_t j = 8; j > 0; --j)
 		{
-			{ // Front
-				SET_BIT(PORTB, DENDRITE_SCK);
-			}
-			{ // Rear
-				CLEAR_BIT(PORTB, DENDRITE_SCK);
-				SET_BIT(USICR, USICLK);
-			}
+			WRITE_REG(USICR, a);
+			WRITE_REG(USICR, b);
 		}
 	}
 	DendriteEnd();
@@ -112,15 +121,10 @@ void DendriteStart()
 	CLEAR_BIT(PORTB, DENDRITE_CSN);
 }
 
-void DendriteInterrupt()
+void Dendrite_Interrupt()
 {
 	DendriteRead();
 	DendriteFinishReading();
-}
-
-void DendriteToggle(char front)
-{
-
 }
 
 char DendreiteReadByte()
