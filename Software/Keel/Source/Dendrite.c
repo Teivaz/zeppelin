@@ -7,7 +7,7 @@
 #include "types.h"
 #include "utils.h"
 
-char s_dendriteSending = 0;
+#define PIPE_LENGTH 32
 
 void FlushTx()
 {
@@ -49,18 +49,21 @@ void DendriteClearRegBit(char reg, char bit)
 
 void DendriteInitRx()
 {
-	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (0 << PRIM_RX));
-	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (1 << PRIM_RX));
-	DendriteWriteReg(RX_PW_P0, 32); // Data pipe 0
+	DendriteWriteReg(CONFIG, (1 << PWR_UP)); // Power up
+	DendriteWriteReg(CONFIG, (1 << PWR_UP) | (1 << PRIM_RX)); // Receive mode
+	// Interrupt TX_DS enabled by default
+	DendriteWriteReg(RX_PW_P0, PIPE_LENGTH); // Data pipe 0 enabled. 32 bytes
 	DendriteWriteReg(RF_SETUP, 0b00000111); // 1 Mbps
-	DendriteWriteReg(EN_AA, 0);	// No acknoledge
+	DendriteWriteReg(EN_AA, 0);	// No acknowledge
 }
 
 void DendriteRead()
 {
-	char data[33] = {0};
+	// Will send read request and 32 empty bytes for reading
+	// Feathers will automatically receive this data
+	char data[PIPE_LENGTH+1] = {0};
 	data[0] = R_RX_PAYLOAD;
-	DendriteWrite(data, 33);
+	DendriteWrite(data, PIPE_LENGTH+1);
 }
 
 void DendriteFinishReading()
@@ -86,8 +89,13 @@ void DendriteWrite( char* data, char size )
 		WRITE_REG(USIDR, data[a]);
 		for(uint8_t b = 0; b < 8; ++b)
 		{
-			DendriteToggle(1);
-			DendriteToggle(0);
+			{ // Front
+				SET_BIT(PORTB, DENDRITE_SCK);
+			}
+			{ // Rear
+				CLEAR_BIT(PORTB, DENDRITE_SCK);
+				SET_BIT(USICR, USICLK);
+			}
 		}
 	}
 	DendriteEnd();
@@ -96,12 +104,10 @@ void DendriteWrite( char* data, char size )
 void DendriteEnd()
 {
 	SET_BIT(PORTB, DENDRITE_CSN);
-	s_dendriteSending = 0;
 }
 
 void DendriteStart()
 {
-	s_dendriteSending = 1;
 	//while(READ_BIT(PINB, CLK));
 	CLEAR_BIT(PORTB, DENDRITE_CSN);
 }
@@ -114,18 +120,7 @@ void DendriteInterrupt()
 
 void DendriteToggle(char front)
 {
-	//if(s_dendriteSending)
-	{
-		if(front == 0)
-		{
-			CLEAR_BIT(PORTB, CLK);
-			SET_BIT(USICR, USICLK);
-		}
-		else
-		{
-			SET_BIT(PORTB, CLK);
-		}
-	}
+
 }
 
 char DendreiteReadByte()

@@ -1,16 +1,16 @@
-#include "main.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
 #include "nRF24L01.h"
-#include "config.h"
-#include "types.h"
+
 #include "utils.h"
 
-#include "Dendrite.h"
 #include "SystemConfig.h"
-#include "spi.h"
+#include "config.h"
+
+#include "main.h"
+#include "Dendrite.h"
+
+#define MANUALLY_MONITOR_IRQ 1
 
 signed char s_speed = 0;
 char s_spiPackage[5] = {0};
@@ -20,12 +20,14 @@ int main(void)
 	Configure();
 	while(1)
     {
+#if MANUALLY_MONITOR_IRQ
 		// Monitor IRQ of wireless module
-		if(!READ_BIT(PINB, INT))
+		if(!READ_BIT(PINB, DENDRITE_IRQ))
 		{
 			DendriteInterrupt();
 		}
-		asm("nop");
+#endif
+		nop();
     }
 }
 
@@ -44,19 +46,43 @@ void Configure()
 	
 	// Fuses CKSEL0...CKSEL3 set to 1111 for crystal osc	
 	
+	/* SPI */
+	SET_BIT(USICR, USIWM0); // Three wire USI mode
 	
-	SET_BIT(USICR, USIWM1); // Two wire USI mode
+	// SCK. Output. Should be triggered manually
+	SET_BIT(PORTB, DENDRITE_SCK);
+	SET_BIT(DDRB, DENDRITE_SCK); // Output. Should be triggered manually
+	CLEAR_BIT(PORTB, DENDRITE_SCK);
 	
-	SET_BIT(PORTB,	CLK);
-	SET_BIT(PORTB,	DENDRITE_CSN);
-	SET_BIT(PORTB,	PB1);
-	SET_BIT(DDRB,	DENDRITE_CSN);
-	SET_BIT(DDRB,	DENDRITE_CSN);
-	SET_BIT(DDRB,	PB1);
-	CLEAR_BIT(PORTB,	CLK);
+	// CSN. Output
+	SET_BIT(PORTB, DENDRITE_CSN);
+	SET_BIT(DDRB, DENDRITE_CSN);
+	CLEAR_BIT(PORTB, DENDRITE_CSN);
+	
+	// MOSI. Output
+	SET_BIT(PORTB, DENDRITE_MOSI);
+	SET_BIT(DDRB, DENDRITE_MOSI);
+	CLEAR_BIT(PORTB, DENDRITE_MOSI);
+	
+	// MISO. Input
+	//CLEAR_BIT(DDRB, DENDRITE_MISO); // Default
+	
+	//Input, interrupt
+	//SET_BIT(DDRB, DENDRITE_IRQ); // Default
+#if !MANUALLY_MONITOR_IRQ
+	SET_BIT(EIFR, PCIF0); // Enable interrupt on PCINT7...0
+	SET_BIT(PCMSK, DENDRITE_IRQ_I); // Enable interrupt only on dendrite IRQ
+#endif
+	
+	// CE. Output
+	SET_BIT(PORTB, DENDRITE_CE);
+	SET_BIT(DDRB, DENDRITE_CE);
+	CLEAR_BIT(PORTB, DENDRITE_CE);
+	/* /SPI */
+	
+	sei();
 	
 	// Wait for clients to start
-	sei();
 	Sleep();
 	// Finish configure
 	DendriteInit();
@@ -70,91 +96,15 @@ void Sleep()
 		{
 			//for(uint8_t c = 0; c < 0xff; ++c)
 			{
-				asm("nop");
+				nop();
 			}
 		}
 	}
 }
 
-char s_spiByteOut = 0;
-#define SPI_QUEUE_SIZE 1 + 33 + 2
-char s_spiQueue[SPI_QUEUE_SIZE];
-char* s_spiQueuePtrOut = s_spiQueue;
-char* s_spiQueuePtrIn = s_spiQueue;
-
-void SetUpSPI()
+#if MANUALLY_MONITOR_IRQ
+ISR(PCINT0_vect)
 {
-	// Set clock timer
-	// Set ddr for MOSI
-	// Set ddr for MISO
-	// Set ddr for CE
-	// Set ddr for CLK
-	// Set ddr for CSN
-	// Set ddr for IRQ (INT0)
-	
-	// Set interrupt on timer clock
-	// Set interrupt INT0 on fall
-	// Enable clock timer
+	DendriteInterrupt();
 }
-
-void transmitByte(char data)
-{
-	*s_spiQueuePtrIn = data;
-	++s_spiQueuePtrIn;
-}
-
-inline char hasByteToTransmitt()
-{
-	return s_spiQueuePtrOut > s_spiQueuePtrIn;
-}
-
-void onByteRecieved(char data)
-{
-	
-}
-
-void onByteSent()
-{
-	if(hasByteToTransmitt())
-		;
-}
-
-//inline char popByte()
-//{
-	//if(hasByteToTransmitt())
-	//{
-		//--s_spiQueuePtr;
-		//return *(s_spiQueuePtr + 1);
-	//}
-	//return 0;
-//}
-
-inline char popBit()
-{
-	char ret = (s_spiByteOut & 0x80) != 0;
-	s_spiByteOut << 1;
-	return ret;
-}
-
-TIMER1_COMPA_vect()
-{
-	if(READ_BIT(PORTD, CLK))
-	{
-		// high to low
-		// write MOSI
-		Spi_IntHToL();
-	}
-	else
-	{
-		// low to high
-		// read MISO
-		Spi_IntLToH();
-	}
-}
-
-INT0_vect()
-{
-	// Read buffer
-	// Store data
-	// Reset buffer
-}
+#endif

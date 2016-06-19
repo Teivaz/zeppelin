@@ -4,17 +4,17 @@
 #include <avr/io.h>
 
 
-char s_spiCounter = 0;
-char s_spiByteIn = 0;
+static char s_spiCounter = 0;
+static char s_spiByteIn = 0;
 
 
 void Spi_IntHToL()
 {
 }
 
-inline void pushBit(char b)
+static void pushBit(char b)
 {
-	s_spiByteIn << 1;
+	s_spiByteIn <<= 1;
 	s_spiByteIn |= b;
 }
 
@@ -30,8 +30,8 @@ void Spi_IntLToH()
 	if(s_spiCounter >= 8)
 	{
 		s_spiCounter = 0;
-		onByteSent();
-		onByteRecieved(s_spiByteIn);
+		//onByteSent();
+		//onByteRecieved(s_spiByteIn);
 		s_spiByteIn = 0;
 	}
 }

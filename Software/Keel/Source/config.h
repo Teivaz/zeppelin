@@ -18,6 +18,7 @@
 	#define DENDRITE_MOSI	PB5
 	#define DENDRITE_MISO	PB6
 	#define DENDRITE_IRQ	PB4
+	#define DENDRITE_IRQ_I	PCINT4
 	#define DENDRITE_CE		PB3
 	
 #endif

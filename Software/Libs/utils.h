@@ -46,6 +46,6 @@ inline char CRC2(char* data)
 #define max(x, y) (x < y ? y : x)
 #endif
 
-#define nop() asm("nop")
+#define nop() __asm__ __volatile__ ("nop"::)
 
 #endif /* _UTILS_H_ */
