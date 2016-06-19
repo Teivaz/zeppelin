@@ -15,10 +15,6 @@ static void Sleep();
 
 void _dbg()
 {
-	SET_BIT(PORTB, DENDRITE_CE);
-	CLEAR_BIT(PORTB, DENDRITE_CE);
-	SET_BIT(PORTB, DENDRITE_CE);
-	CLEAR_BIT(PORTB, DENDRITE_CE);
 }
 
 int main(void)

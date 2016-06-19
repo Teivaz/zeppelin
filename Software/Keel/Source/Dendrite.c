@@ -67,6 +67,13 @@ void DendriteInitRx()
 	DendriteWriteReg(RX_PW_P0, DENDRITE_PIPE_LENGTH); // Data pipe 0 enabled. 32 bytes
 	DendriteWriteReg(RF_SETUP, 0b00000111); // 1 Mbps
 	DendriteWriteReg(EN_AA, 0);	// No acknowledge
+	
+	// Wait 1.5ms at least
+	for(char i = 0xff; i > 0; --i)
+	{
+		for(char i = 0xf; i > 0; --i)
+			nop();
+	}
 	SET_BIT(PORTB, DENDRITE_CE); // Activate chip
 }
 
