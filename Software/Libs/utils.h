@@ -7,17 +7,19 @@
 
 #define READ_BIT(REG, BIT)    ((REG) & (1<<BIT))
 
-#define CLEAR_REG(REG)        ((REG) = (0x0))
+#define CLEAR_REG(REG)        ((REG) ^= (REG))
 
 #define WRITE_REG(REG, VAL)   ((REG) = (VAL))
 
-#define READ_REG(REG)         ((REG))
+#define READ_REG(REG)         (REG)
 
-#define TOGGLE_BIT(REG, BIT)	(READ_BIT(REG, BIT) ? CLEAR_BIT(REG, BIT) : SET_BIT(REG, BIT))
+#define TOGGLE_BIT(REG, BIT)  ((REG) ^ (1<<BIT))
+
+#define MSB(BIT)              ((BIT >> 7) & 0x1)
 
 #define MODIFY_REG(REG, CLEARMASK, SETMASK)  WRITE_REG((REG), (((READ_REG(REG)) & (~(CLEARMASK))) | (SETMASK)))
 
-inline char CRC(char* data, unsigned char size)
+inline char HASH(char* data, unsigned char size)
 {
 	char ret = 0;
 	for(unsigned char i = 0; i < size; ++i)
@@ -27,12 +29,12 @@ inline char CRC(char* data, unsigned char size)
 	return ret;
 }
 
-inline char CRC4(char* data)
+inline char HASH4(char* data)
 {
 	return data[0] ^ data[1] ^ data[2] ^ data[3];
 }
 
-inline char CRC2(char* data)
+inline char HASH2(char* data)
 {
 	return data[0] ^ data[1];
 }

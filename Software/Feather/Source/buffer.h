@@ -22,7 +22,7 @@ typedef struct
 	char primary;		// Primary letter
 	char secondary;		// Secondary letter
 	char payload[2];	// Payload
-	char crc;			// Checksum
+	char hash;			// Checksum
 } Package;
 
 typedef struct
@@ -70,15 +70,11 @@ inline char* Buffer_Read(Buffer* buf)
 		return 0;
 	else if (package->secondary != SECONDARY_LETTER)
 		return 0;
-	else if (CRC4((char*)package) != package->crc)
+	else if (HASH4((char*)package) != package->hash)
 		return 0;
 	else
 		return package->payload;
 }
 
-inline char Buffer_IsValidPackage(Buffer* buf, unsigned char id)
-{
-	id %= TOTAL_PACKAGES;
-}
 
 #endif /* BUFFER_H_ */

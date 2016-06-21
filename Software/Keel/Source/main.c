@@ -12,16 +12,19 @@
 
 static void Configure();
 static void Sleep();
-
-void _dbg()
-{
-}
+#if EMULATE_DENDRITE
+	static void EmulateDendrite();
+#endif
 
 int main(void)
 {
 	Configure();
 	while(1)
     {
+#if EMULATE_DENDRITE
+		EmulateDendrite();
+		continue;
+#endif
 		// Monitor IRQ of wireless module
 		if(!READ_BIT(PINB, DENDRITE_IRQ))
 		{
@@ -81,6 +84,11 @@ void Configure()
 	
 	// Finish configure
 	Dendrite_Init();
+#if EMULATE_DENDRITE
+	SET_BIT(PORTB, DENDRITE_MISO);
+	SET_BIT(DDRB, DENDRITE_MISO);
+	CLEAR_BIT(PORTB, DENDRITE_MISO);
+#endif
 }
 
 void Sleep()
@@ -96,3 +104,36 @@ void Sleep()
 		}
 	}
 }
+
+#if EMULATE_DENDRITE
+static uint8_t s_dendrite0 = 0;
+static int8_t s_dendrite1 = 0;
+
+
+void EmulateSendByte(unsigned char data)
+{
+	CLEAR_BIT(PORTB, DENDRITE_CSN);
+	for(int8_t i = 8; i > 0; --i)
+	{
+		MSB(data) ? SET_BIT(PORTB, DENDRITE_MISO) : CLEAR_BIT(PORTB, DENDRITE_MISO);
+		data = data << 1;
+		SET_BIT(PORTB, DENDRITE_SCK);
+		CLEAR_BIT(PORTB, DENDRITE_SCK);
+	}
+	SET_BIT(PORTB, DENDRITE_CSN);
+}
+
+void EmulateDendrite()
+{
+	char package[] = {'Z', '1', s_dendrite0, s_dendrite1, 0};
+	package[4] = HASH4(package);
+	EmulateSendByte(package[0]);
+	EmulateSendByte(package[1]);
+	EmulateSendByte(package[2]);
+	EmulateSendByte(package[3]);
+	EmulateSendByte(package[4]);
+	Sleep();
+	s_dendrite0 += 1;
+	s_dendrite1 += 1;
+}
+#endif
