@@ -3,7 +3,7 @@
 
 ###Intended result
 First version of this zeppelin should be able to keep itself up in the sky for a decent amount of time. It will be controled remotely (probably via iphone). Total length of airship 168.13cm. Volume 0.46 m3.
-In the end it should look like this:
+In the end it should look like this:    
 ![zeppelin in all its glory](https://raw.githubusercontent.com/Teivaz/zeppelin/master/Blueprints/Renders/zeppelin_full.png)
 ###Progress
  - [X] Calculate the overall size, mass, and lifting force of the aerostat
