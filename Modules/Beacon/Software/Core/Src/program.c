@@ -2,6 +2,8 @@
 #include "main.h"
 #include "nrf24.h"
 
+extern CRC_HandleTypeDef hcrc;
+
 void setup() {
 	NRF24_SetPowerMode(NRF24_PWR_UP);
 	NRF24_SetOperationalMode(NRF24_MODE_TX);
@@ -40,8 +42,9 @@ void onTimer() {
 			(uint8_t)0x06, // Cmd - write-dv
 			(uint8_t)0x10, // value of servo
 			(uint8_t)0x02, // 2 out of 255
-			(uint8_t)0x00, // CRC
+			(uint8_t)0x00, // CRC - 0x6b
 	};
+	payload[7] = HAL_CRC_Calculate(&hcrc, (uint32_t*)payload, 7);
 	NRF24_WritePayload(payload, sizeof(payload));
 	NRF24_Transmit();
 }

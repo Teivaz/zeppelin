@@ -27,7 +27,7 @@ The **Len** (Length) field. Size: 1 byte. Type: `uint8_t`. The length of the res
 The **RId** (Request/Response Id) field. Size: 1 byte. Type: `uint8_t`. The unique id of the request that will be repeated by the response. Can be 0.
 The **Cmd** (Command) of size 1 byte. Full list of commands is in the *Commands* section.
 The **Pld** (Payload) field. Size: 0-26 bytes.
-The **CRC** field. The polynomial CRC-8 value of the whole package (excluding this field).
+The **CRC** field. The (polynomial 0x07, initial value 0x00) CRC-8 value of the whole package (excluding this field).
 
 # Version
 The protocol version is `0bMMMMmmmm` - where `M` - major version bits, `m` - minor version bits).
