@@ -107,7 +107,6 @@ int main(void)
   setup();
   while (1)
   {
-	  NRF24_Check();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
