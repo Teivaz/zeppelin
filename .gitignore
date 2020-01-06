@@ -198,6 +198,7 @@ $RECYCLE.BIN/
 *.s#*
 *.brd.lck
 *.sch.lck
+**/Hardware/**/*.job
 
 #AVR studio
 *.atsuo

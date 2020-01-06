@@ -48,5 +48,3 @@ void onTimer() {
 	NRF24_WritePayload(payload, sizeof(payload));
 	NRF24_Transmit();
 }
-
-

@@ -15,13 +15,13 @@
 #define NRF24_CE_PORT              GPIOA
 #define NRF24_CE_PIN               GPIO_PIN_4
 
-// CSN (chip select negative) pin (PB1)
-#define NRF24_CSN_PORT             GPIOB
-#define NRF24_CSN_PIN              GPIO_PIN_1
+// CSN (chip select negative) pin (PA3)
+#define NRF24_CSN_PORT             GPIOA
+#define NRF24_CSN_PIN              GPIO_PIN_3
 
-// IRQ pin (PA3)
+// IRQ pin (PA2)
 #define NRF24_IRQ_PORT             GPIOA
-#define NRF24_IRQ_PIN              GPIO_PIN_3
+#define NRF24_IRQ_PIN              GPIO_PIN_2
 
 
 #endif // __NRF24_HW_CONF_H

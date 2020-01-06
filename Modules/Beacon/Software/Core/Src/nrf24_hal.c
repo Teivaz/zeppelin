@@ -1,7 +1,7 @@
 #include "nrf24_hal.h"
 #include "nrf24_hw_conf.h"
 
-static SPI_HandleTypeDef s_spi;
+static SPI_HandleTypeDef s_spi = {0};
 
 void NRF24_CE_Low() {
 	HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_RESET);
@@ -23,10 +23,6 @@ void NRF24_GPIO_Init() {
 
 	GPIO_InitTypeDef port = {0};
 
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-
 	/*Configure GPIO pin : CSN */
 	NRF24_CSN_High();
 	port.Pin = NRF24_CSN_PIN;
@@ -46,10 +42,10 @@ void NRF24_GPIO_Init() {
 #if 0
 	// Interrupt will go here
 	/*Configure GPIO pin : PA3 */
-	port.Pin = GPIO_PIN_3;
+	port.Pin = NRF24_IRQ_PIN;
 	port.Mode = GPIO_MODE_IT_RISING;
 	port.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOA, &port);
+	HAL_GPIO_Init(NRF24_IRQ_PORT, &port);
 #endif
 }
 
