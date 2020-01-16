@@ -2,12 +2,12 @@
 
 #include "nrf24.h"
 #include "nrf24_hal.h"
-#include "printf.h"
-#ifndef MINIMAL
+
+extern void _printf(const char*, ...);
+
 // The address used to test presence of the transceiver,
 // note: should not exceed 5 bytes
 #define NRF24_TEST_ADDR "nRF24"
-
 
 // Addresses of the address registers
 static const uint8_t NRF24_ADDR_REGS[7] = {
@@ -469,7 +469,6 @@ void NRF24_ClearIRQFlags(void) {
 
 void NRF24_Transmit() {
 	NRF24_CE_High();
-	NRF24_Wait_10us();
 	NRF24_CE_Low();
 }
 
@@ -536,7 +535,7 @@ void NRF24_DumpConfig(void) {
 
 	// CONFIG
 	i = NRF24_ReadReg(NRF24_REG_CONFIG);
-	printf("[0x%02X][0x%02X] MASK:%03b CRC:%02b PWR:%s MODE:P%s\r\n",
+	_printf("[0x%02X][0x%02X] MASK:%03b CRC:%02b PWR:%s MODE:P%s\r\n",
 			NRF24_REG_CONFIG,
 			i,
 			i >> 4,
@@ -547,9 +546,9 @@ void NRF24_DumpConfig(void) {
 
 	// EN_AA
 	i = NRF24_ReadReg(NRF24_REG_EN_AA);
-	printf("[0x%02X][0x%02X] ENAA: ", NRF24_REG_EN_AA, i);
+	_printf("[0x%02X][0x%02X] ENAA: ", NRF24_REG_EN_AA, i);
 	for (j = 0; j < 6; j++) {
-		printf("[P%1u%s]%s",
+		_printf("[P%1u%s]%s",
 				j,
 				(i & (1 << j)) ? "+" : "-",
 				(j == 5) ? "\r\n" : " "
@@ -558,9 +557,9 @@ void NRF24_DumpConfig(void) {
 
 	// EN_RXADDR
 	i = NRF24_ReadReg(NRF24_REG_EN_RXADDR);
-	printf("[0x%02X][0x%02X] EN_RXADDR: ", NRF24_REG_EN_RXADDR, i);
+	_printf("[0x%02X][0x%02X] EN_RXADDR: ", NRF24_REG_EN_RXADDR, i);
 	for (j = 0; j < 6; j++) {
-		printf("[P%1u%s]%s", j,
+		_printf("[P%1u%s]%s", j,
 				(i & (1 << j)) ? "+" : "-",
 				(j == 5) ? "\r\n" : " "
 			);
@@ -569,7 +568,7 @@ void NRF24_DumpConfig(void) {
 	// SETUP_AW
 	i = NRF24_ReadReg(NRF24_REG_SETUP_AW);
 	aw = NRF24_GetAddrWidth();
-	printf("[0x%02X][0x%02X] Address: %u Bytes\r\n",
+	_printf("[0x%02X][0x%02X] Address: %u Bytes\r\n",
 			NRF24_REG_SETUP_AW,
 			i,
 			aw
@@ -577,7 +576,7 @@ void NRF24_DumpConfig(void) {
 
 	// SETUP_RETR
 	i = NRF24_ReadReg(NRF24_REG_SETUP_RETR);
-	printf("[0x%02X][0x%02X] ARD=%04b ARC=%04b (retr.delay=%uus, count=%u)\r\n",
+	_printf("[0x%02X][0x%02X] ARD=%04b ARC=%04b (retr.delay=%uus, count=%u)\r\n",
 			NRF24_REG_SETUP_RETR,
 			i,
 			i >> 4,
@@ -588,7 +587,7 @@ void NRF24_DumpConfig(void) {
 
 	// RF_CH
 	i = NRF24_ReadReg(NRF24_REG_RF_CH);
-	printf("[0x%02X][0x%02X] RF channel:%u (%.3uGHz)\r\n",
+	_printf("[0x%02X][0x%02X] RF channel:%u (%.3uGHz)\r\n",
 			NRF24_REG_RF_CH,
 			i,
 			i,
@@ -597,7 +596,7 @@ void NRF24_DumpConfig(void) {
 
 	// RF_SETUP
 	i = NRF24_ReadReg(NRF24_REG_RF_SETUP);
-	printf("[0x%02X][0x%02X] CONT_WAVE:%s PLL_LOCK:%s DataRate=",
+	_printf("[0x%02X][0x%02X] CONT_WAVE:%s PLL_LOCK:%s DataRate=",
 			NRF24_REG_RF_SETUP,
 			i,
 			(i & 0x80) ? "ON" : "OFF",
@@ -605,41 +604,41 @@ void NRF24_DumpConfig(void) {
 		);
 	switch ((i & 0x28) >> 3) {
 		case 0x00:
-			printf("1M");
+			_printf("1M");
 			break;
 		case 0x01:
-			printf("2M");
+			_printf("2M");
 			break;
 		case 0x04:
-			printf("250k");
+			_printf("250k");
 			break;
 		default:
-			printf("???");
+			_printf("???");
 			break;
 	}
-	printf("pbs RF_PWR=");
+	_printf("pbs RF_PWR=");
 	switch ((i & 0x06) >> 1) {
 		case 0x00:
-			printf("-18");
+			_printf("-18");
 			break;
 		case 0x01:
-			printf("-12");
+			_printf("-12");
 			break;
 		case 0x02:
-			printf("-6");
+			_printf("-6");
 			break;
 		case 0x03:
-			printf("0");
+			_printf("0");
 			break;
 		default:
-			printf("???");
+			_printf("???");
 			break;
 	}
-	printf("dBm\r\n");
+	_printf("dBm\r\n");
 
 	// STATUS
 	i = NRF24_ReadReg(NRF24_REG_STATUS);
-	printf("[0x%02X][0x%02X] IRQ:%03b RX_PIPE:%u TX_FULL:%s\r\n",
+	_printf("[0x%02X][0x%02X] IRQ:%03b RX_PIPE:%u TX_FULL:%s\r\n",
 			NRF24_REG_STATUS,
 			i,
 			(i & 0x70) >> 4,
@@ -648,7 +647,7 @@ void NRF24_DumpConfig(void) {
 		);
 	// OBSERVE_TX
 	i = NRF24_ReadReg(NRF24_REG_OBSERVE_TX);
-	printf("[0x%02X][0x%02X] PLOS_CNT=%u ARC_CNT=%u\r\n",
+	_printf("[0x%02X][0x%02X] PLOS_CNT=%u ARC_CNT=%u\r\n",
 			NRF24_REG_OBSERVE_TX,
 			i,
 			i >> 4,
@@ -656,7 +655,7 @@ void NRF24_DumpConfig(void) {
 		);
 	// RPD
 	i = NRF24_ReadReg(NRF24_REG_RPD);
-	printf("[0x%02X][0x%02X] RPD=%s\r\n",
+	_printf("[0x%02X][0x%02X] RPD=%s\r\n",
 			NRF24_REG_RPD,
 			i,
 			(i & 0x01) ? "YES" : "NO"
@@ -664,71 +663,70 @@ void NRF24_DumpConfig(void) {
 
 	// TX_ADDR
 	NRF24_ReadMBReg(NRF24_REG_TX_ADDR, buf, aw);
-	printf("[0x%02X] TX_ADDR:    ", NRF24_REG_TX_ADDR);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] TX_ADDR:    ", NRF24_REG_TX_ADDR);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_ADDR_P0
 	NRF24_ReadMBReg(NRF24_REG_RX_ADDR_P0, buf, aw);
-	printf("[0x%02X] RX_ADDR_P0: ", NRF24_REG_RX_ADDR_P0);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] RX_ADDR_P0: ", NRF24_REG_RX_ADDR_P0);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_ADDR_P1
 	NRF24_ReadMBReg(NRF24_REG_RX_ADDR_P1, buf, aw);
-	printf("[0x%02X] RX_ADDR_P1: ", NRF24_REG_RX_ADDR_P1);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] RX_ADDR_P1: ", NRF24_REG_RX_ADDR_P1);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_ADDR_P2
 	buf[aw - 1] = NRF24_ReadReg(NRF24_REG_RX_ADDR_P2);
-	printf("[0x%02X] RX_ADDR_P2: ", NRF24_REG_RX_ADDR_P2);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] RX_ADDR_P2: ", NRF24_REG_RX_ADDR_P2);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_ADDR_P3
 	buf[aw - 1] = NRF24_ReadReg(NRF24_REG_RX_ADDR_P3);
-	printf("[0x%02X] RX_ADDR_P3: ", NRF24_REG_RX_ADDR_P3);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] RX_ADDR_P3: ", NRF24_REG_RX_ADDR_P3);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_ADDR_P4
 	buf[aw - 1] = NRF24_ReadReg(NRF24_REG_RX_ADDR_P4);
-	printf("[0x%02X] RX_ADDR_P4: ", NRF24_REG_RX_ADDR_P4);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] RX_ADDR_P4: ", NRF24_REG_RX_ADDR_P4);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_ADDR_P5
 	buf[aw - 1] = NRF24_ReadReg(NRF24_REG_RX_ADDR_P5);
-	printf("[0x%02X] RX_ADDR_P5: ", NRF24_REG_RX_ADDR_P5);
-	for (i = 0; i < aw; i++) { printf("0x%02x ", buf[i]); }
-	printf("[");
-	for (i = 0; i < aw; i++) { printf("%c", buf[i]); }
-	printf("]\r\n");
+	_printf("[0x%02X] RX_ADDR_P5: ", NRF24_REG_RX_ADDR_P5);
+	for (i = 0; i < aw; i++) { _printf("0x%02x ", buf[i]); }
+	_printf("[");
+	for (i = 0; i < aw; i++) { _printf("%c", buf[i]); }
+	_printf("]\r\n");
 
 	// RX_PW_P0
-	printf("[0x%02X] RX_PW_P0=%u\r\n", NRF24_REG_RX_PW_P0, NRF24_ReadReg(NRF24_REG_RX_PW_P0));
+	_printf("[0x%02X] RX_PW_P0=%u\r\n", NRF24_REG_RX_PW_P0, NRF24_ReadReg(NRF24_REG_RX_PW_P0));
 	// RX_PW_P1
-	printf("[0x%02X] RX_PW_P1=%u\r\n", NRF24_REG_RX_PW_P1, NRF24_ReadReg(NRF24_REG_RX_PW_P1));
+	_printf("[0x%02X] RX_PW_P1=%u\r\n", NRF24_REG_RX_PW_P1, NRF24_ReadReg(NRF24_REG_RX_PW_P1));
 	// RX_PW_P2
-	printf("[0x%02X] RX_PW_P2=%u\r\n", NRF24_REG_RX_PW_P2, NRF24_ReadReg(NRF24_REG_RX_PW_P2));
+	_printf("[0x%02X] RX_PW_P2=%u\r\n", NRF24_REG_RX_PW_P2, NRF24_ReadReg(NRF24_REG_RX_PW_P2));
 	// RX_PW_P3
-	printf("[0x%02X] RX_PW_P3=%u\r\n", NRF24_REG_RX_PW_P3, NRF24_ReadReg(NRF24_REG_RX_PW_P3));
+	_printf("[0x%02X] RX_PW_P3=%u\r\n", NRF24_REG_RX_PW_P3, NRF24_ReadReg(NRF24_REG_RX_PW_P3));
 	// RX_PW_P4
-	printf("[0x%02X] RX_PW_P4=%u\r\n", NRF24_REG_RX_PW_P4, NRF24_ReadReg(NRF24_REG_RX_PW_P4));
+	_printf("[0x%02X] RX_PW_P4=%u\r\n", NRF24_REG_RX_PW_P4, NRF24_ReadReg(NRF24_REG_RX_PW_P4));
 	// RX_PW_P5
-	printf("[0x%02X] RX_PW_P5=%u\r\n", NRF24_REG_RX_PW_P5, NRF24_ReadReg(NRF24_REG_RX_PW_P5));
+	_printf("[0x%02X] RX_PW_P5=%u\r\n", NRF24_REG_RX_PW_P5, NRF24_ReadReg(NRF24_REG_RX_PW_P5));
 }
-#endif
