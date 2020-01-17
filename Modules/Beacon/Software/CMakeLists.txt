@@ -74,9 +74,9 @@ add_library("HAL" ALIAS "STM32L0xx_HAL")
 add_subdirectory("${libraries_dir}/Software/nrf24" "nrf24")
 
 # Let the libraries know where they should look for their configs
-target_include_directories("nrf24" PRIVATE "${CMAKE_CURRENT_LIST_DIR}/config")
-target_include_directories("STM32L0xx_HAL" PRIVATE "${CMAKE_CURRENT_LIST_DIR}/config")
-target_include_directories("printf" PRIVATE "${CMAKE_CURRENT_LIST_DIR}/config")
+target_include_directories("nrf24" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
+target_include_directories("STM32L0xx_HAL" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
+target_include_directories("printf" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
 
 file(GLOB_RECURSE sources "src/*.[c|s|h]")
 add_executable("${PROJECT_NAME}" "${sources}")

@@ -1,4 +1,5 @@
 #pragma once
 
-int main(void);
-extern void SystemInit(void);
+void setup();
+
+int main();
