@@ -1,8 +1,10 @@
 #include "main.h"
 #include "program.h"
 #include "stm32l0xx_hal.h"
+#include "printf.h"
 
 RTC_HandleTypeDef s_rtc;
+UART_HandleTypeDef s_uart2;
 
 void Error_Handler() {
 	*((char*)0) = 0U;
@@ -10,6 +12,7 @@ void Error_Handler() {
 static void RTC_Init();
 static void Clock_Init();
 static void GPIO_Init();
+static void USART2_UART_Init();
 
 int main(void) {
 #ifdef _DEBUG
@@ -18,6 +21,7 @@ int main(void) {
 #endif
 
 	setup();
+	_putchar('a');
 	while(1) {}
 }
 
@@ -26,9 +30,10 @@ void setup() {
 	Clock_Init();
 	RTC_Init();
 	GPIO_Init();
+	USART2_UART_Init();
 }
 
-void Clock_Init() {
+static void Clock_Init() {
 	// Configure the main internal regulator output voltage
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 	
@@ -45,26 +50,25 @@ void Clock_Init() {
 
 	// Initializes the CPU, AHB and APB busses clocks
 	RCC_ClkInitTypeDef rccClk = {0};
-	rccClk.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-															|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+	rccClk.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
 	rccClk.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
 	rccClk.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	rccClk.APB1CLKDivider = RCC_HCLK_DIV1;
 	rccClk.APB2CLKDivider = RCC_HCLK_DIV1;
-
 	if (HAL_RCC_ClockConfig(&rccClk, FLASH_LATENCY_0) != HAL_OK) {
 		Error_Handler();
 	}
 
 	RCC_PeriphCLKInitTypeDef periphClck = {0};
-	periphClck.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+	periphClck.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_RTC;
+	periphClck.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
 	periphClck.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
 	if (HAL_RCCEx_PeriphCLKConfig(&periphClck) != HAL_OK) {
 		Error_Handler();
 	}
 }
 
-void RTC_Init() {
+static void RTC_Init() {
 	// Initialize RTC Only
 	s_rtc.Instance = RTC;
 	s_rtc.Init.HourFormat = RTC_HOURFORMAT_24;
@@ -116,7 +120,7 @@ void RTC_Init() {
 	}
 }
 
-void GPIO_Init() {
+static void GPIO_Init() {
 	GPIO_InitTypeDef port = {0};
 
 	__HAL_RCC_GPIOA_CLK_ENABLE();
@@ -141,6 +145,26 @@ void GPIO_Init() {
 	HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 
+static void USART2_UART_Init() {
+	s_uart2.Instance = USART2;
+	s_uart2.Init.BaudRate = 115200;
+	s_uart2.Init.WordLength = UART_WORDLENGTH_8B;
+	s_uart2.Init.StopBits = UART_STOPBITS_1;
+	s_uart2.Init.Parity = UART_PARITY_NONE;
+	s_uart2.Init.Mode = UART_MODE_TX_RX;
+	s_uart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	s_uart2.Init.OverSampling = UART_OVERSAMPLING_16;
+	s_uart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	s_uart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if (HAL_UART_Init(&s_uart2) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+void _putchar(char character) {
+	HAL_UART_Transmit(&s_uart2, (uint8_t*) &character, 1, HAL_MAX_DELAY);
+}
+
 void SysTick_Handler() {
 	HAL_IncTick();
 }
@@ -154,3 +178,4 @@ void EXTI0_1_IRQHandler() {
 	toggleTimer();
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
+
