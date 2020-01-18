@@ -17,8 +17,27 @@ ENTRY(reset_handler);
 SECTIONS
 {
 	.text : {
-		*(.vectors)
-		*(.text*)
+		KEEP(*(.vectors)) /* Skip optimization for the interrup vectors */
+		*(.text)
+		*(.text.*)
+		*(.rodata)
+		*(.rodata.*)
 		. = ALIGN(4);
-	} >flash
+	} > flash
+	
+	.data : {
+		*(.data)
+		*(.data.*)
+		. = ALIGN(4);
+	} > ram
+
+	.bss : {
+		*(.bss)
+		*(.bss.*)
+		. = ALIGN(4);
+	} > ram
+
+	.ARM.attributes 0 : {
+		*(.ARM.attributes)
+	}
 }
