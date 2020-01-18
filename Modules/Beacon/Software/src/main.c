@@ -117,19 +117,32 @@ void RTC_Init() {
 }
 
 void GPIO_Init() {
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	GPIO_InitTypeDef port = {0};
 
-	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	/*Configure GPIO pin : PA1 */
-	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
-	GPIO_InitStruct.Pin = GPIO_PIN_1;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);	
+	port.Pin = GPIO_PIN_1;
+	port.Mode = GPIO_MODE_OUTPUT_PP;
+	port.Pull = GPIO_NOPULL;
+	port.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &port);	
+
+	/*Configure GPIO pin : PB1 */
+	port.Pin = GPIO_PIN_1;
+	port.Mode = GPIO_MODE_IT_RISING;
+	port.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOB, &port);
+
+	/* EXTI interrupt init*/
+	HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+}
+
+void SysTick_Handler() {
+	HAL_IncTick();
 }
 
 void RTC_IRQHandler() {
@@ -137,6 +150,7 @@ void RTC_IRQHandler() {
 	HAL_RTC_AlarmIRQHandler(&s_rtc);
 }
 
-void SysTick_Handler(void) {
-	HAL_IncTick();
+void EXTI0_1_IRQHandler() {
+	toggleTimer();
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
