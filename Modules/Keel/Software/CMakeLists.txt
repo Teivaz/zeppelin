@@ -64,6 +64,7 @@ add_compile_definitions("${compile_definitions}")
 
 # Dependencies
 add_subdirectory("${libraries_dir}/Software/CMSIS" "CMSIS")
+add_subdirectory("${libraries_dir}/Software/protocol" "protocol")
 add_subdirectory("${libraries_dir}/Software/STM32L0xx_HAL_Driver" "STM32L0xx_HAL")
 
 add_subdirectory("${libraries_dir}/Software/printf" "printf")
@@ -81,5 +82,5 @@ target_include_directories("printf" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
 file(GLOB_RECURSE sources "src/*.[c|s|h]")
 add_executable("${PROJECT_NAME}" "${sources}")
 set_target_properties("${PROJECT_NAME}" PROPERTIES OUTPUT_NAME "program.elf")
-target_link_libraries("${PROJECT_NAME}" "nrf24" "printf" "CMSIS" "STM32L0xx_HAL")
+target_link_libraries("${PROJECT_NAME}" "nrf24" "printf" "CMSIS" "STM32L0xx_HAL" "protocol")
 set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS "${link_flags}")

@@ -3,8 +3,13 @@
 #include "stm32l0xx_hal.h"
 #include "printf.h"
 #include "nrf24.h"
+#include "protocol.h"
 
 uint8_t s_on = 1;
+
+uint8_t PZ_crc(uint8_t* data, uint8_t size) {
+	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
+}
 
 void onTimer() {
 	if (s_on) {
@@ -18,12 +23,18 @@ void onExtIrq() {
 	uint8_t len;
 	NRF24_ReadPayload(payload, &len);
 	printf("nrf24 received %i bytes\n\r", len);
-	if (len > 7) {
-		printf("nrf24 data:\n\r0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\r\n",
-				payload[0], payload[1], payload[2], payload[3],
-				payload[4], payload[5], payload[6], payload[7]
-
-		);
+	if (PZ_verify(payload, len) == PZ_OK) {
+		PZ_Package package = PZ_fromData(payload);
+		PZ_PrintInfo(printf, &package);
+	}
+	else {
+		printf("Not a valid package\r\n");
+		if (len > 7) {
+			printf("0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\r\n",
+					payload[0], payload[1], payload[2], payload[3],
+					payload[4], payload[5], payload[6], payload[7]
+			);
+		}
 	}
 	NRF24_FlushRX();
 }
