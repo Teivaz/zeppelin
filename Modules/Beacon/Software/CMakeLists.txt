@@ -27,7 +27,7 @@ set(c_compile_options
 	"-std=gnu99"
 	"-g3"
 	"-c"
-	"-O0"
+	"-Os"
 	"-ffunction-sections"
 	"-fdata-sections"
 	"-Wall"

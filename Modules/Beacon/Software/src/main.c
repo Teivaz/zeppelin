@@ -5,6 +5,10 @@
 
 RTC_HandleTypeDef s_rtc;
 UART_HandleTypeDef s_uart2;
+SPI_HandleTypeDef s_spi1;
+CRC_HandleTypeDef s_crc;
+
+CRC_HandleTypeDef* GetCrc() { return &s_crc; }
 
 void Error_Handler() {
 	*((char*)0) = 0U;
@@ -13,6 +17,8 @@ static void RTC_Init();
 static void Clock_Init();
 static void GPIO_Init();
 static void USART2_UART_Init();
+static void SPI1_Init();
+static void CRC_Init();
 
 int main(void) {
 #ifdef _DEBUG
@@ -20,17 +26,17 @@ int main(void) {
 	while (stop);
 #endif
 
-	setup();
-	_putchar('a');
-	while(1) {}
-}
-
-void setup() {
 	HAL_Init();
 	Clock_Init();
 	RTC_Init();
 	GPIO_Init();
 	USART2_UART_Init();
+	SPI1_Init();
+	CRC_Init();
+
+	setup();
+
+	while(1) {}
 }
 
 static void Clock_Init() {
@@ -160,6 +166,40 @@ static void USART2_UART_Init() {
 		Error_Handler();
 	}
 }
+
+static void SPI1_Init(void) {
+	s_spi1.Instance = SPI1;
+	s_spi1.Init.Mode = SPI_MODE_MASTER;
+	s_spi1.Init.Direction = SPI_DIRECTION_2LINES;
+	s_spi1.Init.DataSize = SPI_DATASIZE_8BIT;
+	s_spi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+	s_spi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+	s_spi1.Init.NSS = SPI_NSS_SOFT;
+	s_spi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+	s_spi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	s_spi1.Init.TIMode = SPI_TIMODE_DISABLE;
+	s_spi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	s_spi1.Init.CRCPolynomial = 7;
+	if (HAL_SPI_Init(&s_spi1) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+static void CRC_Init() {
+	s_crc.Instance = CRC;
+	s_crc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_DISABLE;
+	s_crc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_DISABLE;
+	s_crc.Init.GeneratingPolynomial = 7;
+	s_crc.Init.CRCLength = CRC_POLYLENGTH_8B;
+	s_crc.Init.InitValue = 0;
+	s_crc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+	s_crc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+	s_crc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+	if (HAL_CRC_Init(&s_crc) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
 
 void _putchar(char character) {
 	HAL_UART_Transmit(&s_uart2, (uint8_t*) &character, 1, HAL_MAX_DELAY);

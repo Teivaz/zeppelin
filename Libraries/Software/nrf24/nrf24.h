@@ -209,10 +209,12 @@ void NRF24_ClearIRQFlags(void);
 void NRF24_WritePayload(uint8_t *pBuf, uint8_t length);
 NRF24_RXResult NRF24_ReadPayload(uint8_t *pBuf, uint8_t *length);
 
-void NRF24_Transmit();
+uint8_t NRF24_Transmit();
 void NRF24_StartReceive();
 void NRF24_StopReceive();
 void NRF24_tmp();
 uint8_t hasDetectedFrequency();
 
-void NRF24_DumpConfig();
+typedef int (*NRF24_printf)(const char* character, ...);
+
+void NRF24_DumpConfig(NRF24_printf);

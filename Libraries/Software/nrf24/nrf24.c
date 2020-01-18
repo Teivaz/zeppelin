@@ -3,8 +3,6 @@
 #include "nrf24.h"
 #include "nrf24_hal.h"
 
-extern void _printf(const char*, ...);
-
 // The address used to test presence of the transceiver,
 // note: should not exceed 5 bytes
 #define NRF24_TEST_ADDR "nRF24"
@@ -92,7 +90,7 @@ void NRF24_Init() {
 }
 
 // Configures the transceiver to its initial state
-void NRF24_Device_Init(void) {
+void NRF24_Device_Init() {
 	//NRF24_CE_High();
 	// Write to the registers their initial values
 	NRF24_WriteReg(NRF24_REG_CONFIG,     0x08);
@@ -467,9 +465,25 @@ void NRF24_ClearIRQFlags(void) {
 	NRF24_WriteReg(NRF24_REG_STATUS, reg);
 }
 
-void NRF24_Transmit() {
-	NRF24_CE_High();
-	NRF24_CE_Low();
+uint8_t NRF24_Transmit() {
+	uint8_t status;
+	NRF24_CE_High(); // assert CE pin (transmission starts)
+	while (1) {
+		status = NRF24_GetStatus();
+		if (status & (NRF24_FLAG_TX_DS | NRF24_FLAG_MAX_RT)) {
+			// transmission ended, exit loop
+			break;
+		}
+	}
+	NRF24_CE_Low(); // de-assert CE pin (nRF24 goes to StandBy-I mode)
+	NRF24_ClearIRQFlags();
+	if (status & NRF24_FLAG_MAX_RT) {
+		return 1;
+	}
+	if (status & NRF24_FLAG_TX_DS) {
+			return 0;
+	}
+	return 2;
 }
 
 void NRF24_StartReceive() {
@@ -525,7 +539,7 @@ uint8_t hasDetectedFrequency() {
 }
 
 // Print NRF24L01+ current configuration (for debug purposes)
-void NRF24_DumpConfig(void) {
+void NRF24_DumpConfig(NRF24_printf _printf) {
 
 	uint8_t i, j;
 	uint8_t aw;
