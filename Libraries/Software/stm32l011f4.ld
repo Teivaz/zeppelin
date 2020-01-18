@@ -29,12 +29,16 @@ SECTIONS
 		*(.data)
 		*(.data.*)
 		. = ALIGN(4);
-	} > ram
+	} > ram AT> flash
 
 	.bss : {
+		. = ALIGN(4);
+		__bss_start__ = .;
 		*(.bss)
 		*(.bss.*)
+    *(COMMON)
 		. = ALIGN(4);
+		__bss_end__ = .;
 	} > ram
 
 	.ARM.attributes 0 : {
