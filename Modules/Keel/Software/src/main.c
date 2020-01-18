@@ -215,7 +215,7 @@ void RTC_IRQHandler() {
 }
 
 void EXTI0_1_IRQHandler() {
-	toggleTimer();
+	onExtIrq();
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 
