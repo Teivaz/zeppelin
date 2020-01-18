@@ -6,12 +6,15 @@ Created by Teivaz
 
 int main(void);
 
-void __attribute__ ((weak, naked)) reset_handler(void) {
-		main();
+void __attribute__ ((weak)) reset_handler(void) {
+	main();
 }
 void blocking_handler(void) { while (1); }
 void null_handler(void) {}
 extern unsigned int _stack;
+
+void RTC_IRQHandler() __attribute__ ((weak, alias ("null_handler")));
+void SysTick_Handler() __attribute__ ((weak, alias ("null_handler")));
 
 __attribute__ ((section(".vectors")))
 struct {
@@ -32,39 +35,39 @@ struct {
 	.hard_fault = blocking_handler,
 	.sv_call = null_handler,
 	.pend_sv = null_handler,
-	.systick = null_handler,
+	.systick = SysTick_Handler,
 	.irq = {
-		null_handler, //Window WatchDog
-		null_handler, //PVD through EXTI Line detection
-		null_handler, //RTC through the EXTI line
-		null_handler, //FLASH
-		null_handler, //RCC
-		null_handler, //EXTI Line 0 and 1
-		null_handler, //EXTI Line 2 and 3
-		null_handler, //EXTI Line 4 to 15
-		null_handler, //Reserved
-		null_handler, //DMA1 Channel 1
-		null_handler, //DMA1 Channel 2 and Channel 3
-		null_handler, //DMA1 Channel 4 and Channel 5
-		null_handler, //ADC1, COMP1 and COMP2
-		null_handler, //LPTIM1
-		null_handler, //Reserved
-		null_handler, //TIM2
-		null_handler, //Reserved
-		null_handler, //Reserved
-		null_handler, //Reserved
-		null_handler, //Reserved
-		null_handler, //TIM21
-		null_handler, //Reserved
-		null_handler, //Reserved
-		null_handler, //I2C1
-		null_handler, //Reserved
-		null_handler, //SPI1
-		null_handler, //Reserved
-		null_handler, //Reserved
-		null_handler, //USART2
-		null_handler, //LPUART1
-		null_handler, //Reserved
-		null_handler, //Reserved
+		null_handler,   // Window WatchDog
+		null_handler,   // PVD through EXTI Line detection
+		RTC_IRQHandler, // RTC through the EXTI line
+		null_handler,   // FLASH
+		null_handler,   // RCC
+		null_handler,   // EXTI Line 0 and 1
+		null_handler,   // EXTI Line 2 and 3
+		null_handler,   // EXTI Line 4 to 15
+		0,              // Reserved
+		null_handler,   // DMA1 Channel 1
+		null_handler,   // DMA1 Channel 2 and Channel 3
+		null_handler,   // DMA1 Channel 4 and Channel 5
+		null_handler,   // ADC1, COMP1 and COMP2
+		null_handler,   // LPTIM1
+		0,              // Reserved
+		null_handler,   // TIM2
+		0,              // Reserved
+		0,              // Reserved
+		0,              // Reserved
+		0,              // Reserved
+		null_handler,   // TIM21
+		0,              // Reserved
+		0,              // Reserved
+		null_handler,   // I2C1
+		0,              // Reserved
+		null_handler,   // SPI1
+		0,              // Reserved
+		0,              // Reserved
+		null_handler,   // USART2
+		null_handler,   // LPUART1
+		0,              // Reserved
+		0,              // Reserved
 	}
 };
