@@ -9,6 +9,7 @@ SPI_HandleTypeDef s_spi1;
 CRC_HandleTypeDef s_crc;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
+SPI_HandleTypeDef* GetSpi() { return &s_spi1; }
 
 void Error_Handler() {
 	*((char*)0) = 0U;

@@ -175,7 +175,7 @@ typedef enum {
 
 
 // Function prototypes
-void NRF24_Init();
+void NRF24_Init(void* spi);
 void NRF24_Device_Init(void);
 uint8_t NRF24_Check(void);
 

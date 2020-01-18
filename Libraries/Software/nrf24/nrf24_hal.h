@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 void NRF24_GPIO_Init();
-void NRF24_SPI_Init();
+void NRF24_SPI_Init(void* spi);
 
 void NRF24_CE_Low();
 void NRF24_CE_High();

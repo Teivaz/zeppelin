@@ -29,7 +29,7 @@ void onExtIrq() {
 }
 
 void setup() {
-	NRF24_Init();
+	NRF24_Init(GetSpi());
 	printf("\r\n\r\n** [Keel] Built: %s %s **\r\n\n", __DATE__, __TIME__);
 
 	GPIO_InitTypeDef port = {0};

@@ -42,7 +42,7 @@ void toggleTimer() {
 }
 
 void setup() {
-	NRF24_Init();
+	NRF24_Init(GetSpi());
 
 	printf("\r\n\r\n** [Beacon] Built: %s %s **\r\n\n", __DATE__, __TIME__);
 

@@ -9,6 +9,7 @@ SPI_HandleTypeDef s_spi1;
 CRC_HandleTypeDef s_crc;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
+SPI_HandleTypeDef* GetSpi() { return &s_spi1; }
 
 void Error_Handler() {
 	*((char*)0) = 0U;
@@ -142,7 +143,7 @@ static void GPIO_Init() {
 
 	/*Configure GPIO pin : PB1 */
 	port.Pin = GPIO_PIN_1;
-	port.Mode = GPIO_MODE_IT_RISING;
+	port.Mode = GPIO_MODE_IT_FALLING;
 	port.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOB, &port);
 

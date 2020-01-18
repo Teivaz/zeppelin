@@ -18,6 +18,6 @@
 #define NRF24_CSN_PORT             GPIOA
 #define NRF24_CSN_PIN              GPIO_PIN_3
 
-// IRQ pin (PA2)
-#define NRF24_IRQ_PORT             GPIOA
-#define NRF24_IRQ_PIN              GPIO_PIN_2
+// IRQ pin (PB2)
+#define NRF24_IRQ_PORT             GPIOB
+#define NRF24_IRQ_PIN              GPIO_PIN_1

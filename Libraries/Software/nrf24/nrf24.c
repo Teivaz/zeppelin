@@ -82,9 +82,9 @@ static void NRF24_WriteMBReg(uint8_t reg, uint8_t *pBuf, uint8_t count) {
 	NRF24_CSN_High();
 }
 
-void NRF24_Init() {
+void NRF24_Init(void* spi) {
 	NRF24_GPIO_Init();
-	NRF24_SPI_Init();
+	NRF24_SPI_Init(spi);
 	// Send without activating CSN to set CLK to the right state
 	NRF24_LL_RW(0x00);
 }
