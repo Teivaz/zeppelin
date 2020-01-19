@@ -84,3 +84,10 @@ add_executable("${PROJECT_NAME}" "${sources}")
 set_target_properties("${PROJECT_NAME}" PROPERTIES OUTPUT_NAME "program.elf")
 target_link_libraries("${PROJECT_NAME}" "nrf24" "printf" "CMSIS" "STM32L0xx_HAL" "protocol")
 set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS "${link_flags}")
+
+add_custom_target("split-eeprom" ALL
+	"${CMAKE_OBJCOPY}" -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 "$<TARGET_FILE:${PROJECT_NAME}>" -O ihex "$<TARGET_FILE_DIR:${PROJECT_NAME}>/eeprom.hex"
+	COMMAND
+	"${CMAKE_OBJCOPY}" -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE:${PROJECT_NAME}>"
+	DEPENDS "${PROJECT_NAME}"
+)

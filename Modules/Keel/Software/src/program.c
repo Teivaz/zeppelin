@@ -4,6 +4,7 @@
 #include "printf.h"
 #include "nrf24.h"
 #include "protocol.h"
+#include "keel.h"
 
 uint8_t s_on = 1;
 
@@ -25,6 +26,7 @@ void onExtIrq() {
 	printf("nrf24 received %i bytes\n\r", len);
 	if (PZ_verify(payload, len) == PZ_OK) {
 		PZ_Package package = PZ_fromData(payload);
+		processPackage(&package);
 		PZ_PrintInfo(printf, &package);
 	}
 	else {

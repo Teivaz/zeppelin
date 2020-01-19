@@ -35,6 +35,7 @@ int main(void) {
 	SPI1_Init();
 	CRC_Init();
 
+	initKeel();
 	setup();
 
 	while(1) {}
@@ -43,7 +44,7 @@ int main(void) {
 static void Clock_Init() {
 	// Configure the main internal regulator output voltage
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-	
+
 	// Initializes the CPU, AHB and APB busses clocks 
 	RCC_OscInitTypeDef rccOsc = {0};
 	rccOsc.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;

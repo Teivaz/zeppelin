@@ -7,6 +7,7 @@ Created by Teivaz
 MEMORY
 {
 	ram (xrw) : ORIGIN = 0x20000000, LENGTH = 2K
+	eeprom (rw) : ORIGIN = 0x08080000, LENGTH = 512
 	flash (rx) : ORIGIN = 0x08000000, LENGTH = 16K
 }
 PROVIDE(_stack = ORIGIN(ram) + LENGTH(ram));
@@ -40,6 +41,12 @@ SECTIONS
 		. = ALIGN(4);
 		__bss_end__ = .;
 	} > ram
+
+	.eeprom : {
+		. = ALIGN(4);
+		*(.eeprom)
+		. = ALIGN(4);
+	} > eeprom
 
 	.ARM.attributes 0 : {
 		*(.ARM.attributes)
