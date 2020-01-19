@@ -1,22 +1,56 @@
 #include "protocol.h"
 #include <string.h>
 
-//static uint8_t s_buff[PZ_MAX_PACKAGE_LEN];
+static uint8_t s_nextRid = 0;
 
-PZ_Result PZ_create(uint8_t* buf, PZ_Cmd cmd, uint8_t addr) {
-
-	return PZ_OK;
+PZ_Package PZ_compose0(uint8_t adr, PZ_Cmd cmd) {
+	return PZ_compose(adr, cmd, 0, 0);
+}
+PZ_Package PZ_compose1(uint8_t adr, PZ_Cmd cmd, uint8_t data0) {
+	return PZ_compose(adr, cmd, &data0, 1);
+}
+PZ_Package PZ_compose2(uint8_t adr, PZ_Cmd cmd, uint8_t data0, uint8_t data1) {
+	const uint8_t buf[] = {data0, data1};
+	return PZ_compose(adr, cmd, &buf[0], 2);
+}
+PZ_Package PZ_compose(uint8_t adr, PZ_Cmd cmd, uint8_t const* data, uint8_t dataLen) {
+	PZ_Package result;
+	result.fpr = PZ_FOOTPRINT;
+	result.adr = adr;
+	result.len = dataLen + 3;
+	result.rid = s_nextRid++;
+	result.cmd = cmd;
+	memcpy(&result.pld[0], data, dataLen);
+	result.crc = PZ_crc((uint8_t*)&result, dataLen + 5);
+	return result;
 }
 
-uint8_t PZ_isResponse(PZ_Package* p) {
+PZ_Package PZ_composeRe2(PZ_Package const* pck, uint8_t data0, uint8_t data1) {
+	const uint8_t buf[] = {data0, data1};
+	return PZ_composeRe(pck, &buf[0], 2);
+}
+
+PZ_Package PZ_composeRe(PZ_Package const* pck, uint8_t const* data, uint8_t dataLen) {
+	PZ_Package result;
+	result.fpr = PZ_FOOTPRINT;
+	result.adr = pck->adr;
+	result.len = dataLen + 3;
+	result.rid = pck->rid;
+	result.cmd = pck->cmd | 0x80;
+	memcpy(&result.pld[0], data, dataLen);
+	result.crc = PZ_crc((uint8_t*)&result, dataLen + 5);
+	return result;
+}
+
+uint8_t PZ_isResponse(PZ_Package const* p) {
 	return !!(p->cmd & 0x80);
 }
 
-uint8_t PZ_isAdrValid(uint8_t addr) {
-	if (addr < 0x08) {
+uint8_t PZ_isAdrValid(uint8_t adr) {
+	if (adr < 0x08) {
 		return 0;
 	}
-	if (addr > 0x7b) {
+	if (adr > 0x7b) {
 		return 0;
 	}
 	return 1;
@@ -44,7 +78,7 @@ uint8_t PZ_PldLen(PZ_Cmd cmd) {
 	}
 }
 
-PZ_Result PZ_verify(uint8_t* package, uint8_t size) {
+PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 	if (size < PZ_MIN_PACKAGE_LEN) {
 		return PZ_ERROR;
 	}
@@ -81,7 +115,7 @@ void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package package) {
 	*outData = package.crc;
 }
 
-PZ_Package PZ_fromData(uint8_t* data) {
+PZ_Package PZ_fromData(uint8_t const* data) {
 	PZ_Package result;
 	memcpy(&result, data, 5);
 	data += 5;
@@ -91,7 +125,7 @@ PZ_Package PZ_fromData(uint8_t* data) {
 	return result;
 }
 
-static const char* cmdToStr(PZ_Cmd cmd) {
+static char const* cmdToStr(PZ_Cmd cmd) {
 	switch (cmd) {
 		case PZ_Cmd_Info: return "info";
 		case PZ_Cmd_Info_re: return "info-re";
@@ -109,7 +143,7 @@ static const char* cmdToStr(PZ_Cmd cmd) {
 	}
 }
 
-void PZ_PrintInfo(PZ_printf _printf, PZ_Package* package) {
+void PZ_PrintInfo(PZ_printf _printf, PZ_Package const* package) {
 	_printf("Package 0x%02x - %s(0x%02x) to Address 0x%02x. Data: ", package->rid, cmdToStr(package->cmd), package->cmd, package->adr);
 	if (package->len == 3) {
 		_printf("<No Data>", package->pld[0]);

@@ -8,7 +8,7 @@
 
 uint8_t s_on = 1;
 
-uint8_t PZ_crc(uint8_t* data, uint8_t size) {
+uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
 	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
 }
 
