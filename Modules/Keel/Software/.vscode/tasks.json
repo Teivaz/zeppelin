@@ -14,6 +14,18 @@
 				"-rst"
 			],
 			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Flash EEPROM (STM32 Programmer)",
+			"command": "/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI",
+			"args": [
+				"-c", "port=SWD", "freq=1000",
+				"--skipErase",
+				"-w", "build/eeprom.hex",
+				"-v"
+			],
+			"problemMatcher": []
 		}
 	]
 }

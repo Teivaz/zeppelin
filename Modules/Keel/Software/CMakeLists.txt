@@ -81,13 +81,12 @@ target_include_directories("printf" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
 
 file(GLOB_RECURSE sources "src/*.[c|s|h]")
 add_executable("${PROJECT_NAME}" "${sources}")
-set_target_properties("${PROJECT_NAME}" PROPERTIES OUTPUT_NAME "program.elf")
 target_link_libraries("${PROJECT_NAME}" "nrf24" "printf" "CMSIS" "STM32L0xx_HAL" "protocol")
 set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS "${link_flags}")
 
 add_custom_target("split-eeprom" ALL
-	"${CMAKE_OBJCOPY}" -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 "$<TARGET_FILE:${PROJECT_NAME}>" -O ihex "$<TARGET_FILE_DIR:${PROJECT_NAME}>/eeprom.hex"
+	"${CMAKE_OBJCOPY}" -j .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" -O ihex "$<TARGET_FILE_DIR:${PROJECT_NAME}>/eeprom.hex"
 	COMMAND
-	"${CMAKE_OBJCOPY}" -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE:${PROJECT_NAME}>"
+	"${CMAKE_OBJCOPY}" -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/program.elf>"
 	DEPENDS "${PROJECT_NAME}"
 )
