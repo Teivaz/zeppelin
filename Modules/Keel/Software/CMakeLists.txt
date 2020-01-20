@@ -86,7 +86,6 @@ set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS "${link_flags}")
 
 add_custom_target("split-eeprom" ALL
 	"${CMAKE_OBJCOPY}" -j .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" -O ihex "$<TARGET_FILE_DIR:${PROJECT_NAME}>/eeprom.hex"
-	COMMAND
-	"${CMAKE_OBJCOPY}" -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/program.elf>"
+	COMMAND "${CMAKE_OBJCOPY}" -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/program.elf"
 	DEPENDS "${PROJECT_NAME}"
 )
