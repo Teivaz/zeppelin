@@ -21,8 +21,11 @@ uint8_t getAddress() {
 }
 
 void setAddress(uint8_t address) {
+	HAL_FLASHEx_DATAEEPROM_Unlock();
 	s_configurableValues.address = address;
-	s_address = address;
+	HAL_FLASHEx_DATAEEPROM_Program(FLASH_TYPEPROGRAMDATA_BYTE, (uint32_t)&s_configurableValues.address, address);
+	HAL_FLASHEx_DATAEEPROM_Lock();
+	s_address = s_configurableValues.address;
 }
 
 void processPackage(PZ_Package* p) {
