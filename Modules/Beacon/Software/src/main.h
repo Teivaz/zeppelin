@@ -6,5 +6,6 @@ void RTC_IRQHandler();
 void EXTI0_1_IRQHandler();
 CRC_HandleTypeDef* GetCrc();
 SPI_HandleTypeDef* GetSpi();
+UART_HandleTypeDef* getUart();
 
 int main();

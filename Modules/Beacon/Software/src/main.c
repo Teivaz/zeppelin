@@ -10,6 +10,7 @@ CRC_HandleTypeDef s_crc;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
 SPI_HandleTypeDef* GetSpi() { return &s_spi1; }
+UART_HandleTypeDef* getUart() { return &s_uart2; }
 
 void Error_Handler() {
 	*((char*)0) = 0U;
@@ -166,6 +167,8 @@ static void USART2_UART_Init() {
 	if (HAL_UART_Init(&s_uart2) != HAL_OK) {
 		Error_Handler();
 	}
+	HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
 static void SPI1_Init(void) {
@@ -218,5 +221,10 @@ void RTC_IRQHandler() {
 void EXTI0_1_IRQHandler() {
 	toggleTimer();
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+}
+
+void USART2_IRQHandler() {
+	HAL_UART_IRQHandler(&s_uart2);
+	onUart();
 }
 

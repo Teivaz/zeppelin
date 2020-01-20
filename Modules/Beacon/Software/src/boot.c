@@ -26,6 +26,7 @@ void null_handler(void) {}
 void SysTick_Handler() __attribute__ ((weak, alias ("null_handler")));
 void RTC_IRQHandler() __attribute__ ((weak, alias ("null_handler")));
 void EXTI0_1_IRQHandler() __attribute__ ((weak, alias ("null_handler")));
+void USART2_IRQHandler() __attribute__ ((weak, alias ("null_handler")));
 
 __attribute__ ((section(".vectors")))
 struct {
@@ -76,7 +77,7 @@ struct {
 		null_handler,       // SPI1
 		0,                  // Reserved
 		0,                  // Reserved
-		null_handler,       // USART2
+		USART2_IRQHandler,  // USART2
 		null_handler,       // LPUART1
 		0,                  // Reserved
 		0,                  // Reserved
