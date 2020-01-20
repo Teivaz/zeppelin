@@ -73,6 +73,18 @@ void cmd_readCv(char const* argv[], uint8_t argn) {
 	}
 }
 
+void cmd_readDv(char const* argv[], uint8_t argn) {
+	if (argn > 1) {
+		uint8_t adr = atoi(argv[1]);
+		uint8_t dv = atoi(argv[2]);
+		s_pkg = PZ_compose1(adr, PZ_Cmd_Read_dv, dv);
+		sendPz(&s_pkg);
+	}
+	else {
+		printf("Error. Format: read-dv <adr> <cv>\r\n");
+	}
+}
+
 void cmd_on(char const* argv[], uint8_t argn) { s_on = 1; }
 void cmd_off(char const* argv[], uint8_t argn) { s_on = 0; }
 
@@ -107,6 +119,7 @@ void setup() {
 	TM_registerCommand("off", cmd_off);
 	TM_registerCommand("write-cv", cmd_writeCv);
 	TM_registerCommand("read-cv", cmd_readCv);
+	TM_registerCommand("read-dv", cmd_readDv);
 
 	s_pkg = PZ_compose2(0x10, PZ_Cmd_Write_dv, 0x10, 0x02);
 
@@ -155,7 +168,6 @@ void setup() {
 	NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
 	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
 	NRF24_StartReceive();
-	//NRF24_DumpConfig(printf);
 }
 
 uint8_t PZ_crc(uint8_t const* data, uint8_t size) {

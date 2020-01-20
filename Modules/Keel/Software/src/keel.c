@@ -30,7 +30,6 @@ void setAddress(uint8_t address) {
 
 void processPackage(PZ_Package* p) {
 	if (p->adr == getAddress()) {
-		printf("it's me!\n\r");
 		if (p->cmd == PZ_Cmd_Info) {
 			PZ_Package r = PZ_composeRe2(p, PZ_KEEL_TYPE, PZ_VERSION);
 			sendPz(&r);
@@ -46,6 +45,20 @@ void processPackage(PZ_Package* p) {
 				if (PZ_isAdrValid(p->pld[1])) {
 					setAddress(p->pld[1]);
 				}
+			}
+		}
+		else if (p->cmd == PZ_Cmd_Read_dv) {
+			if (p->pld[0] == PZ_Keel_DV_bat0) {
+				PZ_Package r = PZ_composeRe2(p, PZ_Keel_DV_bat0, getBattery0());
+				sendPz(&r);
+			}
+			else if (p->pld[0] == PZ_Keel_DV_bat1) {
+				PZ_Package r = PZ_composeRe2(p, PZ_Keel_DV_bat1, getBattery1());
+				sendPz(&r);
+			}
+			else if (p->pld[0] == PZ_Keel_DV_thermo) {
+				PZ_Package r = PZ_composeRe2(p, PZ_Keel_DV_thermo, getThermometer0());
+				sendPz(&r);
 			}
 		}
 	}

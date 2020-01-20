@@ -112,3 +112,13 @@ void setup() {
 	NRF24_StartReceive();
 	//NRF24_DumpConfig(printf);
 }
+
+uint8_t getBattery0() {
+	return 24;
+}
+uint8_t getBattery1() {
+	return 13;
+}
+uint8_t getThermometer0() {
+	return 12;
+}
