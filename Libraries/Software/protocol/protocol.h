@@ -5,10 +5,13 @@
 // Implement this function in your app
 uint8_t PZ_crc(uint8_t const* data, uint8_t size);
 
+#define PZ_CLIENT_ADDR {0x7A, 0x70, 0x6C, 0x6E, 0x31}
+#define PZ_HOST_ADDR {0x7A, 0x70, 0x6C, 0x6E, 0x30}
+
 #define PZ_VERSION_MAJOR ((uint8_t)0x1)
 #define PZ_VERSION_NINOR ((uint8_t)0x0)
 
-#define PZ_VERSION = ((PZ_VERSION_MAJOR << 4) | PZ_VERSION_NINOR)
+#define PZ_VERSION ((PZ_VERSION_MAJOR << 4) | PZ_VERSION_NINOR)
 
 #define PZ_FOOTPRINT ((uint8_t)0x55)
 #define PZ_MIN_PACKAGE_LEN 6

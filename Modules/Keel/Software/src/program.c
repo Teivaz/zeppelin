@@ -8,6 +8,32 @@
 
 uint8_t s_on = 1;
 
+static void send(uint8_t* data, uint8_t len) {
+	NRF24_StopReceive();
+	NRF24_WritePayload(data, len);
+	NRF24_SetOperationalMode(NRF24_MODE_TX);
+	uint8_t result = NRF24_Transmit();
+	NRF24_SetOperationalMode(NRF24_MODE_RX);
+	NRF24_StartReceive();
+	if (result == 0) {
+		//printf("Transmission OK.\r\n");
+	}
+	else if (result == 1) {
+		printf("Transmission Failed: Retransmittion limit reached.\r\n");
+	}
+	else {
+		printf("Transmission Failed: Unkown error.\r\n");
+	}
+}
+void sendPz(PZ_Package* p) {
+	uint8_t msg[8];
+	uint8_t msgLen = 0;
+	printf("<< ");
+	PZ_PrintInfo(printf, p);
+	PZ_toData(msg, &msgLen, p);
+	send(msg, msgLen);
+}
+
 uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
 	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
 }
@@ -25,8 +51,9 @@ void onExtIrq() {
 	NRF24_ReadDynPayload(payload, &len);
 	if (PZ_verify(payload, len) == PZ_OK) {
 		PZ_Package package = PZ_fromData(payload);
-		processPackage(&package);
+		printf(">> ");
 		PZ_PrintInfo(printf, &package);
+		processPackage(&package);
 	}
 	else {
 		printf("Not a valid package\r\n");
@@ -64,26 +91,24 @@ void setup() {
 		return;
 	}
 
-	uint8_t addr[] = { 'n', 'R', 'F', '2', '4' }; // the address for RX pipe
-	NRF24_DisableAA(0xFF); // disable ShockBurst
+	uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
+	uint8_t const hostAddr[] = PZ_HOST_ADDR;
 	NRF24_SetRFChannel(90); // set RF channel to 2490MHz
 	NRF24_SetDataRate(NRF24_DR_2Mbps); // 2Mbit/s data rate
 	NRF24_SetCRCScheme(NRF24_CRC_1byte); // 1-byte CRC scheme
 	NRF24_SetAddrWidth(5); // address width is 5 bytes
-	NRF24_SetAddr(NRF24_PIPE1, addr); // program pipe address
+	NRF24_SetAddr(NRF24_PIPETX, hostAddr);
+	NRF24_SetAddr(NRF24_PIPE0, hostAddr); // program pipe address
+	NRF24_SetAddr(NRF24_PIPE1, clientAddr); // program pipe address
 	NRF24_SetRXPipe(NRF24_PIPE1, NRF24_AA_ON, 8); // enable RX pipe#1 with Auto-ACK: disabled, payload length: 10 bytes
 	NRF24_LockUnlockFeature();
 	NRF24_EableDynPl();
 	NRF24_SetTXPower(NRF24_TXPWR_0dBm);
+	NRF24_SetAutoRetr(NRF24_ARD_2500us, 10);
+	NRF24_EnableAA(NRF24_PIPE0);
 	NRF24_SetOperationalMode(NRF24_MODE_RX); // switch transceiver to the RX mode
-
-	NRF24_SetIrqMask(1, 0, 0);
-
-	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it sleeping)
-	// then pull CE pin to HIGH, and the nRF24 will start a receive...
-
+	NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
+	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
 	NRF24_StartReceive();
-
-	NRF24_DumpConfig(printf);
+	//NRF24_DumpConfig(printf);
 }
-

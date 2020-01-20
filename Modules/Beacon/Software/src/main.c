@@ -144,7 +144,7 @@ static void GPIO_Init() {
 
 	/*Configure GPIO pin : PB1 */
 	port.Pin = GPIO_PIN_1;
-	port.Mode = GPIO_MODE_IT_RISING;
+	port.Mode = GPIO_MODE_IT_FALLING;
 	port.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOB, &port);
 
@@ -219,7 +219,7 @@ void RTC_IRQHandler() {
 }
 
 void EXTI0_1_IRQHandler() {
-	toggleTimer();
+	onExtIrq();
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 

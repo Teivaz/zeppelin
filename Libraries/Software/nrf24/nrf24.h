@@ -197,7 +197,7 @@ void NRF24_SetRXPipe(uint8_t pipe, uint8_t aa_state, uint8_t payload_len);
 void NRF24_ClosePipe(uint8_t pipe);
 void NRF24_EnableAA(uint8_t pipe);
 void NRF24_DisableAA(uint8_t pipe);
-void NRF24_SetIrqMask(uint8_t rx_dr_enable, uint8_t tx_ds_enable, uint8_t max_rt_enable);
+void NRF24_SetIrqMask(uint8_t mask);
 void NRF24_LockUnlockFeature();
 void NRF24_EnableFeature(uint8_t features);
 void NRF24_DisableFeature(uint8_t features);

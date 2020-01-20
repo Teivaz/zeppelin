@@ -2,6 +2,7 @@
 #include "program.h"
 #include "stm32l0xx_hal.h"
 #include "printf.h"
+#include "keel.h"
 
 RTC_HandleTypeDef s_rtc;
 UART_HandleTypeDef s_uart2;

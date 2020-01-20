@@ -1,6 +1,7 @@
 #include "keel.h"
 #include "main.h"
 #include "printf.h"
+#include "program.h"
 
 __attribute__ ((section(".eeprom")))
 struct {
@@ -27,5 +28,22 @@ void setAddress(uint8_t address) {
 void processPackage(PZ_Package* p) {
 	if (p->adr == getAddress()) {
 		printf("it's me!\n\r");
+		if (p->cmd == PZ_Cmd_Info) {
+			PZ_Package r = PZ_composeRe2(p, PZ_KEEL_TYPE, PZ_VERSION);
+			sendPz(&r);
+		}
+		else if (p->cmd == PZ_Cmd_Read_cv) {
+			if (p->pld[0] == PZ_Keel_CV_addres) {
+				PZ_Package r = PZ_composeRe2(p, PZ_Keel_CV_addres, getAddress());
+				sendPz(&r);
+			}
+		}
+		else if (p->cmd == PZ_Cmd_Write_cv) {
+			if (p->pld[0] == PZ_Keel_CV_addres) {
+				if (PZ_isAdrValid(p->pld[1])) {
+					setAddress(p->pld[1]);
+				}
+			}
+		}
 	}
 }

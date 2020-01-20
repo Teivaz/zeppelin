@@ -420,10 +420,10 @@ void NRF24_DisableDynPl() {
 	NRF24_WriteReg(NRF24_REG_DYNPD, reg);
 }
 
-void NRF24_SetIrqMask(uint8_t rx_dr_enable, uint8_t tx_ds_enable, uint8_t max_rt_enable) {
+void NRF24_SetIrqMask(uint8_t mask) {
 	uint8_t reg = NRF24_ReadReg(NRF24_REG_CONFIG);
-	reg &= ~(NRF24_FLAG_RX_DR | NRF24_FLAG_TX_DS | NRF24_FLAG_MAX_RT);
-	reg |= ((!rx_dr_enable) & NRF24_FLAG_RX_DR) | ((!tx_ds_enable) & NRF24_FLAG_TX_DS) | ((!max_rt_enable) & NRF24_FLAG_MAX_RT);
+	reg |= (NRF24_FLAG_RX_DR | NRF24_FLAG_TX_DS | NRF24_FLAG_MAX_RT);
+	reg &= ~mask;
 	NRF24_WriteReg(NRF24_REG_CONFIG, reg);
 }
 
