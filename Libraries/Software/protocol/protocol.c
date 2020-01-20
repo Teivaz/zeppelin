@@ -106,13 +106,13 @@ PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 	return PZ_OK;
 }
 
-void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package package) {
-	*outDataSize = package.len + 3; // First three fields
-	memcpy(outData, &package, 5); // Length of the header up to data package
+void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package* package) {
+	*outDataSize = package->len + 3; // First three fields
+	memcpy(outData, package, 5); // Length of the header up to data package
 	outData += 5;
-	memcpy(outData, &package.pld[0], package.len - 3);
-	outData += package.len - 3;
-	*outData = package.crc;
+	memcpy(outData, &package->pld[0], package->len - 3);
+	outData += package->len - 3;
+	*outData = package->crc;
 }
 
 PZ_Package PZ_fromData(uint8_t const* data) {

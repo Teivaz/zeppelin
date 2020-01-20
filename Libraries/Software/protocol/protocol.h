@@ -59,7 +59,7 @@ uint8_t PZ_isAdrValid(uint8_t adr);
 uint8_t PZ_pldLen(PZ_Cmd cmd);
 PZ_Result PZ_verify(uint8_t const* package, uint8_t size);
 PZ_Package PZ_fromData(uint8_t const* data);
-void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package package);
+void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package* package);
 
 PZ_Package PZ_compose0(uint8_t adr, PZ_Cmd cmd);
 PZ_Package PZ_compose1(uint8_t adr, PZ_Cmd cmd, uint8_t data0);
