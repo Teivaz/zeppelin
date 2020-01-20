@@ -22,8 +22,7 @@ void onExtIrq() {
 	NRF24_ClearIRQFlags();
 	uint8_t payload[32];
 	uint8_t len;
-	NRF24_ReadPayload(payload, &len);
-	printf("nrf24 received %i bytes\n\r", len);
+	NRF24_ReadDynPayload(payload, &len);
 	if (PZ_verify(payload, len) == PZ_OK) {
 		PZ_Package package = PZ_fromData(payload);
 		processPackage(&package);
@@ -73,6 +72,8 @@ void setup() {
 	NRF24_SetAddrWidth(5); // address width is 5 bytes
 	NRF24_SetAddr(NRF24_PIPE1, addr); // program pipe address
 	NRF24_SetRXPipe(NRF24_PIPE1, NRF24_AA_ON, 8); // enable RX pipe#1 with Auto-ACK: disabled, payload length: 10 bytes
+	NRF24_LockUnlockFeature();
+	NRF24_EableDynPl();
 	NRF24_SetTXPower(NRF24_TXPWR_0dBm);
 	NRF24_SetOperationalMode(NRF24_MODE_RX); // switch transceiver to the RX mode
 

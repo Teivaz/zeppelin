@@ -43,7 +43,7 @@ void cmd_info(char const* argv[], uint8_t argn) {
 	}
 }
 
-void cmd_setCv(char const* argv[], uint8_t argn) {
+void cmd_writeCv(char const* argv[], uint8_t argn) {
 	if (argn > 3) {
 		uint8_t adr = atoi(argv[1]);
 		uint8_t cv = atoi(argv[2]);
@@ -52,11 +52,11 @@ void cmd_setCv(char const* argv[], uint8_t argn) {
 		sendPz(&s_pkg);
 	}
 	else {
-		printf("Error. Format: set-cv <adr> <cv> <val>\r\n");
+		printf("Error. Format: write-cv <adr> <cv> <val>\r\n");
 	}
 }
 
-void cmd_getCv(char const* argv[], uint8_t argn) {
+void cmd_readCv(char const* argv[], uint8_t argn) {
 	if (argn > 1) {
 		uint8_t adr = atoi(argv[1]);
 		uint8_t cv = atoi(argv[2]);
@@ -64,7 +64,7 @@ void cmd_getCv(char const* argv[], uint8_t argn) {
 		sendPz(&s_pkg);
 	}
 	else {
-		printf("Error. Format: get-cv <adr> <cv>\r\n");
+		printf("Error. Format: read-cv <adr> <cv>\r\n");
 	}
 }
 
@@ -89,28 +89,15 @@ void setup() {
 	TM_registerCommand("info", cmd_info);
 	TM_registerCommand("on", cmd_on);
 	TM_registerCommand("off", cmd_off);
-	TM_registerCommand("set-cv", cmd_setCv);
-	TM_registerCommand("get-cv", cmd_getCv);
+	TM_registerCommand("write-cv", cmd_writeCv);
+	TM_registerCommand("read-cv", cmd_readCv);
 
 	s_pkg = PZ_compose2(0x10, PZ_Cmd_Write_dv, 0x10, 0x02);
-	/*{
-			(uint8_t)0x55, // Hdr
-			(uint8_t)0x10, // default Adr
-			(uint8_t)0x05, // Len
-			(uint8_t)0x00, // RId
-			(uint8_t)0x06, // Cmd - write-dv
-			(uint8_t)0x10, // value of servo
-			(uint8_t)0x02, // 2 out of 255
-			(uint8_t)0x6b, // CRC - 0x6b
-	};
-	s_msgLen = 8;
-	*/
-
-	HAL_UART_Receive_IT(getUart(), &s_uart_buff, 1);
 
 	NRF24_Init(GetSpi());
 
 	printf("\r\n\r\n** [Beacon] Built: %s %s **\r\n\n", __DATE__, __TIME__);
+	HAL_UART_Receive_IT(getUart(), &s_uart_buff, 1);
 
 	GPIO_InitTypeDef port = {0};
 
@@ -127,7 +114,6 @@ void setup() {
 		s_on = 1;
 	} else {
 		printf("NRF24 Devices is FAILED\r\n");
-		printf("skipping config\r\n");
 		s_on = 0;
 		return;
 	}
@@ -140,12 +126,13 @@ void setup() {
 	NRF24_SetAddrWidth(5); // address width is 5 bytes
 	NRF24_SetAddr(NRF24_PIPETX, addr);
 	NRF24_SetAddr(NRF24_PIPE0, addr);
+	NRF24_LockUnlockFeature();
+	NRF24_EableDynPl();
 	NRF24_SetTXPower(NRF24_TXPWR_0dBm); // configure TX power
 	NRF24_SetAutoRetr(NRF24_ARD_2500us, 10);
 	NRF24_EnableAA(NRF24_PIPE0);
 	NRF24_SetOperationalMode(NRF24_MODE_TX); // switch transceiver to the TX mode
 	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it sleeping)
-
 
 	//NRF24_DumpConfig(printf);
 }

@@ -390,11 +390,48 @@ void NRF24_DisableAA(uint8_t pipe) {
 	}
 }
 
+void NRF24_EnableFeature(uint8_t features) {
+	uint8_t reg;
+	reg = NRF24_ReadReg(NRF24_REG_FEATURE);
+	reg |= features;
+	NRF24_WriteReg(NRF24_REG_FEATURE, reg);
+}
+
+void NRF24_DisableFeature(uint8_t features) {
+	uint8_t reg;
+	reg = NRF24_ReadReg(NRF24_REG_FEATURE);
+	reg &= ~(1U << features);
+	NRF24_WriteReg(NRF24_REG_FEATURE, reg);
+}
+
+void NRF24_EableDynPl() {
+	NRF24_EnableFeature(NRF24_FEATURE_DPL);
+	uint8_t reg;
+	reg = NRF24_ReadReg(NRF24_REG_DYNPD);
+	reg |= (1U << NRF24_PIPE0) | (1U << NRF24_PIPE1) | (1U << NRF24_PIPE2) | (1U << NRF24_PIPE3) | (1U << NRF24_PIPE4) | (1U << NRF24_PIPE5);
+	NRF24_WriteReg(NRF24_REG_DYNPD, reg);
+}
+
+void NRF24_DisableDynPl() {
+	NRF24_DisableFeature(NRF24_FEATURE_DPL);
+	uint8_t reg;
+	reg = NRF24_ReadReg(NRF24_REG_DYNPD);
+	reg &= ~((1U << NRF24_PIPE0) | (1U << NRF24_PIPE1) | (1U << NRF24_PIPE2) | (1U << NRF24_PIPE3) | (1U << NRF24_PIPE4) | (1U << NRF24_PIPE5));
+	NRF24_WriteReg(NRF24_REG_DYNPD, reg);
+}
+
 void NRF24_SetIrqMask(uint8_t rx_dr_enable, uint8_t tx_ds_enable, uint8_t max_rt_enable) {
 	uint8_t reg = NRF24_ReadReg(NRF24_REG_CONFIG);
 	reg &= ~(NRF24_FLAG_RX_DR | NRF24_FLAG_TX_DS | NRF24_FLAG_MAX_RT);
 	reg |= ((!rx_dr_enable) & NRF24_FLAG_RX_DR) | ((!tx_ds_enable) & NRF24_FLAG_TX_DS) | ((!max_rt_enable) & NRF24_FLAG_MAX_RT);
 	NRF24_WriteReg(NRF24_REG_CONFIG, reg);
+}
+
+void NRF24_LockUnlockFeature() {
+	NRF24_CSN_Low();
+	NRF24_LL_RW(NRF24_CMD_LOCK_UNLOCK);
+	NRF24_LL_RW(0x73);
+	NRF24_CSN_High();
 }
 
 // Get address length
@@ -433,6 +470,15 @@ uint8_t NRF24_GetStatus_TXFIFO(void) {
 // return: pipe number or 0x07 if the RX FIFO is empty
 uint8_t NRF24_GetRXSource(void) {
 	return ((NRF24_ReadReg(NRF24_REG_STATUS) & NRF24_MASK_RX_P_NO) >> 1);
+}
+
+uint8_t NRF24_GetRXPayloadWidth(void) {
+	uint8_t result;
+	NRF24_CSN_Low();
+	NRF24_LL_RW(NRF24_CMD_R_RX_PL_WID);
+	result = NRF24_LL_RW(0x00);
+	NRF24_CSN_High();
+	return result;
 }
 
 // Get auto retransmit statistic
@@ -540,9 +586,29 @@ NRF24_RXResult NRF24_ReadPayload(uint8_t *pBuf, uint8_t *length) {
 	return NRF24_RX_EMPTY;
 }
 
-uint8_t hasDetectedFrequency() {
-	const uint8_t i = NRF24_ReadReg(NRF24_REG_RPD);
-	return (i & 0x01) != 0;
+NRF24_RXResult NRF24_ReadDynPayload(uint8_t *pBuf, uint8_t *length) {
+	uint8_t pipe;
+
+	// Extract a payload pipe number from the STATUS register
+	pipe = (NRF24_ReadReg(NRF24_REG_STATUS) & NRF24_MASK_RX_P_NO) >> 1;
+
+	// RX FIFO empty?
+	if (pipe < 6U) {
+		// Get payload length
+		*length = NRF24_GetRXPayloadWidth();
+
+		// Read a payload from the RX FIFO
+		if (*length) {
+			NRF24_ReadMBReg(NRF24_CMD_R_RX_PAYLOAD, pBuf, *length);
+		}
+
+		return ((NRF24_RXResult)pipe);
+	}
+
+	// The RX FIFO is empty
+	*length = 0U;
+
+	return NRF24_RX_EMPTY;
 }
 
 // Print NRF24L01+ current configuration (for debug purposes)

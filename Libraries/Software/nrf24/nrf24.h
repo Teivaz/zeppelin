@@ -19,6 +19,7 @@
 #define NRF24_CMD_FLUSH_RX         (uint8_t)0xE2 // Flush RX FIFO
 #define NRF24_CMD_REUSE_TX_PL      (uint8_t)0xE3 // Reuse TX payload
 #define NRF24_CMD_LOCK_UNLOCK      (uint8_t)0x50 // Lock/unlock exclusive features
+#define NRF24_CMD_R_RX_PL_WID      (uint8_t)0x60 // Read RX-payload width for the top R_RX_PAYLOAD in the RX FIFO
 #define NRF24_CMD_NOP              (uint8_t)0xFF // No operation (used for reading status register)
 
 // NRF24L0 register definitions
@@ -73,6 +74,10 @@
 #define NRF24_MASK_ARC_CNT         (uint8_t)0x0F // Mask for ARC_CNT[3:0] bits in OBSERVE_TX register
 #define NRF24_MASK_SETUP_AW        (uint8_t)0x03 // Mask for AW[1:0] bits in SETUP_AW register
 
+// Features
+#define NRF24_FEATURE_DPL          (uint8_t)0x04 // Dynamic Payload Length
+#define NRF24_FEATURE_ACK_PAY      (uint8_t)0x02 // Payload with ACK
+#define NRF24_FEATURE_DYN_ACK      (uint8_t)0x01 // The W_TX_PAYLOAD_NOACK command
 
 // Retransmit delay
 enum {
@@ -193,6 +198,11 @@ void NRF24_ClosePipe(uint8_t pipe);
 void NRF24_EnableAA(uint8_t pipe);
 void NRF24_DisableAA(uint8_t pipe);
 void NRF24_SetIrqMask(uint8_t rx_dr_enable, uint8_t tx_ds_enable, uint8_t max_rt_enable);
+void NRF24_LockUnlockFeature();
+void NRF24_EnableFeature(uint8_t features);
+void NRF24_DisableFeature(uint8_t features);
+void NRF24_EableDynPl();
+void NRF24_DisableDynPl();
 
 uint8_t NRF24_GetAddrWidth(void);
 uint8_t NRF24_GetStatus(void);
@@ -200,6 +210,7 @@ uint8_t NRF24_GetIRQFlags(void);
 uint8_t NRF24_GetStatus_RXFIFO(void);
 uint8_t NRF24_GetStatus_TXFIFO(void);
 uint8_t NRF24_GetRXSource(void);
+uint8_t NRF24_GetRXPayloadWidth(void);
 uint8_t NRF24_GetRetransmitCounters(void);
 
 void NRF24_ResetPLOS(void);
@@ -209,12 +220,12 @@ void NRF24_ClearIRQFlags(void);
 
 void NRF24_WritePayload(uint8_t *pBuf, uint8_t length);
 NRF24_RXResult NRF24_ReadPayload(uint8_t *pBuf, uint8_t *length);
+NRF24_RXResult NRF24_ReadDynPayload(uint8_t *pBuf, uint8_t *length);
 
 uint8_t NRF24_Transmit();
 void NRF24_StartReceive();
 void NRF24_StopReceive();
 void NRF24_tmp();
-uint8_t hasDetectedFrequency();
 
 typedef int (*NRF24_printf)(const char* character, ...);
 
