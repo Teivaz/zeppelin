@@ -4,9 +4,9 @@
 void SysTick_Handler();
 void RTC_IRQHandler();
 void EXTI0_1_IRQHandler();
+void I2C1_IRQHandler();
 
 CRC_HandleTypeDef* GetCrc();
-SPI_HandleTypeDef* GetSpi();
 I2C_HandleTypeDef* GetI2c();
 
 int main();

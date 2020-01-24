@@ -2,16 +2,15 @@
 #include "program.h"
 #include "stm32l0xx_hal.h"
 #include "printf.h"
-#include "keel.h"
+#include "configurablevalues.h"
+#include "dynamicvalues.h"
 
 RTC_HandleTypeDef s_rtc;
 UART_HandleTypeDef s_uart2;
-SPI_HandleTypeDef s_spi1;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
-SPI_HandleTypeDef* GetSpi() { return &s_spi1; }
 I2C_HandleTypeDef* GetI2c() { return &s_i2c1; }
 
 void Error_Handler() {
@@ -22,7 +21,6 @@ static void RTC_Init();
 static void Clock_Init();
 static void GPIO_Init();
 static void USART2_UART_Init();
-static void SPI1_Init();
 static void CRC_Init();
 static void I2C1_Init();
 
@@ -36,12 +34,14 @@ int main(void) {
 	Clock_Init();
 	RTC_Init();
 	GPIO_Init();
-	USART2_UART_Init();
-	SPI1_Init();
 	CRC_Init();
+	
+	initCv();
+	resetAllDv();
+
+	USART2_UART_Init();
 	I2C1_Init();
 
-	initKeel();
 	setup();
 
 	while(1) {}
@@ -176,24 +176,6 @@ static void USART2_UART_Init() {
 	}
 }
 
-static void SPI1_Init(void) {
-	s_spi1.Instance = SPI1;
-	s_spi1.Init.Mode = SPI_MODE_MASTER;
-	s_spi1.Init.Direction = SPI_DIRECTION_2LINES;
-	s_spi1.Init.DataSize = SPI_DATASIZE_8BIT;
-	s_spi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-	s_spi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-	s_spi1.Init.NSS = SPI_NSS_SOFT;
-	s_spi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-	s_spi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	s_spi1.Init.TIMode = SPI_TIMODE_DISABLE;
-	s_spi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	s_spi1.Init.CRCPolynomial = 7;
-	if (HAL_SPI_Init(&s_spi1) != HAL_OK) {
-		Error_Handler();
-	}
-}
-
 static void CRC_Init() {
 	s_crc.Instance = CRC;
 	s_crc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_DISABLE;
@@ -212,7 +194,7 @@ static void CRC_Init() {
 static void I2C1_Init() {
 	s_i2c1.Instance = I2C1;
 	s_i2c1.Init.Timing = 0x00303D5B;
-	s_i2c1.Init.OwnAddress1 = 0;
+	s_i2c1.Init.OwnAddress1 = getAddress();
 	s_i2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 	s_i2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
 	s_i2c1.Init.OwnAddress2 = 0;
@@ -244,7 +226,13 @@ void RTC_IRQHandler() {
 }
 
 void EXTI0_1_IRQHandler() {
-	onExtIrq();
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 
+void I2C1_IRQHandler(void) {
+	if (s_i2c1.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+		HAL_I2C_ER_IRQHandler(&s_i2c1);
+	} else {
+		HAL_I2C_EV_IRQHandler(&s_i2c1);
+	}
+}

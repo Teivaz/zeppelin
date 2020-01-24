@@ -28,7 +28,7 @@ void setAddress(uint8_t address) {
 	s_address = s_configurableValues.address;
 }
 
-void processPackage(PZ_Package* p) {
+void processPackage(PZ_Package* p, uint8_t* raw, uint8_t size) {
 	if (p->adr == getAddress()) {
 		if (p->cmd == PZ_Cmd_Info) {
 			PZ_Package r = PZ_composeRe2(p, PZ_KEEL_TYPE, PZ_VERSION);
@@ -61,5 +61,8 @@ void processPackage(PZ_Package* p) {
 				sendPz(&r);
 			}
 		}
+	}
+	else {
+		HAL_I2C_Master_Transmit(GetI2c(), p->adr, raw, size, HAL_MAX_DELAY);
 	}
 }

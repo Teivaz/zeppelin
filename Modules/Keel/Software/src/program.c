@@ -53,7 +53,7 @@ void onExtIrq() {
 		PZ_Package package = PZ_fromData(payload);
 		printf(">> ");
 		PZ_PrintInfo(printf, &package);
-		processPackage(&package);
+		processPackage(&package, payload, len);
 	}
 	else {
 		printf("Not a valid package\r\n");
