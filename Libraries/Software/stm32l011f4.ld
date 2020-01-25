@@ -7,13 +7,10 @@ Created by Teivaz
 MEMORY
 {
 	ram (xrw) : ORIGIN = 0x20000000, LENGTH = 2K
-	eeprom (rw) : ORIGIN = 0x08080000, LENGTH = 512
 	flash (rx) : ORIGIN = 0x08000000, LENGTH = 16K
+	eeprom (rw) : ORIGIN = 0x08080000, LENGTH = 512
 }
-PROVIDE(_stack = ORIGIN(ram) + LENGTH(ram));
-
-EXTERN(vector_table);
-ENTRY(reset_handler);
+PROVIDE(__stack = ORIGIN(ram) + LENGTH(ram));
 
 SECTIONS
 {
@@ -34,12 +31,12 @@ SECTIONS
 
 	.bss : {
 		. = ALIGN(4);
-		__bss_start__ = .;
+		__bss_start = .;
 		*(.bss)
 		*(.bss.*)
     *(COMMON)
 		. = ALIGN(4);
-		__bss_end__ = .;
+		__bss_end = .;
 	} > ram
 
 	.eeprom : {

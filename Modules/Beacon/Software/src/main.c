@@ -13,7 +13,8 @@ SPI_HandleTypeDef* GetSpi() { return &s_spi1; }
 UART_HandleTypeDef* getUart() { return &s_uart2; }
 
 void Error_Handler() {
-	*((char*)0) = 0U;
+	void __blocking_handler();
+	__blocking_handler();
 }
 static void RTC_Init();
 static void Clock_Init();
@@ -38,7 +39,9 @@ int main(void) {
 
 	setup();
 
-	while(1) {}
+	while(1) {
+		poll();
+	}
 }
 
 static void Clock_Init() {
@@ -204,6 +207,9 @@ static void CRC_Init() {
 	}
 }
 
+uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
+	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
+}
 
 void _putchar(char character) {
 	HAL_UART_Transmit(&s_uart2, (uint8_t*) &character, 1, HAL_MAX_DELAY);

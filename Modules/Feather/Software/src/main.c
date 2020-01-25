@@ -14,8 +14,8 @@ CRC_HandleTypeDef* GetCrc() { return &s_crc; }
 I2C_HandleTypeDef* GetI2c() { return &s_i2c1; }
 
 void Error_Handler() {
-	void blocking_handler();
-	blocking_handler();
+	void __blocking_handler();
+	__blocking_handler();
 }
 static void RTC_Init();
 static void Clock_Init();
