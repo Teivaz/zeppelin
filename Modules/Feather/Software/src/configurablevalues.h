@@ -2,8 +2,12 @@
 #include "protocol.h"
 
 void initCv();
+
 uint8_t readCv(PZ_Feather_CV);
 void writeCv(PZ_Feather_CV, void* value);
+
+void resetCv(PZ_Feather_CV);
+void resetAllCv();
 
 void setAddress(uint8_t value);
 void setMotorDef(int8_t value);

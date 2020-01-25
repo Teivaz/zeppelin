@@ -50,6 +50,31 @@ static struct {
 	uint8_t servoCal2;
 } s_cv;
 
+void resetCv(PZ_Feather_CV index) {
+	switch (index) {
+		case PZ_Feather_CV_address: setAddress(0x10);
+		case PZ_Feather_CV_motorDef: return setMotorDef(0);
+		case PZ_Feather_CV_motorCal1: return setMotorCal1(-127);
+		case PZ_Feather_CV_motorCal2: return setMotorCal2(127);
+		case PZ_Feather_CV_motorCal0: return setMotorCal0(0);
+		case PZ_Feather_CV_servoDef: return setServoDef(0);
+		case PZ_Feather_CV_servoCal1: return setServoCal1(0);
+		case PZ_Feather_CV_servoCal2: return setServoCal2(255);
+		default: return;
+	}
+}
+
+void resetAllCv() {
+	// Do not reset address
+	setMotorDef(0);
+	setMotorCal1(-127);
+	setMotorCal2(127);
+	setMotorCal0(0);
+	setServoDef(0);
+	setServoCal1(0);
+	setServoCal2(255);
+}
+
 void initCv() {
 	s_cv.address = s_configurableValues.address;
 	s_cv.motorDef = s_configurableValues.motor.def;
@@ -63,7 +88,7 @@ void initCv() {
 
 uint8_t readCv(PZ_Feather_CV index) {
 	switch (index) {
-		case PZ_Feather_CV_addres: return *(uint8_t*)&s_cv.address;
+		case PZ_Feather_CV_address: return *(uint8_t*)&s_cv.address;
 		case PZ_Feather_CV_motorDef: return *(uint8_t*)&s_cv.motorDef;
 		case PZ_Feather_CV_motorCal1: return *(uint8_t*)&s_cv.motorCal1;
 		case PZ_Feather_CV_motorCal2: return *(uint8_t*)&s_cv.motorCal2;
@@ -86,7 +111,7 @@ static void* _writeCv(uint8_t offset, void* data) {
 
 void writeCv(PZ_Feather_CV index, void* value) {
 	switch (index) {
-		case PZ_Feather_CV_addres: return setAddress(*(uint8_t*)value);
+		case PZ_Feather_CV_address: return setAddress(*(uint8_t*)value);
 		case PZ_Feather_CV_motorDef: return setMotorDef(*(int8_t*)value);
 		case PZ_Feather_CV_motorCal1: return setMotorCal1(*(int8_t*)value);
 		case PZ_Feather_CV_motorCal2: return setMotorCal2(*(int8_t*)value);
@@ -94,12 +119,13 @@ void writeCv(PZ_Feather_CV index, void* value) {
 		case PZ_Feather_CV_servoDef: return setServoDef(*(uint8_t*)value);
 		case PZ_Feather_CV_servoCal1: return setServoCal1(*(uint8_t*)value);
 		case PZ_Feather_CV_servoCal2: return setServoCal2(*(uint8_t*)value);
+		default: return;
 	}
 }
 
 void setAddress(uint8_t value) {
 	if (value != s_cv.address) {
-		s_cv.address = *(uint8_t*)_writeCv(PZ_Feather_CV_addres, &value);
+		s_cv.address = *(uint8_t*)_writeCv(PZ_Feather_CV_address, &value);
 
 		// Set I2C address here and reinit
 		HAL_I2C_DeInit(GetI2c());
