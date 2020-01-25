@@ -42,6 +42,17 @@ PZ_Package PZ_composeRe(PZ_Package const* pck, uint8_t const* data, uint8_t data
 	return result;
 }
 
+uint8_t PZ_needsResponse(PZ_Package const* p) {
+	switch (p->cmd) {
+		case PZ_Cmd_Info:
+		case PZ_Cmd_Read_cv:
+		case PZ_Cmd_Read_dv_re:
+			return 1;
+		default:
+			return 0;
+	}
+}
+
 uint8_t PZ_isResponse(PZ_Package const* p) {
 	return !!(p->cmd & 0x80);
 }

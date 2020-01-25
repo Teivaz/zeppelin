@@ -57,6 +57,7 @@ typedef struct PZ_Package {
 } PZ_Package;
 #pragma pack(pop)
 
+uint8_t PZ_needsResponse(PZ_Package const*);
 uint8_t PZ_isResponse(PZ_Package const*);
 uint8_t PZ_isAdrValid(uint8_t adr);
 uint8_t PZ_pldLen(PZ_Cmd cmd);
@@ -78,7 +79,7 @@ void PZ_PrintInfo(PZ_printf, PZ_Package const*);
 #define PZ_FEATHER_TYPE ((uint8_t)0x01)
 
 typedef enum {
-	PZ_Feather_CV_addres = 0x00, // The address of the device
+	PZ_Feather_CV_address = 0x00, // The address of the device
 	PZ_Feather_CV_motorDef = 0x10, // default value for DC motor on startup
 	PZ_Feather_CV_motorCal1 = 0x11, // calibrating minimal value for DC motor
 	PZ_Feather_CV_motorCal2 = 0x12, // calibrating maximal value for DC motor
@@ -98,7 +99,7 @@ typedef enum {
 #define PZ_KEEL_TYPE ((uint8_t)0x02)
 
 typedef enum {
-	PZ_Keel_CV_addres = 0x00, // The address of the device
+	PZ_Keel_CV_address = 0x00, // The address of the device
 } PZ_Keel_CV;
 
 typedef enum {
