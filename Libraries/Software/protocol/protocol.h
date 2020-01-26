@@ -1,9 +1,7 @@
-#pragma once
+#ifndef _PROTOCOL_H_INCLUDED_
+#define _PROTOCOL_H_INCLUDED_
 
 #include <stdint.h>
-
-// Implement this function in your app
-uint8_t PZ_crc(uint8_t const* data, uint8_t size);
 
 #define PZ_CLIENT_ADDR {0x7A, 0x70, 0x6C, 0x6E, 0x31}
 #define PZ_HOST_ADDR {0x7A, 0x70, 0x6C, 0x6E, 0x30}
@@ -13,10 +11,14 @@ uint8_t PZ_crc(uint8_t const* data, uint8_t size);
 
 #define PZ_VERSION ((PZ_VERSION_MAJOR << 4) | PZ_VERSION_NINOR)
 
-#define PZ_FOOTPRINT ((uint8_t)0x55)
-#define PZ_MIN_PACKAGE_LEN 6
-#define PZ_MAX_PACKAGE_LEN 8
-#define PZ_MAX_DATA_LEN 2
+typedef enum {
+	PZ_Footrpint_OK = 0x55
+} PZ_Footrpint;
+
+#define PZ_MIN_PACKAGE_LEN (uint8_t)6
+#define PZ_MAX_PACKAGE_LEN (uint8_t)8
+#define PZ_MAX_DATA_LEN (uint8_t)2
+#define PZ_HEADER_LEN (uint8_t)3 // The size of the first 3 bytes including footprint, address, and the length of the remaining part
 
 typedef enum {
 	PZ_Cmd_Info = 0x00,
@@ -47,7 +49,7 @@ typedef enum {
 #pragma pack(push)
 #pragma pack(1)
 typedef struct PZ_Package {
-	uint8_t fpr;
+	PZ_Footrpint fpr;
 	uint8_t adr;
 	uint8_t len;
 	uint8_t rid;
@@ -60,10 +62,9 @@ typedef struct PZ_Package {
 uint8_t PZ_needsResponse(PZ_Package const*);
 uint8_t PZ_isResponse(PZ_Package const*);
 uint8_t PZ_isAdrValid(uint8_t adr);
-uint8_t PZ_pldLen(PZ_Cmd cmd);
 PZ_Result PZ_verify(uint8_t const* package, uint8_t size);
 PZ_Package PZ_fromData(uint8_t const* data);
-void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package* package);
+void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package const* package);
 
 PZ_Package PZ_compose0(uint8_t adr, PZ_Cmd cmd);
 PZ_Package PZ_compose1(uint8_t adr, PZ_Cmd cmd, uint8_t data0);
@@ -107,3 +108,5 @@ typedef enum {
 	PZ_Keel_DV_bat1 = 0x01, // value of the battery1
 	PZ_Keel_DV_thermo = 0x10, // value of the thermometer0
 } PZ_Keel_DV;
+
+#endif // _PROTOCOL_H_INCLUDED_

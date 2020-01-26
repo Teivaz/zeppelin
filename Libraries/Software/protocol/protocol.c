@@ -3,6 +3,9 @@
 
 static uint8_t s_nextRid = 0;
 
+// Implement this function in your app
+extern uint8_t PZ_crc(uint8_t const* data, uint8_t size);
+
 PZ_Package PZ_compose0(uint8_t adr, PZ_Cmd cmd) {
 	return PZ_compose(adr, cmd, 0, 0);
 }
@@ -15,13 +18,13 @@ PZ_Package PZ_compose2(uint8_t adr, PZ_Cmd cmd, uint8_t data0, uint8_t data1) {
 }
 PZ_Package PZ_compose(uint8_t adr, PZ_Cmd cmd, uint8_t const* data, uint8_t dataLen) {
 	PZ_Package result;
-	result.fpr = PZ_FOOTPRINT;
+	result.fpr = PZ_Footrpint_OK;
 	result.adr = adr;
-	result.len = dataLen + 3;
+	result.len = PZ_MIN_PACKAGE_LEN + dataLen;
 	result.rid = s_nextRid++;
 	result.cmd = cmd;
 	memcpy(&result.pld[0], data, dataLen);
-	result.crc = PZ_crc((uint8_t*)&result, dataLen + 5);
+	result.crc = PZ_crc((uint8_t*)&result, result.len - 1);
 	return result;
 }
 
@@ -32,13 +35,13 @@ PZ_Package PZ_composeRe2(PZ_Package const* pck, uint8_t data0, uint8_t data1) {
 
 PZ_Package PZ_composeRe(PZ_Package const* pck, uint8_t const* data, uint8_t dataLen) {
 	PZ_Package result;
-	result.fpr = PZ_FOOTPRINT;
+	result.fpr = PZ_Footrpint_OK;
 	result.adr = pck->adr;
-	result.len = dataLen + 3;
+	result.len = PZ_MIN_PACKAGE_LEN + dataLen;
 	result.rid = pck->rid;
 	result.cmd = pck->cmd | 0x80;
 	memcpy(&result.pld[0], data, dataLen);
-	result.crc = PZ_crc((uint8_t*)&result, dataLen + 5);
+	result.crc = PZ_crc((uint8_t*)&result, result.len - 1);
 	return result;
 }
 
@@ -67,7 +70,7 @@ uint8_t PZ_isAdrValid(uint8_t adr) {
 	return 1;
 }
 
-uint8_t PZ_PldLen(PZ_Cmd cmd) {
+static uint8_t PZ_PldLen(PZ_Cmd cmd) {
 	switch (cmd) {
 		case PZ_Cmd_Info:
 		case PZ_Cmd_Reset_all_cv:
@@ -98,16 +101,16 @@ PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 	}
 	PZ_Package* pck = (PZ_Package*)package;
 
-	if (pck->fpr != PZ_FOOTPRINT) {
+	if (pck->fpr != PZ_Footrpint_OK) {
 		return PZ_ERROR;
 	}
 	if (!PZ_isAdrValid(pck->adr)) {
 		return PZ_ERROR;
 	}
-	if (pck->len + 3 != size) {
+	if (pck->len + PZ_HEADER_LEN != size) {
 		return PZ_ERROR;
 	}
-	if (pck->len != PZ_PldLen(pck->cmd) + 3) {
+	if (pck->len != PZ_PldLen(pck->cmd) + PZ_HEADER_LEN) {
 		return PZ_ERROR;
 	}
 	uint8_t crc = package[size-1];
@@ -117,19 +120,19 @@ PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 	return PZ_OK;
 }
 
-void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package* package) {
-	*outDataSize = package->len + 3; // First three fields
-	memcpy(outData, package, 5); // Length of the header up to data package
-	outData += 5;
-	memcpy(outData, &package->pld[0], package->len - 3);
-	outData += package->len - 3;
+void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package const* package) {
+	*outDataSize = package->len + PZ_HEADER_LEN;
+	memcpy(outData, package, PZ_HEADER_LEN); // Length of the header up to data package
+	outData += PZ_HEADER_LEN;
+	memcpy(outData, &package->pld[0], package->len - 1);
+	outData += package->len - 1;
 	*outData = package->crc;
 }
 
 PZ_Package PZ_fromData(uint8_t const* data) {
 	PZ_Package result;
-	memcpy(&result, data, 5);
-	data += 5;
+	memcpy(&result, data, PZ_HEADER_LEN);
+	data += PZ_HEADER_LEN;
 	memcpy(&result.pld[0], data, result.len - 1);
 	data += result.len - 1;
 	result.crc = *data;
