@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _NRF24_H_INCLUDED_
+#define _NRF24_H_INCLUDED_
 
 #include <stdint.h>
 
@@ -218,7 +219,7 @@ void NRF24_FlushTX(void);
 void NRF24_FlushRX(void);
 void NRF24_ClearIRQFlags(void);
 
-void NRF24_WritePayload(uint8_t *pBuf, uint8_t length);
+void NRF24_WritePayload(uint8_t const* pBuf, uint8_t length);
 NRF24_RXResult NRF24_ReadPayload(uint8_t *pBuf, uint8_t *length);
 NRF24_RXResult NRF24_ReadDynPayload(uint8_t *pBuf, uint8_t *length);
 
@@ -230,3 +231,5 @@ void NRF24_tmp();
 typedef int (*NRF24_printf)(const char* character, ...);
 
 void NRF24_DumpConfig(NRF24_printf);
+
+#endif // _NRF24_H_INCLUDED_

@@ -73,7 +73,7 @@ static void NRF24_ReadMBReg(uint8_t reg, uint8_t *pBuf, uint8_t count) {
 //   reg - number of register to write
 //   pBuf - pointer to the buffer with data to write
 //   count - number of bytes to write
-static void NRF24_WriteMBReg(uint8_t reg, uint8_t *pBuf, uint8_t count) {
+static void NRF24_WriteMBReg(uint8_t reg, uint8_t const* pBuf, uint8_t count) {
 	NRF24_CSN_Low();
 	NRF24_LL_RW(reg);
 	while (count--) {
@@ -550,7 +550,7 @@ void NRF24_StopReceive() {
 // input:
 //   pBuf - pointer to the buffer with payload data
 //   length - payload length in bytes
-void NRF24_WritePayload(uint8_t *pBuf, uint8_t length) {
+void NRF24_WritePayload(uint8_t const* pBuf, uint8_t length) {
 	NRF24_WriteMBReg(NRF24_CMD_W_TX_PAYLOAD, pBuf, length);
 }
 
