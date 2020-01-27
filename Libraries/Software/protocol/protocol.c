@@ -49,7 +49,7 @@ uint8_t PZ_needsResponse(PZ_Package const* p) {
 	switch (p->cmd) {
 		case PZ_Cmd_Info:
 		case PZ_Cmd_Read_cv:
-		case PZ_Cmd_Read_dv_re:
+		case PZ_Cmd_Read_dv:
 			return 1;
 		default:
 			return 0;
