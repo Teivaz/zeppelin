@@ -121,22 +121,18 @@ PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 }
 
 void PZ_toData(uint8_t* outData, uint8_t* outDataSize, PZ_Package const* package) {
-	*outDataSize = package->len + PZ_HEADER_LEN;
-	memcpy(outData, package, PZ_HEADER_LEN); // Length of the header up to data package
-	outData += PZ_HEADER_LEN;
-	memcpy(outData, &package->pld[0], package->len - 1);
-	outData += package->len - 1;
-	*outData = package->crc;
+	*outDataSize = PZ_HEADER_LEN + package->len;
+	memcpy(outData, package, PZ_HEADER_LEN + PZ_STATIC_PAYLOAD_LEN);
+	memcpy(outData + PZ_HEADER_LEN + PZ_STATIC_PAYLOAD_LEN, &package->pld[0], package->len - PZ_STATIC_PAYLOAD_LEN - 1);
+	outData[PZ_HEADER_LEN + package->len - 1] = package->crc;
 }
 
 PZ_Package PZ_fromData(uint8_t const* data) {
-	PZ_Package result;
-	memcpy(&result, data, PZ_HEADER_LEN);
-	data += PZ_HEADER_LEN;
-	memcpy(&result.pld[0], data, result.len - 1);
-	data += result.len - 1;
-	result.crc = *data;
-	return result;
+	PZ_Package package;
+	memcpy(&package, data, PZ_HEADER_LEN + PZ_STATIC_PAYLOAD_LEN);
+	memcpy(&package.pld[0], data + PZ_HEADER_LEN + PZ_STATIC_PAYLOAD_LEN, package.len - PZ_STATIC_PAYLOAD_LEN - 1);
+	package.crc = data[PZ_HEADER_LEN + package.len - 1];
+	return package;
 }
 
 static char const* cmdToStr(PZ_Cmd cmd) {

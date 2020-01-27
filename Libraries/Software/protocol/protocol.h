@@ -18,7 +18,8 @@ typedef enum {
 #define PZ_MIN_PACKAGE_LEN (uint8_t)6
 #define PZ_MAX_PACKAGE_LEN (uint8_t)8
 #define PZ_MAX_DATA_LEN (uint8_t)2
-#define PZ_HEADER_LEN (uint8_t)3 // The size of the first 3 bytes including footprint, address, and the length of the remaining part
+#define PZ_HEADER_LEN (uint8_t)3 // The first 3 fields: *fpr*, *adr*, *len*
+#define PZ_STATIC_PAYLOAD_LEN (uint8_t)2 // The *rid* and *cmd* fields of the payload
 
 typedef enum {
 	PZ_Cmd_Info = 0x00,
@@ -49,12 +50,16 @@ typedef enum {
 #pragma pack(push)
 #pragma pack(1)
 typedef struct PZ_Package {
+	// Header
 	PZ_Footrpint fpr;
 	uint8_t adr;
 	uint8_t len;
+	// Static payload
 	uint8_t rid;
 	PZ_Cmd cmd;
+	// Dynamic payload
 	uint8_t pld[PZ_MAX_DATA_LEN];
+	// CRC
 	uint8_t crc;
 } PZ_Package;
 #pragma pack(pop)
