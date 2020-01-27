@@ -1,11 +1,10 @@
 #include "main.h"
 #include "program.h"
 #include "stm32l0xx_hal.h"
-#include "printf.h"
-#include "keel.h"
+#include "configurablevalues.h"
+#include "dynamicvalues.h"
 
 RTC_HandleTypeDef s_rtc;
-UART_HandleTypeDef s_uart2;
 SPI_HandleTypeDef s_spi1;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
@@ -21,7 +20,6 @@ void Error_Handler() {
 static void RTC_Init();
 static void Clock_Init();
 static void GPIO_Init();
-static void USART2_UART_Init();
 static void SPI1_Init();
 static void CRC_Init();
 static void I2C1_Init();
@@ -36,15 +34,19 @@ int main(void) {
 	Clock_Init();
 	RTC_Init();
 	GPIO_Init();
-	USART2_UART_Init();
-	SPI1_Init();
 	CRC_Init();
+
+	initCv();
+	resetAllDv();
+
+	SPI1_Init();
 	I2C1_Init();
 
-	initKeel();
 	setup();
 
-	while(1) {}
+	while(1) {
+		poll();
+	}
 }
 
 static void Clock_Init() {
@@ -151,29 +153,9 @@ static void GPIO_Init() {
 
 	/*Configure GPIO pin : PB1 */
 	port.Pin = GPIO_PIN_1;
-	port.Mode = GPIO_MODE_IT_FALLING;
+	port.Mode = GPIO_MODE_INPUT;
 	port.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOB, &port);
-
-	/* EXTI interrupt init*/
-	HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-}
-
-static void USART2_UART_Init() {
-	s_uart2.Instance = USART2;
-	s_uart2.Init.BaudRate = 115200;
-	s_uart2.Init.WordLength = UART_WORDLENGTH_8B;
-	s_uart2.Init.StopBits = UART_STOPBITS_1;
-	s_uart2.Init.Parity = UART_PARITY_NONE;
-	s_uart2.Init.Mode = UART_MODE_TX_RX;
-	s_uart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	s_uart2.Init.OverSampling = UART_OVERSAMPLING_16;
-	s_uart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-	s_uart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-	if (HAL_UART_Init(&s_uart2) != HAL_OK) {
-		Error_Handler();
-	}
 }
 
 static void SPI1_Init(void) {
@@ -230,8 +212,8 @@ static void I2C1_Init() {
 	}
 }
 
-void _putchar(char character) {
-	HAL_UART_Transmit(&s_uart2, (uint8_t*) &character, 1, HAL_MAX_DELAY);
+uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
+	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
 }
 
 void SysTick_Handler() {
@@ -239,12 +221,14 @@ void SysTick_Handler() {
 }
 
 void RTC_IRQHandler() {
-	onTimer();
 	HAL_RTC_AlarmIRQHandler(&s_rtc);
+	onTimer();
 }
 
-void EXTI0_1_IRQHandler() {
-	onExtIrq();
-	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+void I2C1_IRQHandler() {
+	if (s_i2c1.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+		HAL_I2C_ER_IRQHandler(&s_i2c1);
+	} else {
+		HAL_I2C_EV_IRQHandler(&s_i2c1);
+	}
 }
-

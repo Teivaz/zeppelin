@@ -37,7 +37,7 @@ uint8_t readCv(PZ_Keel_CV index) {
 	}
 }
 
-static void* _writeCv(uint8_t offset, void* data) {
+static void* _writeCv(uint8_t offset, void const* data) {
 	uint8_t* p = (uint8_t*)&s_configurableValues;
 	p += (uint8_t)offset;
 	HAL_FLASHEx_DATAEEPROM_Unlock();
@@ -46,7 +46,7 @@ static void* _writeCv(uint8_t offset, void* data) {
 	return p;
 }
 
-void writeCv(PZ_Keel_CV index, void* value) {
+void writeCv(PZ_Keel_CV index, void const* value) {
 	switch (index) {
 		case PZ_Keel_CV_address: return setAddress(*(uint8_t*)value);
 		default: return;

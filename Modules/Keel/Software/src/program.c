@@ -1,41 +1,84 @@
 #include "main.h"
 #include "program.h"
 #include "stm32l0xx_hal.h"
-#include "printf.h"
 #include "nrf24.h"
 #include "protocol.h"
-#include "keel.h"
+#include "configurablevalues.h"
+#include "dynamicvalues.h"
+#include "dendrite.h"
 
-uint8_t s_on = 1;
+static void processPackage(PZ_Package const* p);
+static void axonSend(PZ_Package const* p);
+static void axonSendRaw(uint8_t const* data, uint8_t len);
 
-static void send(uint8_t* data, uint8_t len) {
+static uint8_t s_on = 0;
+
+static void processPackage(PZ_Package const* p) {
+	PZ_Package r;
+	switch (p->cmd) {
+		case PZ_Cmd_Info:
+			r = PZ_composeRe2(p, PZ_KEEL_TYPE, PZ_VERSION);
+			axonSend(&r);
+			break;
+		case PZ_Cmd_Info_re:
+			break;
+		case PZ_Cmd_Read_cv:
+			r = PZ_composeRe2(p, p->pld[0], readCv(p->pld[0]));
+			axonSend(&r);
+			break;
+		case PZ_Cmd_Read_cv_re:
+			break;
+		case PZ_Cmd_Write_cv:
+			writeCv(p->pld[0], &p->pld[1]);
+			break;
+		case PZ_Cmd_Reset_cv:
+			resetCv(p->pld[0]);
+			break;
+		case PZ_Cmd_Reset_all_cv:
+			resetAllCv();
+			break;
+		case PZ_Cmd_Read_dv:
+			r = PZ_composeRe2(p, p->pld[0], readDv(p->pld[0]));
+			axonSend(&r);
+			break;
+		case PZ_Cmd_Read_dv_re:
+			break;
+		case PZ_Cmd_Write_dv:
+			// Nothing for this module
+			break;
+		case PZ_Cmd_Reset_dv:
+			// Nothing for this module
+			break;
+		case PZ_Cmd_Reset_all_dv:
+			// Nothing for this module
+			break;
+	}
+}
+
+static void axonSend(PZ_Package const* p) {
+	uint8_t len = 0;
+	uint8_t buffer[PZ_MAX_PACKAGE_LEN];
+	PZ_toData(buffer, &len, p);
+	axonSendRaw(buffer, len);
+}
+
+static void axonSendRaw(uint8_t const* data, uint8_t len) {
 	NRF24_StopReceive();
 	NRF24_WritePayload(data, len);
 	NRF24_SetOperationalMode(NRF24_MODE_TX);
 	uint8_t result = NRF24_Transmit();
 	NRF24_SetOperationalMode(NRF24_MODE_RX);
+	NRF24_FlushTX();
 	NRF24_StartReceive();
 	if (result == 0) {
 		//printf("Transmission OK.\r\n");
 	}
 	else if (result == 1) {
-		printf("Transmission Failed: Retransmittion limit reached.\r\n");
+		//printf("Transmission Failed: Retransmittion limit reached.\r\n");
 	}
 	else {
-		printf("Transmission Failed: Unkown error.\r\n");
+		//printf("Transmission Failed: Unkown error.\r\n");
 	}
-}
-void sendPz(PZ_Package* p) {
-	uint8_t msg[8];
-	uint8_t msgLen = 0;
-	printf("<< ");
-	PZ_PrintInfo(printf, p);
-	PZ_toData(msg, &msgLen, p);
-	send(msg, msgLen);
-}
-
-uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
-	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
 }
 
 void onTimer() {
@@ -44,32 +87,9 @@ void onTimer() {
 	}
 }
 
-void onExtIrq() {
-	NRF24_ClearIRQFlags();
-	uint8_t payload[32];
-	uint8_t len;
-	NRF24_ReadDynPayload(payload, &len);
-	if (PZ_verify(payload, len) == PZ_OK) {
-		PZ_Package package = PZ_fromData(payload);
-		printf(">> ");
-		PZ_PrintInfo(printf, &package);
-		processPackage(&package, payload, len);
-	}
-	else {
-		printf("Not a valid package\r\n");
-		if (len > 7) {
-			printf("0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X\r\n",
-					payload[0], payload[1], payload[2], payload[3],
-					payload[4], payload[5], payload[6], payload[7]
-			);
-		}
-	}
-	NRF24_FlushRX();
-}
-
 void setup() {
 	NRF24_Init(GetSpi());
-	printf("\r\n\r\n** [Keel] Built: %s %s **\r\n\n", __DATE__, __TIME__);
+	//printf("\r\n\r\n** [Keel] Built: %s %s **\r\n\n", __DATE__, __TIME__);
 
 	GPIO_InitTypeDef port = {0};
 
@@ -80,14 +100,7 @@ void setup() {
 	port.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOA, &port);
 	NRF24_Device_Init();
-	const uint8_t check = NRF24_Check();
-	if (check) {
-		printf("NRF24 Device is OK\r\n");
-		s_on = 1;
-	} else {
-		printf("NRF24 Devices is FAILED\r\n");
-		printf("skipping config\r\n");
-		s_on = 0;
+	if (!NRF24_Check()) {
 		return;
 	}
 
@@ -110,15 +123,32 @@ void setup() {
 	NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
 	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
 	NRF24_StartReceive();
-	//NRF24_DumpConfig(printf);
+	s_on = 1;
 }
 
-uint8_t getBattery0() {
-	return 24;
-}
-uint8_t getBattery1() {
-	return 13;
-}
-uint8_t getThermometer0() {
-	return 12;
+void poll() {
+	const uint8_t hasSpiData = !HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
+	if (hasSpiData) {
+		uint8_t dataLen = 0;
+		uint8_t buffer[PZ_MAX_PACKAGE_LEN];
+		NRF24_ReadDynPayload(buffer, &dataLen);
+
+		if (PZ_verify(buffer, dataLen) == PZ_OK) {
+			PZ_Package package = PZ_fromData(buffer);
+
+			if (package.adr == getAddress()) {
+				processPackage(&package);
+			}
+			else {
+				dendriteSend(&package);
+			}
+		}
+		NRF24_ClearIRQFlags();
+		NRF24_FlushRX();
+	}
+	const uint8_t dendriteDataLength = getDendriteDataLen();
+	if (dendriteDataLength > 0) {
+		axonSendRaw(getDendriteData(), dendriteDataLength);
+		resetDendriteData();
+	}
 }

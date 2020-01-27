@@ -15,7 +15,7 @@ uint8_t readDv(PZ_Keel_DV index) {
 	}
 }
 
-void writeDv(PZ_Keel_DV index, void* value) {
+void writeDv(PZ_Keel_DV index, void const* value) {
 	switch (index) {
 		case PZ_Keel_DV_bat0: return setBat0(*(uint8_t*)value);
 		case PZ_Keel_DV_bat1: return setBat1(*(uint8_t*)value);

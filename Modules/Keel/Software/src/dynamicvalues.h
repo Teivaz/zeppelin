@@ -1,8 +1,10 @@
-#pragma once
+#ifndef _DYNAMICVALUES_H_INCLUDED_
+#define _DYNAMICVALUES_H_INCLUDED_
+
 #include "protocol.h"
 
 uint8_t readDv(PZ_Keel_DV);
-void writeDv(PZ_Keel_DV, void* value);
+void writeDv(PZ_Keel_DV, void const* value);
 
 void resetDv(PZ_Keel_DV);
 void resetAllDv();
@@ -14,3 +16,5 @@ void setThermo(uint8_t value);
 uint8_t getBat0();
 uint8_t getBat1();
 uint8_t getThermo();
+
+#endif // _DYNAMICVALUES_H_INCLUDED_
