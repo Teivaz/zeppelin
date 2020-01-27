@@ -20,11 +20,11 @@ PZ_Package PZ_compose(uint8_t adr, PZ_Cmd cmd, uint8_t const* data, uint8_t data
 	PZ_Package result;
 	result.fpr = PZ_Footrpint_OK;
 	result.adr = adr;
-	result.len = PZ_MIN_PACKAGE_LEN + dataLen;
+	result.len = PZ_STATIC_PAYLOAD_LEN + dataLen + 1;
 	result.rid = s_nextRid++;
 	result.cmd = cmd;
 	memcpy(&result.pld[0], data, dataLen);
-	result.crc = PZ_crc((uint8_t*)&result, result.len - 1);
+	result.crc = PZ_crc((uint8_t*)&result, result.len + PZ_HEADER_LEN - 1);
 	return result;
 }
 
@@ -37,11 +37,11 @@ PZ_Package PZ_composeRe(PZ_Package const* pck, uint8_t const* data, uint8_t data
 	PZ_Package result;
 	result.fpr = PZ_Footrpint_OK;
 	result.adr = pck->adr;
-	result.len = PZ_MIN_PACKAGE_LEN + dataLen;
+	result.len = PZ_STATIC_PAYLOAD_LEN + dataLen + 1;
 	result.rid = pck->rid;
 	result.cmd = pck->cmd | 0x80;
 	memcpy(&result.pld[0], data, dataLen);
-	result.crc = PZ_crc((uint8_t*)&result, result.len - 1);
+	result.crc = PZ_crc((uint8_t*)&result, result.len + PZ_HEADER_LEN - 1);
 	return result;
 }
 
@@ -70,28 +70,6 @@ uint8_t PZ_isAdrValid(uint8_t adr) {
 	return 1;
 }
 
-static uint8_t PZ_PldLen(PZ_Cmd cmd) {
-	switch (cmd) {
-		case PZ_Cmd_Info:
-		case PZ_Cmd_Reset_all_cv:
-		case PZ_Cmd_Reset_all_dv:
-			return 0;
-		case PZ_Cmd_Read_cv:
-		case PZ_Cmd_Reset_cv:
-		case PZ_Cmd_Read_dv:
-		case PZ_Cmd_Reset_dv:
-			return 1;
-		case PZ_Cmd_Info_re:
-		case PZ_Cmd_Read_cv_re:
-		case PZ_Cmd_Write_cv:
-		case PZ_Cmd_Read_dv_re:
-		case PZ_Cmd_Write_dv:
-			return 2;
-		default:
-			return 0;
-	}
-}
-
 PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 	if (size < PZ_MIN_PACKAGE_LEN) {
 		return PZ_ERROR;
@@ -108,9 +86,6 @@ PZ_Result PZ_verify(uint8_t const* package, uint8_t size) {
 		return PZ_ERROR;
 	}
 	if (pck->len + PZ_HEADER_LEN != size) {
-		return PZ_ERROR;
-	}
-	if (pck->len != PZ_PldLen(pck->cmd) + PZ_HEADER_LEN) {
 		return PZ_ERROR;
 	}
 	uint8_t crc = package[size-1];
