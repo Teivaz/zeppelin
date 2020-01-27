@@ -19,7 +19,8 @@
 	******************************************************************************
 	*/ 
 
-#pragma once
+#ifndef _STM32L0XX_HAL_CONF_H_INCLUDED_
+#define _STM32L0XX_HAL_CONF_H_INCLUDED_
 
 #ifdef __cplusplus
  extern "C" {
@@ -43,7 +44,7 @@
 //#define HAL_SPI_MODULE_ENABLED
 //#define HAL_TIM_MODULE_ENABLED
 //#define HAL_TSC_MODULE_ENABLED
-#define HAL_UART_MODULE_ENABLED
+//#define HAL_UART_MODULE_ENABLED
 //#define HAL_USART_MODULE_ENABLED
 //#define HAL_IRDA_MODULE_ENABLED
 //#define HAL_SMARTCARD_MODULE_ENABLED
@@ -274,3 +275,5 @@
 #ifdef __cplusplus
 }
 #endif
+
+#endif // _STM32L0XX_HAL_CONF_H_INCLUDED_

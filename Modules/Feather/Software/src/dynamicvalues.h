@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _DYNAMICVALUES_H_INCLUDED_
+#define _DYNAMICVALUES_H_INCLUDED_
+
 #include "protocol.h"
 
 uint8_t readDv(PZ_Feather_DV);
@@ -16,3 +18,5 @@ int8_t getMotor();
 uint8_t getMotorCalMode();
 uint8_t getServo();
 uint8_t getServoCalMode();
+
+#endif // _DYNAMICVALUES_H_INCLUDED_

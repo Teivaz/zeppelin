@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _CONFIGURABLEVALUES_H_INCLUDED_
+#define _CONFIGURABLEVALUES_H_INCLUDED_
+
 #include "protocol.h"
 
 void initCv();
@@ -26,3 +28,5 @@ int8_t getMotorCal0();
 uint8_t getServoDef();
 uint8_t getServoCal1();
 uint8_t getServoCal2();
+
+#endif // _CONFIGURABLEVALUES_H_INCLUDED_

@@ -1,12 +1,10 @@
 #include "main.h"
 #include "program.h"
 #include "stm32l0xx_hal.h"
-#include "printf.h"
 #include "configurablevalues.h"
 #include "dynamicvalues.h"
 
 RTC_HandleTypeDef s_rtc;
-UART_HandleTypeDef s_uart2;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
 
@@ -20,7 +18,6 @@ void Error_Handler() {
 static void RTC_Init();
 static void Clock_Init();
 static void GPIO_Init();
-static void USART2_UART_Init();
 static void CRC_Init();
 static void I2C1_Init();
 
@@ -39,12 +36,13 @@ int main(void) {
 	initCv();
 	resetAllDv();
 
-	USART2_UART_Init();
 	I2C1_Init();
 
 	setup();
 
-	while(1) {}
+	while(1) {
+		poll();
+	}
 }
 
 static void Clock_Init() {
@@ -139,7 +137,6 @@ static void GPIO_Init() {
 	GPIO_InitTypeDef port = {0};
 
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	/*Configure GPIO pin : PA1 */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
@@ -147,33 +144,7 @@ static void GPIO_Init() {
 	port.Mode = GPIO_MODE_OUTPUT_PP;
 	port.Pull = GPIO_NOPULL;
 	port.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &port);	
-
-	/*Configure GPIO pin : PB1 */
-	port.Pin = GPIO_PIN_1;
-	port.Mode = GPIO_MODE_IT_FALLING;
-	port.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOB, &port);
-
-	/* EXTI interrupt init*/
-	HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-}
-
-static void USART2_UART_Init() {
-	s_uart2.Instance = USART2;
-	s_uart2.Init.BaudRate = 115200;
-	s_uart2.Init.WordLength = UART_WORDLENGTH_8B;
-	s_uart2.Init.StopBits = UART_STOPBITS_1;
-	s_uart2.Init.Parity = UART_PARITY_NONE;
-	s_uart2.Init.Mode = UART_MODE_TX_RX;
-	s_uart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	s_uart2.Init.OverSampling = UART_OVERSAMPLING_16;
-	s_uart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-	s_uart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-	if (HAL_UART_Init(&s_uart2) != HAL_OK) {
-		Error_Handler();
-	}
+	HAL_GPIO_Init(GPIOA, &port);
 }
 
 static void CRC_Init() {
@@ -210,10 +181,6 @@ static void I2C1_Init() {
 	if (HAL_I2CEx_ConfigDigitalFilter(&s_i2c1, 0) != HAL_OK) {
 		Error_Handler();
 	}
-}
-
-void _putchar(char character) {
-	HAL_UART_Transmit(&s_uart2, (uint8_t*) &character, 1, HAL_MAX_DELAY);
 }
 
 void SysTick_Handler() {
