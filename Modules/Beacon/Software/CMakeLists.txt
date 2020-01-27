@@ -5,26 +5,13 @@ set(CMAKE_TOOLCHAIN_FILE "${libraries_dir}/Software/toolchain.cmake")
 
 project("Beacon")
 
-set(CMAKE_C_STANDARD "99")
-enable_language(ASM)
+set(CMAKE_C_STANDARD "11")
 
 set(linker_script "${libraries_dir}/Software/stm32l011f4.ld")
 set(device_name "STM32L011xx")
 
-set(asm_compile_options
-	"-mcpu=cortex-m0plus"
-	"-g3"
-	"-c"
-	"-x"
-	"assembler-with-cpp"
-	"--specs=nano.specs"
-	"-mfloat-abi=soft"
-	"-mthumb"
-)
-
 set(c_compile_options
 	"-mcpu=cortex-m0plus"
-	"-std=gnu99"
 	"-g3"
 	"-c"
 	"-Os"
@@ -59,7 +46,6 @@ set(link_flags
 # Compile options and definitions that should be set globally.
 # For local to the project use `target_compile_definitions`
 add_compile_options("$<$<COMPILE_LANGUAGE:C>:${c_compile_options}>")
-add_compile_options("$<$<COMPILE_LANGUAGE:ASM>:${asm_compile_options}>")
 add_compile_definitions("${compile_definitions}")
 
 # Dependencies

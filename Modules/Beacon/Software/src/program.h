@@ -4,3 +4,5 @@ void setup();
 void onTimer();
 void onExtIrq();
 void onUart();
+
+void poll();

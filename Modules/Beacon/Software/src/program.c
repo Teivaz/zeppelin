@@ -9,6 +9,8 @@
 
 static uint8_t s_uart_buff;
 uint8_t s_on = 0;
+static uint8_t s_hasSpiData = 0;
+static uint8_t s_spiBuffer[PZ_MAX_PACKAGE_LEN];
 PZ_Package s_pkg;
 
 static void send(uint8_t* data, uint8_t len) {
@@ -17,6 +19,7 @@ static void send(uint8_t* data, uint8_t len) {
 	NRF24_SetOperationalMode(NRF24_MODE_TX);
 	uint8_t result = NRF24_Transmit();
 	NRF24_SetOperationalMode(NRF24_MODE_RX);
+	NRF24_FlushTX();
 	NRF24_StartReceive();
 	if (result == 0) {
 		//printf("Transmission OK.\r\n");
@@ -96,16 +99,7 @@ void onTimer() {
 }
 
 void onExtIrq() {
-	NRF24_ClearIRQFlags();
-	uint8_t payload[32];
-	uint8_t len;
-	NRF24_ReadDynPayload(payload, &len);
-	if (PZ_verify(payload, len) == PZ_OK) {
-		PZ_Package package = PZ_fromData(payload);
-		printf(">> ");
-		PZ_PrintInfo(printf, &package);
-	}
-	NRF24_FlushRX();
+	s_hasSpiData = 1;
 }
 
 void onUart() {
@@ -121,7 +115,7 @@ void setup() {
 	TM_registerCommand("read-cv", cmd_readCv);
 	TM_registerCommand("read-dv", cmd_readDv);
 
-	s_pkg = PZ_compose2(0x10, PZ_Cmd_Write_dv, 0x10, 0x02);
+	s_pkg = PZ_compose1(0x10, PZ_Cmd_Read_dv, 0x10);
 
 	NRF24_Init(GetSpi());
 
@@ -137,17 +131,12 @@ void setup() {
 	port.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOA, &port);
 	NRF24_Device_Init();
-	const uint8_t check = NRF24_Check();
-	if (check) {
-		printf("NRF24 Device is OK\r\n");
-		s_on = 1;
-	} else {
+	if (!NRF24_Check()) {
 		printf("NRF24 Devices is FAILED\r\n");
-		s_on = 0;
 		return;
 	}
 
-	s_on = 0;
+	printf("NRF24 Device is OK\r\n");
 
 	uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
 	uint8_t const hostAddr[] = PZ_HOST_ADDR;
@@ -168,8 +157,21 @@ void setup() {
 	NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
 	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
 	NRF24_StartReceive();
+	s_on = 1;
 }
 
-uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
-	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
+void poll() {
+	if (s_hasSpiData) {
+
+		NRF24_ClearIRQFlags();
+		NRF24_ReadDynPayload(s_spiBuffer, &s_hasSpiData);
+		NRF24_FlushRX();
+
+		if (PZ_verify(s_spiBuffer, s_hasSpiData) == PZ_OK) {
+			PZ_Package package = PZ_fromData(s_spiBuffer);
+			printf(">> ");
+			PZ_PrintInfo(printf, &package);
+		}
+		s_hasSpiData = 0;
+	}
 }
