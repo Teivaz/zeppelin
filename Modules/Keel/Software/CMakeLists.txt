@@ -23,7 +23,7 @@ set(c_compile_options
 	"-mfloat-abi=soft"
 	"-mthumb"
 )
-	
+
 set(compile_definitions "${device_name}")
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	list(APPEND compile_definitions "DEBUG" "_DEBUG")
@@ -66,10 +66,8 @@ add_executable("${PROJECT_NAME}" "${sources}")
 target_link_libraries("${PROJECT_NAME}" "nrf24" "CMSIS" "STM32L0xx_HAL" "protocol")
 set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS "${link_flags}")
 
-add_custom_target("split-eeprom" ALL
-	"${CMAKE_OBJCOPY}" -j .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" -O ihex "$<TARGET_FILE_DIR:${PROJECT_NAME}>/eeprom.hex"
-	COMMAND "${CMAKE_OBJCOPY}" -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/program.elf"
-	DEPENDS "${PROJECT_NAME}"
-	SOURCES "$<TARGET_FILE:${PROJECT_NAME}>"
-	BYPRODUCTS "$<TARGET_FILE_DIR:${PROJECT_NAME}>/eeprom.hex" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/program.elf"
+add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD
+	COMMAND "${CMAKE_OBJCOPY}" ARGS -j .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" -O ihex "eeprom.hex"
+	COMMAND "${CMAKE_OBJCOPY}" ARGS -R .eeprom "$<TARGET_FILE:${PROJECT_NAME}>" "program.elf"
+	BYPRODUCTS "eeprom.hex" "program.elf"
 )
