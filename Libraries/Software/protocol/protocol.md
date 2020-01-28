@@ -97,6 +97,6 @@ Base communication hub with additional functions.
 - `0x00` - The address of the device. Type: `uint8_t`. Default: `0x10`.
 
 ### Dynamic values:
-- `0x00` - value of the battery0. Type: `uint8_t`. Read only (resetting/writing to it has no effect).
-- `0x01` - value of the battery1. Type: `uint8_t`. Read only (resetting/writing to it has no effect).
-- `0x10` - value of the thermometer0. Type `uint8_t`. Read only (resetting/writing to it has no effect).
+- `0x00` - value of the battery0. Type: `uint8_t`. Read only (resetting/writing to it has no effect). The value is in decivolts.
+- `0x01` - value of the battery1. Type: `uint8_t`. Read only (resetting/writing to it has no effect). The value is in decivolts.
+- `0x10` - value of the temperature0. Type `int8_t`. Read only (resetting/writing to it has no effect). The value is in degrees Celcius.

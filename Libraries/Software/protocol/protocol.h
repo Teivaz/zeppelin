@@ -111,7 +111,7 @@ typedef enum {
 typedef enum {
 	PZ_Keel_DV_bat0 = 0x00, // value of the battery0
 	PZ_Keel_DV_bat1 = 0x01, // value of the battery1
-	PZ_Keel_DV_thermo = 0x10, // value of the thermometer0
+	PZ_Keel_DV_temp0 = 0x10, // value of the temperature0
 } PZ_Keel_DV;
 
 #endif // _PROTOCOL_H_INCLUDED_
