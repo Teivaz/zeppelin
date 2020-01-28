@@ -8,21 +8,26 @@ RTC_HandleTypeDef s_rtc;
 SPI_HandleTypeDef s_spi1;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
+ADC_HandleTypeDef s_adc;
+DMA_HandleTypeDef s_dma_adc;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
 SPI_HandleTypeDef* GetSpi() { return &s_spi1; }
 I2C_HandleTypeDef* GetI2c() { return &s_i2c1; }
+ADC_HandleTypeDef* GetAdc() { return &s_adc; }
 
 void Error_Handler() {
 	void __blocking_handler();
 	__blocking_handler();
 }
+static void DMA_Init();
 static void RTC_Init();
 static void Clock_Init();
 static void GPIO_Init();
 static void SPI1_Init();
 static void CRC_Init();
 static void I2C1_Init();
+static void ADC_Init();
 
 int main(void) {
 #ifdef _DEBUG
@@ -32,12 +37,14 @@ int main(void) {
 
 	HAL_Init();
 	Clock_Init();
+	DMA_Init();
 	RTC_Init();
 	GPIO_Init();
 	CRC_Init();
+	ADC_Init();
 
 	initCv();
-	resetAllDv();
+	initDv();
 
 	SPI1_Init();
 	I2C1_Init();
@@ -166,7 +173,7 @@ static void SPI1_Init(void) {
 	s_spi1.Init.CLKPolarity = SPI_POLARITY_LOW;
 	s_spi1.Init.CLKPhase = SPI_PHASE_1EDGE;
 	s_spi1.Init.NSS = SPI_NSS_SOFT;
-	s_spi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+	s_spi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
 	s_spi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
 	s_spi1.Init.TIMode = SPI_TIMODE_DISABLE;
 	s_spi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -212,6 +219,50 @@ static void I2C1_Init() {
 	}
 }
 
+static void ADC_Init() {
+	HAL_ADCEx_EnableVREFINT();
+	HAL_ADCEx_EnableVREFINTTempSensor();
+	s_adc.Instance = ADC1;
+	s_adc.Init.OversamplingMode = ENABLE;
+	s_adc.Init.Oversample.Ratio = ADC_OVERSAMPLING_RATIO_16;
+	s_adc.Init.Oversample.RightBitShift = ADC_RIGHTBITSHIFT_4;
+	s_adc.Init.Oversample.TriggeredMode = ADC_TRIGGEREDMODE_SINGLE_TRIGGER;
+	s_adc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+	s_adc.Init.Resolution = ADC_RESOLUTION_12B;
+	s_adc.Init.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
+	s_adc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
+	s_adc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	s_adc.Init.ContinuousConvMode = ENABLE;
+	s_adc.Init.DiscontinuousConvMode = DISABLE;
+	s_adc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	s_adc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	s_adc.Init.DMAContinuousRequests = ENABLE;
+	s_adc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+	s_adc.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+	s_adc.Init.LowPowerAutoWait = DISABLE;
+	s_adc.Init.LowPowerFrequencyMode = DISABLE;
+	s_adc.Init.LowPowerAutoPowerOff = DISABLE;
+	if (HAL_ADC_Init(&s_adc) != HAL_OK) {
+		Error_Handler();
+	}
+  ADC_ChannelConfTypeDef config = {0};
+	config.Channel = ADC_CHANNEL_TEMPSENSOR;
+	config.Rank = ADC_RANK_CHANNEL_NUMBER;
+	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
+		Error_Handler();
+	}
+	config.Channel = ADC_CHANNEL_VREFINT;
+	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+void DMA_Init() {
+	__HAL_RCC_DMA1_CLK_ENABLE();
+	HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+}
+
 uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
 	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
 }
@@ -231,4 +282,12 @@ void I2C1_IRQHandler() {
 	} else {
 		HAL_I2C_EV_IRQHandler(&s_i2c1);
 	}
+}
+
+void ADC1_COMP_IRQHandler() {
+	HAL_ADC_IRQHandler(&s_adc);
+}
+
+void DMA1_Channel1_IRQHandler() {
+	HAL_DMA_IRQHandler(&s_dma_adc);
 }

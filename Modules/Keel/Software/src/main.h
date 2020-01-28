@@ -9,6 +9,7 @@ void RTC_IRQHandler();
 CRC_HandleTypeDef* GetCrc();
 SPI_HandleTypeDef* GetSpi();
 I2C_HandleTypeDef* GetI2c();
+ADC_HandleTypeDef* GetAdc();
 
 int main();
 

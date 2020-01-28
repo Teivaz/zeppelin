@@ -12,6 +12,12 @@ static void axonSend(PZ_Package const* p);
 static void axonSendRaw(uint8_t const* data, uint8_t len);
 
 static uint8_t s_on = 0;
+static uint16_t s_dmaBuffer[2];
+
+#define VREFINT_CAL (*(uint16_t const*)0x1FF80078UL)
+#define TEMP30_CAL (*(uint16_t const*)0x1FF8007AUL)
+#define TEMP130_CAL (*(uint16_t const*)0x1FF8007EUL)
+#define VDD_CALIB ((uint16_t) (30)) // decivolts
 
 static void processPackage(PZ_Package const* p) {
 	PZ_Package r;
@@ -44,13 +50,13 @@ static void processPackage(PZ_Package const* p) {
 		case PZ_Cmd_Read_dv_re:
 			break;
 		case PZ_Cmd_Write_dv:
-			// Nothing for this module
+			//writeDv(p->pld[0], &p->pld[1]); // Empty for this module
 			break;
 		case PZ_Cmd_Reset_dv:
-			// Nothing for this module
+			//resetDv(p->pld[0]); // Empty for this module
 			break;
 		case PZ_Cmd_Reset_all_dv:
-			// Nothing for this module
+			//resetAllDv(); // Empty for this module
 			break;
 	}
 }
@@ -87,6 +93,26 @@ void onTimer() {
 	}
 }
 
+uint8_t convertVoltage(uint16_t measure) {
+	 // 3V x VREFINT_CAL / VREFINT_DATA
+	uint16_t voltage = 10 * 3 * VREFINT_CAL /  measure; // decivolts
+	return (uint8_t)voltage;
+}
+
+int8_t ComputeTemperature(uint16_t measure) {
+	int32_t temperature;
+	temperature = ((measure * getBat0() / VDD_CALIB) - (int32_t)TEMP30_CAL);
+	temperature = temperature * (int32_t)(130 - 30);
+	temperature = temperature / (int32_t)(TEMP130_CAL - TEMP30_CAL);
+	temperature = temperature + 30;
+	return temperature;
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+	setBat0(convertVoltage(s_dmaBuffer[0]));
+	setTemp0(ComputeTemperature(s_dmaBuffer[1]));
+}
+
 void setup() {
 	NRF24_Init(GetSpi());
 	//printf("\r\n\r\n** [Keel] Built: %s %s **\r\n\n", __DATE__, __TIME__);
@@ -99,31 +125,33 @@ void setup() {
 	port.Pull = GPIO_NOPULL;
 	port.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOA, &port);
-	NRF24_Device_Init();
-	if (!NRF24_Check()) {
-		return;
+
+	if (NRF24_Check()) {
+		NRF24_Device_Init();
+
+		uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
+		uint8_t const hostAddr[] = PZ_HOST_ADDR;
+		NRF24_SetRFChannel(90); // set RF channel to 2490MHz
+		NRF24_SetDataRate(NRF24_DR_2Mbps); // 2Mbit/s data rate
+		NRF24_SetCRCScheme(NRF24_CRC_1byte); // 1-byte CRC scheme
+		NRF24_SetAddrWidth(5); // address width is 5 bytes
+		NRF24_SetAddr(NRF24_PIPETX, hostAddr);
+		NRF24_SetAddr(NRF24_PIPE0, hostAddr); // program pipe address
+		NRF24_SetAddr(NRF24_PIPE1, clientAddr); // program pipe address
+		NRF24_SetRXPipe(NRF24_PIPE1, NRF24_AA_ON, 8); // enable RX pipe#1 with Auto-ACK: disabled, payload length: 10 bytes
+		NRF24_LockUnlockFeature();
+		NRF24_EableDynPl();
+		NRF24_SetTXPower(NRF24_TXPWR_0dBm);
+		NRF24_SetAutoRetr(NRF24_ARD_2500us, 10);
+		NRF24_EnableAA(NRF24_PIPE0);
+		NRF24_SetOperationalMode(NRF24_MODE_RX); // switch transceiver to the RX mode
+		NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
+		NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
+		NRF24_StartReceive();
+		s_on = 1;
 	}
 
-	uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
-	uint8_t const hostAddr[] = PZ_HOST_ADDR;
-	NRF24_SetRFChannel(90); // set RF channel to 2490MHz
-	NRF24_SetDataRate(NRF24_DR_2Mbps); // 2Mbit/s data rate
-	NRF24_SetCRCScheme(NRF24_CRC_1byte); // 1-byte CRC scheme
-	NRF24_SetAddrWidth(5); // address width is 5 bytes
-	NRF24_SetAddr(NRF24_PIPETX, hostAddr);
-	NRF24_SetAddr(NRF24_PIPE0, hostAddr); // program pipe address
-	NRF24_SetAddr(NRF24_PIPE1, clientAddr); // program pipe address
-	NRF24_SetRXPipe(NRF24_PIPE1, NRF24_AA_ON, 8); // enable RX pipe#1 with Auto-ACK: disabled, payload length: 10 bytes
-	NRF24_LockUnlockFeature();
-	NRF24_EableDynPl();
-	NRF24_SetTXPower(NRF24_TXPWR_0dBm);
-	NRF24_SetAutoRetr(NRF24_ARD_2500us, 10);
-	NRF24_EnableAA(NRF24_PIPE0);
-	NRF24_SetOperationalMode(NRF24_MODE_RX); // switch transceiver to the RX mode
-	NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
-	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
-	NRF24_StartReceive();
-	s_on = 1;
+	HAL_ADC_Start_DMA(GetAdc(), (uint32_t*)s_dmaBuffer, 4);
 }
 
 void poll() {
