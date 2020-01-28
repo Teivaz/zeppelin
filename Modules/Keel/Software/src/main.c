@@ -247,12 +247,16 @@ static void ADC_Init() {
 		Error_Handler();
 	}
   ADC_ChannelConfTypeDef config = {0};
-	config.Channel = ADC_CHANNEL_TEMPSENSOR; // Sample time at least 10us
 	config.Rank = ADC_RANK_CHANNEL_NUMBER;
+	config.Channel = ADC_CHANNEL_0;
 	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
 		Error_Handler();
 	}
 	config.Channel = ADC_CHANNEL_VREFINT; // Sample time at least 5us
+	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
+		Error_Handler();
+	}
+	config.Channel = ADC_CHANNEL_TEMPSENSOR; // Sample time at least 10us
 	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
 		Error_Handler();
 	}

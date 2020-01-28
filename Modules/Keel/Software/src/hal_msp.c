@@ -82,8 +82,15 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c) {
 }
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc) {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 	__HAL_RCC_ADC1_CLK_ENABLE();
-
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	// PA0-CK_IN ------> ADC_IN0
+	GPIO_InitStruct.Pin = GPIO_PIN_0;
+	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	
 	s_dma_adc.Instance = DMA1_Channel1;
 	s_dma_adc.Init.Request = DMA_REQUEST_0;
 	s_dma_adc.Init.Direction = DMA_PERIPH_TO_MEMORY;
@@ -105,6 +112,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc) {
 
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc) {
 	__HAL_RCC_ADC1_CLK_DISABLE();
+	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
 	HAL_DMA_DeInit(hadc->DMA_Handle);
 	HAL_NVIC_DisableIRQ(ADC1_COMP_IRQn);
 }

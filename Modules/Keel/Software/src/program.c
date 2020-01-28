@@ -10,14 +10,29 @@
 static void processPackage(PZ_Package const* p);
 static void axonSend(PZ_Package const* p);
 static void axonSendRaw(uint8_t const* data, uint8_t len);
+static uint8_t convertVoltage(uint16_t measure);
+static uint8_t convertVref(uint16_t measure);
+static int8_t convertTemp(uint16_t measure);
 
 static uint8_t s_on = 0;
-static uint16_t s_dmaBuffer[2];
+
+#pragma pack(push)
+#pragma pack(2)
+static union {
+	uint16_t buffer[3];
+	struct {
+		uint16_t chan0; // ADC_CHANNEL_0
+		uint16_t vref; // ADC_CHANNEL_VREFINT = ADC_CHANNEL_17
+		uint16_t temp; // ADC_CHANNEL_TEMPSENSOR = ADC_CHANNEL_18
+	};
+} s_dmaAdc;
+#pragma pack(pop)
 
 #define VREFINT_CAL (*(uint16_t const*)0x1FF80078UL)
 #define TEMP30_CAL (*(uint16_t const*)0x1FF8007AUL)
 #define TEMP130_CAL (*(uint16_t const*)0x1FF8007EUL)
 #define VDD_CALIB ((uint16_t) (30)) // decivolts
+#define ADC_MAX_VAL (uint16_t)0xFFF
 
 static void processPackage(PZ_Package const* p) {
 	PZ_Package r;
@@ -93,13 +108,20 @@ void onTimer() {
 	}
 }
 
-uint8_t convertVoltage(uint16_t measure) {
+static uint8_t convertVoltage(uint16_t measure) {
+	int32_t voltage = measure * (int32_t)getBat0() / ADC_MAX_VAL;
+	return (uint8_t)voltage;
+}
+
+// According to datasheet this is the way
+static uint8_t convertVref(uint16_t measure) {
 	 // 3V x VREFINT_CAL / VREFINT_DATA
 	uint16_t voltage = 10 * 3 * VREFINT_CAL /  measure; // decivolts
 	return (uint8_t)voltage;
 }
 
-int8_t ComputeTemperature(uint16_t measure) {
+// According to datasheet this is the way
+static int8_t convertTemp(uint16_t measure) {
 	int32_t temperature;
 	temperature = ((measure * getBat0() / VDD_CALIB) - (int32_t)TEMP30_CAL);
 	temperature = temperature * (int32_t)(130 - 30);
@@ -109,8 +131,9 @@ int8_t ComputeTemperature(uint16_t measure) {
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-	setBat0(convertVoltage(s_dmaBuffer[0]));
-	setTemp0(ComputeTemperature(s_dmaBuffer[1]));
+	setBat0(convertVref(s_dmaAdc.vref));
+	setBat1(convertVoltage(s_dmaAdc.chan0));
+	setTemp0(convertTemp(s_dmaAdc.temp));
 }
 
 void setup() {
@@ -151,7 +174,7 @@ void setup() {
 		s_on = 1;
 	}
 
-	HAL_ADC_Start_DMA(GetAdc(), (uint32_t*)s_dmaBuffer, 4);
+	HAL_ADC_Start_DMA(GetAdc(), (uint32_t*)s_dmaAdc.buffer, sizeof(s_dmaAdc));
 }
 
 void poll() {
