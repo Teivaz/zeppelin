@@ -220,16 +220,17 @@ static void I2C1_Init() {
 }
 
 static void ADC_Init() {
-	HAL_ADCEx_EnableVREFINT();
-	HAL_ADCEx_EnableVREFINTTempSensor();
+	// For HSI 16MHz
+	// F_adc = 16/4 = 4MHz
+	// 79.5 cycles will make 19.875us sample time - should be enough for any channel
 	s_adc.Instance = ADC1;
 	s_adc.Init.OversamplingMode = ENABLE;
 	s_adc.Init.Oversample.Ratio = ADC_OVERSAMPLING_RATIO_16;
 	s_adc.Init.Oversample.RightBitShift = ADC_RIGHTBITSHIFT_4;
 	s_adc.Init.Oversample.TriggeredMode = ADC_TRIGGEREDMODE_SINGLE_TRIGGER;
-	s_adc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+	s_adc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
 	s_adc.Init.Resolution = ADC_RESOLUTION_12B;
-	s_adc.Init.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
+	s_adc.Init.SamplingTime = ADC_SAMPLETIME_79CYCLES_5;
 	s_adc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
 	s_adc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	s_adc.Init.ContinuousConvMode = ENABLE;
@@ -238,7 +239,7 @@ static void ADC_Init() {
 	s_adc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
 	s_adc.Init.DMAContinuousRequests = ENABLE;
 	s_adc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
-	s_adc.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+	s_adc.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
 	s_adc.Init.LowPowerAutoWait = DISABLE;
 	s_adc.Init.LowPowerFrequencyMode = DISABLE;
 	s_adc.Init.LowPowerAutoPowerOff = DISABLE;
@@ -246,12 +247,12 @@ static void ADC_Init() {
 		Error_Handler();
 	}
   ADC_ChannelConfTypeDef config = {0};
-	config.Channel = ADC_CHANNEL_TEMPSENSOR;
+	config.Channel = ADC_CHANNEL_TEMPSENSOR; // Sample time at least 10us
 	config.Rank = ADC_RANK_CHANNEL_NUMBER;
 	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
 		Error_Handler();
 	}
-	config.Channel = ADC_CHANNEL_VREFINT;
+	config.Channel = ADC_CHANNEL_VREFINT; // Sample time at least 5us
 	if (HAL_ADC_ConfigChannel(&s_adc, &config) != HAL_OK) {
 		Error_Handler();
 	}
