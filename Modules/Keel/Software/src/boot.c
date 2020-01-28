@@ -14,9 +14,11 @@ inline void __attribute__((always_inline)) __initialize_bss(unsigned int* region
 	unsigned int *p = region_begin;
 	while (p < region_end) *p++ = 0;
 }
+void SystemInit() __attribute__ ((weak, alias ("null_handler")));
 
 void __reset_handler(void) {
 	__initialize_bss(&__bss_start, &__bss_end);
+	SystemInit();
 	main();
 }
 void __blocking_handler(void) { while (1); }

@@ -22,19 +22,20 @@ SECTIONS
 		*(.rodata.*)
 		. = ALIGN(4);
 	} > flash
-	
+
 	.data : {
+		. = ALIGN(4);
 		*(.data)
 		*(.data.*)
 		. = ALIGN(4);
 	} > ram AT> flash
 
+	. = ALIGN(4);
 	.bss : {
-		. = ALIGN(4);
 		__bss_start = .;
 		*(.bss)
 		*(.bss.*)
-    *(COMMON)
+		*(COMMON)
 		. = ALIGN(4);
 		__bss_end = .;
 	} > ram
