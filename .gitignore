@@ -201,6 +201,9 @@ $RECYCLE.BIN/
 *.b#*
 *.l#*
 *.s#*
+*.lbr.lck
+*.brd.lck
+*.sch.lck
 
 #AVR studio
 *.atsuo
