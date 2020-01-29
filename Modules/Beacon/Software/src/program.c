@@ -141,7 +141,7 @@ void setup() {
 	uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
 	uint8_t const hostAddr[] = PZ_HOST_ADDR;
 	NRF24_SetRFChannel(90); // set RF channel to 2490MHz
-	NRF24_SetDataRate(NRF24_DR_2Mbps); // 2Mbit/s data rate
+	NRF24_SetDataRate(NRF24_DR_1Mbps); // 2Mbit/s data rate
 	NRF24_SetCRCScheme(NRF24_CRC_1byte); // 1-byte CRC scheme
 	NRF24_SetAddrWidth(5); // address width is 5 bytes
 	NRF24_SetAddr(NRF24_PIPETX, clientAddr);

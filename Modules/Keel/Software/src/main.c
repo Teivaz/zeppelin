@@ -173,7 +173,7 @@ static void SPI1_Init(void) {
 	s_spi1.Init.CLKPolarity = SPI_POLARITY_LOW;
 	s_spi1.Init.CLKPhase = SPI_PHASE_1EDGE;
 	s_spi1.Init.NSS = SPI_NSS_SOFT;
-	s_spi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+	s_spi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
 	s_spi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
 	s_spi1.Init.TIMode = SPI_TIMODE_DISABLE;
 	s_spi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
