@@ -204,6 +204,9 @@ $RECYCLE.BIN/
 *.lbr.lck
 *.brd.lck
 *.sch.lck
+/Schematic/*.job
+/Schematic/*.pro
+/Schematic/*.scr
 
 #AVR studio
 *.atsuo
