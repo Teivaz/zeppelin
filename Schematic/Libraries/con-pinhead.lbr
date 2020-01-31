@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.4">
+<eagle version="9.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
+<setting keepoldvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="50" unitdist="mil" unit="mm" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="no" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="yes"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="yes"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
@@ -32,7 +33,7 @@
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
 <layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
-<layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="yes"/>
 <layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
@@ -4517,30 +4518,54 @@
 </package>
 <package name="1X03/90">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
-<wire x1="-3.81" y1="-1.905" x2="-1.27" y2="-1.905" width="0.1524" layer="21"/>
-<wire x1="-1.27" y1="-1.905" x2="-1.27" y2="0.635" width="0.1524" layer="21"/>
-<wire x1="-1.27" y1="0.635" x2="-3.81" y2="0.635" width="0.1524" layer="21"/>
-<wire x1="-3.81" y1="0.635" x2="-3.81" y2="-1.905" width="0.1524" layer="21"/>
-<wire x1="-2.54" y1="6.985" x2="-2.54" y2="1.27" width="0.762" layer="21"/>
-<wire x1="-1.27" y1="-1.905" x2="1.27" y2="-1.905" width="0.1524" layer="21"/>
-<wire x1="1.27" y1="-1.905" x2="1.27" y2="0.635" width="0.1524" layer="21"/>
-<wire x1="1.27" y1="0.635" x2="-1.27" y2="0.635" width="0.1524" layer="21"/>
-<wire x1="0" y1="6.985" x2="0" y2="1.27" width="0.762" layer="21"/>
-<wire x1="1.27" y1="-1.905" x2="3.81" y2="-1.905" width="0.1524" layer="21"/>
-<wire x1="3.81" y1="-1.905" x2="3.81" y2="0.635" width="0.1524" layer="21"/>
-<wire x1="3.81" y1="0.635" x2="1.27" y2="0.635" width="0.1524" layer="21"/>
-<wire x1="2.54" y1="6.985" x2="2.54" y2="1.27" width="0.762" layer="21"/>
-<pad name="1" x="-2.54" y="-3.81" drill="1.016" shape="long" rot="R90"/>
-<pad name="2" x="0" y="-3.81" drill="1.016" shape="long" rot="R90"/>
-<pad name="3" x="2.54" y="-3.81" drill="1.016" shape="long" rot="R90"/>
-<text x="-4.445" y="-3.81" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
-<text x="5.715" y="-3.81" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<rectangle x1="-2.921" y1="0.635" x2="-2.159" y2="1.143" layer="21"/>
-<rectangle x1="-0.381" y1="0.635" x2="0.381" y2="1.143" layer="21"/>
-<rectangle x1="2.159" y1="0.635" x2="2.921" y2="1.143" layer="21"/>
-<rectangle x1="-2.921" y1="-2.921" x2="-2.159" y2="-1.905" layer="21"/>
-<rectangle x1="-0.381" y1="-2.921" x2="0.381" y2="-1.905" layer="21"/>
-<rectangle x1="2.159" y1="-2.921" x2="2.921" y2="-1.905" layer="21"/>
+<wire x1="-3.81" y1="1.905" x2="-1.27" y2="1.905" width="0.1524" layer="51"/>
+<wire x1="-1.27" y1="1.905" x2="-1.27" y2="4.445" width="0.1524" layer="51"/>
+<wire x1="-1.27" y1="4.445" x2="-3.81" y2="4.445" width="0.1524" layer="51"/>
+<wire x1="-3.81" y1="4.445" x2="-3.81" y2="1.905" width="0.1524" layer="51"/>
+<wire x1="-1.27" y1="1.905" x2="1.27" y2="1.905" width="0.1524" layer="51"/>
+<wire x1="1.27" y1="1.905" x2="1.27" y2="4.445" width="0.1524" layer="51"/>
+<wire x1="1.27" y1="4.445" x2="-1.27" y2="4.445" width="0.1524" layer="51"/>
+<wire x1="1.27" y1="1.905" x2="3.81" y2="1.905" width="0.1524" layer="51"/>
+<wire x1="3.81" y1="1.905" x2="3.81" y2="4.445" width="0.1524" layer="51"/>
+<wire x1="3.81" y1="4.445" x2="1.27" y2="4.445" width="0.1524" layer="51"/>
+<pad name="1" x="-2.54" y="0" drill="1" diameter="1.95" rot="R90" first="yes"/>
+<pad name="2" x="0" y="0" drill="1" diameter="1.95" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1" diameter="1.95" rot="R90"/>
+<text x="-4.445" y="0" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
+<text x="5.715" y="0" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<rectangle x1="-2.921" y1="9.652" x2="-2.159" y2="11.303" layer="51"/>
+<rectangle x1="-0.381" y1="9.652" x2="0.381" y2="11.303" layer="51"/>
+<rectangle x1="2.159" y1="9.652" x2="2.921" y2="11.303" layer="51"/>
+<rectangle x1="-2.921" y1="0.889" x2="-2.159" y2="1.905" layer="51"/>
+<rectangle x1="-0.381" y1="0.889" x2="0.381" y2="1.905" layer="51"/>
+<rectangle x1="2.159" y1="0.889" x2="2.921" y2="1.905" layer="51"/>
+<rectangle x1="-3.81" y1="1.905" x2="3.81" y2="18.161" layer="39"/>
+<circle x="-3.81" y="1.27" radius="0.254" width="0.127" layer="21"/>
+<wire x1="-3.81" y1="1.905" x2="-1.27" y2="1.905" width="0.1524" layer="21"/>
+<wire x1="-1.27" y1="1.905" x2="-1.27" y2="4.445" width="0.1524" layer="21"/>
+<wire x1="-1.27" y1="4.445" x2="-3.81" y2="4.445" width="0.1524" layer="21"/>
+<wire x1="-3.81" y1="4.445" x2="-3.81" y2="1.905" width="0.1524" layer="21"/>
+<wire x1="-2.54" y1="10.795" x2="-2.54" y2="5.08" width="0.762" layer="21"/>
+<wire x1="-1.27" y1="1.905" x2="1.27" y2="1.905" width="0.1524" layer="21"/>
+<wire x1="1.27" y1="1.905" x2="1.27" y2="4.445" width="0.1524" layer="21"/>
+<wire x1="1.27" y1="4.445" x2="-1.27" y2="4.445" width="0.1524" layer="21"/>
+<wire x1="0" y1="10.795" x2="0" y2="5.08" width="0.762" layer="21"/>
+<wire x1="1.27" y1="1.905" x2="3.81" y2="1.905" width="0.1524" layer="21"/>
+<wire x1="3.81" y1="1.905" x2="3.81" y2="4.445" width="0.1524" layer="21"/>
+<wire x1="3.81" y1="4.445" x2="1.27" y2="4.445" width="0.1524" layer="21"/>
+<wire x1="2.54" y1="10.795" x2="2.54" y2="5.08" width="0.762" layer="21"/>
+<rectangle x1="-2.921" y1="4.445" x2="-2.159" y2="4.953" layer="21"/>
+<rectangle x1="-0.381" y1="4.445" x2="0.381" y2="4.953" layer="21"/>
+<rectangle x1="2.159" y1="4.445" x2="2.921" y2="4.953" layer="21"/>
+<rectangle x1="-2.921" y1="0.889" x2="-2.159" y2="1.905" layer="21"/>
+<rectangle x1="-0.381" y1="0.889" x2="0.381" y2="1.905" layer="21"/>
+<rectangle x1="2.159" y1="0.889" x2="2.921" y2="1.905" layer="21"/>
+<wire x1="-3.81" y1="4.445" x2="-3.81" y2="12.954" width="0.127" layer="51"/>
+<wire x1="-3.81" y1="12.954" x2="-3.81" y2="18.034" width="0.127" layer="51"/>
+<wire x1="-3.81" y1="18.034" x2="3.81" y2="18.034" width="0.127" layer="51"/>
+<wire x1="3.81" y1="18.034" x2="3.81" y2="12.954" width="0.127" layer="51"/>
+<wire x1="3.81" y1="12.954" x2="3.81" y2="4.572" width="0.127" layer="51"/>
+<wire x1="-3.81" y1="12.954" x2="3.81" y2="12.954" width="0.127" layer="51"/>
 </package>
 <package name="1X04/90">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>

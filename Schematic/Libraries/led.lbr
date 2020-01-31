@@ -4,17 +4,16 @@
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
-<setting keepoldvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="50" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="20" name="Dimension" color="24" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
@@ -46,10 +45,12 @@
 <layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="88" name="SimResults" color="9" fill="1" visible="yes" active="yes"/>
+<layer number="89" name="SimProbes" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
-<layer number="93" name="Pins" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="93" name="Pins" color="2" fill="1" visible="no" active="yes"/>
 <layer number="94" name="Symbols" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="95" name="Names" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="96" name="Values" color="7" fill="1" visible="yes" active="yes"/>
@@ -57,72 +58,73 @@
 <layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
 </layers>
 <library>
-<description>nRF24L01 module</description>
 <packages>
-<package name="PIN">
-<pad name="1" x="-3.81" y="-1.27" drill="1" first="yes"/>
-<pad name="2" x="-3.81" y="1.27" drill="1"/>
-<pad name="3" x="-1.27" y="-1.27" drill="1"/>
-<pad name="4" x="-1.27" y="1.27" drill="1"/>
-<pad name="5" x="1.27" y="-1.27" drill="1"/>
-<pad name="6" x="1.27" y="1.27" drill="1"/>
-<pad name="7" x="3.81" y="-1.27" drill="1"/>
-<pad name="8" x="3.81" y="1.27" drill="1"/>
-<text x="-3.81" y="3.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-3.81" y="-4.445" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="-4.064" y1="-1.524" x2="-3.556" y2="-1.016" layer="51"/>
-<rectangle x1="-4.064" y1="1.016" x2="-3.556" y2="1.524" layer="51"/>
-<rectangle x1="-1.524" y1="1.016" x2="-1.016" y2="1.524" layer="51"/>
-<rectangle x1="-1.524" y1="-1.524" x2="-1.016" y2="-1.016" layer="51"/>
-<rectangle x1="1.016" y1="1.016" x2="1.524" y2="1.524" layer="51" rot="R180"/>
-<rectangle x1="1.016" y1="-1.524" x2="1.524" y2="-1.016" layer="51"/>
-<rectangle x1="3.556" y1="1.016" x2="4.064" y2="1.524" layer="51"/>
-<rectangle x1="3.556" y1="-1.524" x2="4.064" y2="-1.016" layer="51"/>
-<wire x1="-5.08" y1="-2.54" x2="-5.08" y2="2.54" width="0.127" layer="21"/>
-<wire x1="-5.08" y1="2.54" x2="5.08" y2="2.54" width="0.127" layer="21"/>
-<wire x1="-5.08" y1="-2.54" x2="5.08" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="5.08" y1="-2.54" x2="5.08" y2="2.54" width="0.127" layer="21"/>
-<rectangle x1="-5.08" y1="-2.54" x2="5.08" y2="2.54" layer="39"/>
-<wire x1="-6.35" y1="-2.54" x2="-6.35" y2="26.162" width="0.127" layer="51"/>
-<wire x1="-6.35" y1="-2.54" x2="8.89" y2="-2.54" width="0.127" layer="51"/>
-<wire x1="8.89" y1="-2.54" x2="8.89" y2="26.162" width="0.127" layer="51"/>
-<wire x1="-6.35" y1="26.162" x2="8.89" y2="26.162" width="0.127" layer="51"/>
+<package name="AP2012">
+<smd name="C" x="1.175" y="0" dx="1.25" dy="1.1" layer="1"/>
+<smd name="A" x="-1.175" y="0" dx="1.25" dy="1.1" layer="1"/>
+<rectangle x1="-1" y1="-0.625" x2="1" y2="0.625" layer="39"/>
+<wire x1="0.8" y1="0.7" x2="0.4" y2="0.7" width="0.127" layer="21"/>
+<wire x1="0.4" y1="0.7" x2="0.4" y2="-0.7" width="0.127" layer="21"/>
+<wire x1="0.4" y1="-0.7" x2="0.8" y2="-0.7" width="0.127" layer="21"/>
+<wire x1="-1" y1="0.625" x2="-0.7" y2="0.625" width="0.127" layer="51"/>
+<wire x1="-0.7" y1="0.625" x2="0.2" y2="0.625" width="0.127" layer="51"/>
+<wire x1="0.2" y1="0.625" x2="0.6" y2="0.625" width="0.127" layer="51"/>
+<wire x1="0.6" y1="0.625" x2="1" y2="0.625" width="0.127" layer="51"/>
+<wire x1="1" y1="0.625" x2="1" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="1" y1="-0.625" x2="0.6" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="0.6" y1="-0.625" x2="0.2" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="0.2" y1="-0.625" x2="-0.7" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="-0.7" y1="-0.625" x2="-1" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="-1" y1="-0.625" x2="-1" y2="0.625" width="0.127" layer="51"/>
+<wire x1="-0.7" y1="0.625" x2="-0.7" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="0.6" y1="0.625" x2="0.6" y2="0.3" width="0.127" layer="51"/>
+<wire x1="0.6" y1="0.3" x2="0.6" y2="-0.3" width="0.127" layer="51"/>
+<wire x1="0.6" y1="-0.3" x2="0.6" y2="-0.625" width="0.127" layer="51"/>
+<wire x1="0.2" y1="0.625" x2="0.2" y2="0.3" width="0.127" layer="51"/>
+<wire x1="0.2" y1="0.3" x2="0.6" y2="0.3" width="0.127" layer="51"/>
+<wire x1="0.2" y1="-0.625" x2="0.2" y2="-0.3" width="0.127" layer="51"/>
+<wire x1="0.2" y1="-0.3" x2="0.6" y2="-0.3" width="0.127" layer="51"/>
+<text x="-1.5" y="1" size="1.27" layer="25">&gt;NAME</text>
+<text x="-1.5" y="2.5" size="1.27" layer="27">&gt;VALUE</text>
 </package>
 </packages>
 <symbols>
-<symbol name="NFR24">
-<wire x1="-7.62" y1="12.7" x2="-7.62" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="-7.62" y1="-10.16" x2="5.08" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="5.08" y1="-10.16" x2="5.08" y2="12.7" width="0.254" layer="94"/>
-<wire x1="5.08" y1="12.7" x2="-7.62" y2="12.7" width="0.254" layer="94"/>
-<pin name="MISO" x="-12.7" y="-5.08" length="middle" direction="out"/>
-<pin name="SCK" x="-12.7" y="0" length="middle" direction="in"/>
-<pin name="CE" x="-12.7" y="5.08" length="middle" direction="in"/>
-<pin name="GND" x="-12.7" y="10.16" length="middle" direction="pwr"/>
-<pin name="IRQ" x="-12.7" y="-7.62" length="middle" direction="out"/>
-<pin name="MOSI" x="-12.7" y="-2.54" length="middle" direction="in"/>
-<pin name="CSN" x="-12.7" y="2.54" length="middle" direction="in"/>
-<pin name="VCC" x="-12.7" y="7.62" length="middle" direction="pwr"/>
-<text x="-5.08" y="15.24" size="1.27" layer="96">&gt;NAME</text>
-<text x="-5.08" y="-12.7" size="1.27" layer="96">&gt;VALUE</text>
+<symbol name="LED">
+<wire x1="1.27" y1="0" x2="0" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="-2.54" x2="-1.27" y2="0" width="0.254" layer="94"/>
+<wire x1="1.27" y1="-2.54" x2="0" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="-2.54" x2="-1.27" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
+<wire x1="0" y1="0" x2="-1.27" y2="0" width="0.254" layer="94"/>
+<wire x1="-2.032" y1="-0.762" x2="-3.429" y2="-2.159" width="0.1524" layer="94"/>
+<wire x1="-1.905" y1="-1.905" x2="-3.302" y2="-3.302" width="0.1524" layer="94"/>
+<text x="3.556" y="-4.572" size="1.778" layer="95" rot="R90">&gt;NAME</text>
+<text x="5.715" y="-4.572" size="1.778" layer="96" rot="R90">&gt;VALUE</text>
+<pin name="C" x="0" y="-5.08" visible="off" length="short" direction="pas" rot="R90"/>
+<pin name="A" x="0" y="2.54" visible="off" length="short" direction="pas" rot="R270"/>
+<polygon width="0.1524" layer="94">
+<vertex x="-3.429" y="-2.159"/>
+<vertex x="-3.048" y="-1.27"/>
+<vertex x="-2.54" y="-1.778"/>
+</polygon>
+<polygon width="0.1524" layer="94">
+<vertex x="-3.302" y="-3.302"/>
+<vertex x="-2.921" y="-2.413"/>
+<vertex x="-2.413" y="-2.921"/>
+</polygon>
 </symbol>
 </symbols>
 <devicesets>
-<deviceset name="NRF24013" prefix="CN">
+<deviceset name="AP2012" prefix="LED">
+<description>Kingbright AP2012 SMT LED</description>
 <gates>
-<gate name="G$1" symbol="NFR24" x="0" y="0"/>
+<gate name="G$1" symbol="LED" x="0" y="0"/>
 </gates>
 <devices>
-<device name="" package="PIN">
+<device name="" package="AP2012">
 <connects>
-<connect gate="G$1" pin="CE" pad="3"/>
-<connect gate="G$1" pin="CSN" pad="4"/>
-<connect gate="G$1" pin="GND" pad="1"/>
-<connect gate="G$1" pin="IRQ" pad="8"/>
-<connect gate="G$1" pin="MISO" pad="7"/>
-<connect gate="G$1" pin="MOSI" pad="6"/>
-<connect gate="G$1" pin="SCK" pad="5"/>
-<connect gate="G$1" pin="VCC" pad="2"/>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
 </connects>
 <technologies>
 <technology name=""/>
