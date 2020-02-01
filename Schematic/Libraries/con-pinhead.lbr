@@ -7,7 +7,7 @@
 <setting keepoldvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="50" unitdist="mil" unit="mm" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
+<grid distance="50" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -15,7 +15,7 @@
 <layer number="18" name="Vias" color="2" fill="1" visible="no" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="no" active="yes"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
@@ -4536,9 +4536,9 @@
 <rectangle x1="-2.921" y1="9.652" x2="-2.159" y2="11.303" layer="51"/>
 <rectangle x1="-0.381" y1="9.652" x2="0.381" y2="11.303" layer="51"/>
 <rectangle x1="2.159" y1="9.652" x2="2.921" y2="11.303" layer="51"/>
-<rectangle x1="-2.921" y1="0.889" x2="-2.159" y2="1.905" layer="51"/>
-<rectangle x1="-0.381" y1="0.889" x2="0.381" y2="1.905" layer="51"/>
-<rectangle x1="2.159" y1="0.889" x2="2.921" y2="1.905" layer="51"/>
+<rectangle x1="-2.921" y1="1.27" x2="-2.159" y2="1.905" layer="51"/>
+<rectangle x1="-0.381" y1="1.27" x2="0.381" y2="1.905" layer="51"/>
+<rectangle x1="2.159" y1="1.27" x2="2.921" y2="1.905" layer="51"/>
 <rectangle x1="-3.81" y1="1.905" x2="3.81" y2="18.161" layer="39"/>
 <circle x="-3.81" y="1.27" radius="0.254" width="0.127" layer="21"/>
 <wire x1="-3.81" y1="1.905" x2="-1.27" y2="1.905" width="0.1524" layer="21"/>
@@ -4557,9 +4557,9 @@
 <rectangle x1="-2.921" y1="4.445" x2="-2.159" y2="4.953" layer="21"/>
 <rectangle x1="-0.381" y1="4.445" x2="0.381" y2="4.953" layer="21"/>
 <rectangle x1="2.159" y1="4.445" x2="2.921" y2="4.953" layer="21"/>
-<rectangle x1="-2.921" y1="0.889" x2="-2.159" y2="1.905" layer="21"/>
-<rectangle x1="-0.381" y1="0.889" x2="0.381" y2="1.905" layer="21"/>
-<rectangle x1="2.159" y1="0.889" x2="2.921" y2="1.905" layer="21"/>
+<rectangle x1="-2.921" y1="1.27" x2="-2.159" y2="1.905" layer="21"/>
+<rectangle x1="-0.381" y1="1.27" x2="0.381" y2="1.905" layer="21"/>
+<rectangle x1="2.159" y1="1.27" x2="2.921" y2="1.905" layer="21"/>
 <wire x1="-3.81" y1="4.445" x2="-3.81" y2="12.954" width="0.127" layer="51"/>
 <wire x1="-3.81" y1="12.954" x2="-3.81" y2="18.034" width="0.127" layer="51"/>
 <wire x1="-3.81" y1="18.034" x2="3.81" y2="18.034" width="0.127" layer="51"/>
