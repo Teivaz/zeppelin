@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.2">
+<eagle version="9.2.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="1" unitdist="mm" unit="mm" style="dots" multiple="1" display="yes" altdistance="0.5" altunitdist="mm" altunit="mm"/>
@@ -1446,11 +1446,11 @@ for trimmer refence see : &lt;u&gt;www.electrospec-inc.com/cross_references/trim
 <rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
 <rectangle x1="1.746" y1="-0.254" x2="2.254" y2="0.254" layer="51"/>
 <rectangle x1="3.746" y1="-0.254" x2="4.254" y2="0.254" layer="51"/>
-<pad name="1" x="-4" y="0" locked="yes" drill="0.8"/>
-<pad name="2" x="-2" y="0" locked="yes" drill="0.8"/>
-<pad name="3" x="0" y="0" locked="yes" drill="0.8"/>
-<pad name="4" x="2" y="0" locked="yes" drill="0.8"/>
-<pad name="5" x="4" y="0" locked="yes" drill="0.8" first="yes"/>
+<pad name="1" x="-4" y="0" drill="0.8"/>
+<pad name="2" x="-2" y="0" drill="0.8"/>
+<pad name="3" x="0" y="0" drill="0.8"/>
+<pad name="4" x="2" y="0" drill="0.8"/>
+<pad name="5" x="4" y="0" drill="0.8" first="yes"/>
 <wire x1="-6" y1="-1.75" x2="6" y2="-1.75" width="0.127" layer="21" locked="yes"/>
 <wire x1="-6" y1="2.95" x2="6" y2="2.95" width="0.127" layer="21" locked="yes"/>
 <wire x1="-6" y1="-1.75" x2="-6" y2="2.95" width="0.127" layer="21" locked="yes"/>
@@ -1490,8 +1490,8 @@ for trimmer refence see : &lt;u&gt;www.electrospec-inc.com/cross_references/trim
 <rectangle x1="-6" y1="-1.75" x2="6" y2="2.95" locked="yes" layer="39"/>
 </package>
 <package name="1X2H">
-<pad name="2" x="-1" y="0" locked="yes" drill="0.8"/>
-<pad name="1" x="1" y="0" locked="yes" drill="0.8" first="yes"/>
+<pad name="2" x="-1" y="0" drill="0.8"/>
+<pad name="1" x="1" y="0" drill="0.8" first="yes"/>
 <wire x1="-3" y1="6.25" x2="-3" y2="0.25" width="0.127" layer="21"/>
 <wire x1="3" y1="0.25" x2="3" y2="6.25" width="0.127" layer="21"/>
 <wire x1="3" y1="6.25" x2="-3" y2="6.25" width="0.127" layer="21"/>
@@ -1693,26 +1693,26 @@ NS Package M08A</description>
 <wire x1="3.3" y1="-1.965" x2="3.3" y2="1.965" width="0.127" layer="21"/>
 <wire x1="3.3" y1="1.965" x2="-3.3" y2="1.965" width="0.127" layer="21"/>
 <circle x="-2.448" y="-1.143" radius="0.3592" width="0.127" layer="21"/>
-<smd name="1" x="-2.925" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="2" x="-2.275" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="3" x="-1.625" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="4" x="-0.975" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="5" x="-0.325" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="6" x="0.325" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="7" x="0.975" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="8" x="1.625" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="9" x="2.275" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="10" x="2.925" y="-2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="11" x="2.925" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="12" x="2.275" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="13" x="1.625" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="14" x="0.975" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="15" x="0.325" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="16" x="-0.325" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="17" x="-0.975" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="18" x="-1.625" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="19" x="-2.275" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
-<smd name="20" x="-2.925" y="2.875" dx="0.4" dy="1.35" layer="1" locked="yes"/>
+<smd name="1" x="-2.925" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="2" x="-2.275" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="3" x="-1.625" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="4" x="-0.975" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="5" x="-0.325" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="6" x="0.325" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="7" x="0.975" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="8" x="1.625" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="9" x="2.275" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="10" x="2.925" y="-2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="11" x="2.925" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="12" x="2.275" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="13" x="1.625" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="14" x="0.975" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="15" x="0.325" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="16" x="-0.325" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="17" x="-0.975" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="18" x="-1.625" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="19" x="-2.275" y="2.875" dx="0.4" dy="1.35" layer="1"/>
+<smd name="20" x="-2.925" y="2.875" dx="0.4" dy="1.35" layer="1"/>
 <text x="-3.5" y="0" size="1.27" layer="25" rot="R90" align="bottom-center">&gt;NAME</text>
 <text x="3.5" y="0" size="1.27" layer="27" rot="R90" align="top-center">&gt;VALUE</text>
 <rectangle x1="-3.1028" y1="-3.302" x2="-2.7472" y2="-2.0066" layer="51"/>
@@ -1743,12 +1743,12 @@ NS Package M08A</description>
 <library name="switch">
 <packages>
 <package name="TL2201">
-<pad name="2" x="0" y="-2.7" locked="yes" drill="0.8"/>
-<pad name="1" x="-2.5" y="-2.7" locked="yes" drill="0.8" first="yes"/>
-<pad name="3" x="2.5" y="-2.7" locked="yes" drill="0.8"/>
-<pad name="6" x="2.5" y="2.7" locked="yes" drill="0.8"/>
-<pad name="5" x="0" y="2.7" locked="yes" drill="0.8"/>
-<pad name="4" x="-2.5" y="2.7" locked="yes" drill="0.8"/>
+<pad name="2" x="0" y="-2.7" drill="0.8"/>
+<pad name="1" x="-2.5" y="-2.7" drill="0.8" first="yes"/>
+<pad name="3" x="2.5" y="-2.7" drill="0.8"/>
+<pad name="6" x="2.5" y="2.7" drill="0.8"/>
+<pad name="5" x="0" y="2.7" drill="0.8"/>
+<pad name="4" x="-2.5" y="2.7" drill="0.8"/>
 <wire x1="-4.25" y1="4.25" x2="4.25" y2="4.25" width="0.127" layer="51"/>
 <wire x1="4.25" y1="4.25" x2="4.25" y2="-4.25" width="0.127" layer="51"/>
 <wire x1="4.25" y1="-4.25" x2="-4.25" y2="-4.25" width="0.127" layer="51"/>
@@ -3416,7 +3416,6 @@ In short: You are welcome to use (and extend) this library, but extensions must 
 <wire x1="44.92" y1="16.73" x2="44.92" y2="19.27" width="0.75" layer="16"/>
 <wire x1="41" y1="26" x2="41" y2="15" width="0.75" layer="16"/>
 <wire x1="41" y1="15" x2="42" y2="14" width="0.75" layer="16" curve="90"/>
-<wire x1="44.92" y1="14.08" x2="45" y2="14" width="0.75" layer="16" curve="90"/>
 <wire x1="44.92" y1="16.73" x2="44.92" y2="14.08" width="0.75" layer="16"/>
 <wire x1="63.54" y1="18" x2="63.54" y2="21.1257875" width="0.75" layer="16"/>
 <wire x1="63.54" y1="21.1257875" x2="63.83289375" y2="21.83289375" width="0.75" layer="16" curve="-45"/>
@@ -3441,6 +3440,8 @@ In short: You are welcome to use (and extend) this library, but extensions must 
 <wire x1="59.04" y1="9.54" x2="59.04" y2="7.5" width="0.5" layer="1"/>
 <wire x1="59.04" y1="7.5" x2="59.54" y2="7" width="0.5" layer="1" curve="90"/>
 <wire x1="59.54" y1="7" x2="63.54" y2="7" width="0.5" layer="1"/>
+<wire x1="44.92" y1="14.08" x2="45" y2="14" width="0.25" layer="16"/>
+<wire x1="44.92" y1="14.08" x2="44.92" y2="14.08" width="0.75" layer="16"/>
 </signal>
 <signal name="VCC2">
 <contactref element="U8" pad="16"/>
@@ -3525,8 +3526,9 @@ In short: You are welcome to use (and extend) this library, but extensions must 
 <wire x1="47.075" y1="15.125" x2="45.125" y2="15.125" width="0.25" layer="1"/>
 <wire x1="45.125" y1="15.125" x2="45" y2="15" width="0.25" layer="1" curve="90"/>
 <wire x1="45" y1="15" x2="45" y2="14.052" width="0.25" layer="1"/>
-<wire x1="45" y1="14.052" x2="44.9688" y2="14.0208" width="0.25" layer="1" curve="-90"/>
-<wire x1="44.9688" y1="14.0208" x2="44.95" y2="14" width="0" layer="19" extent="1-1"/>
+<wire x1="44.9688" y1="14.0208" x2="45" y2="14.052" width="0.25" layer="1" curve="90"/>
+<wire x1="44.95" y1="14" x2="44.9688" y2="14.0188" width="0.25" layer="1"/>
+<wire x1="44.9688" y1="14.0188" x2="44.9688" y2="14.0208" width="0.25" layer="1"/>
 </signal>
 <signal name="N$22">
 <contactref element="R10" pad="1"/>
@@ -3826,14 +3828,6 @@ In short: You are welcome to use (and extend) this library, but extensions must 
 <approved hash="7,39,5db6a969d18cd62e"/>
 <approved hash="7,39,52bbe47f7078b65e"/>
 <approved hash="7,39,c2b5b2c094c333da"/>
-<approved hash="4,1,c5212068403ac5b6"/>
-<approved hash="4,1,c7a6edfa7c7dbb7e"/>
-<approved hash="4,1,589a72e4c643df8b"/>
-<approved hash="4,1,2ec77cfeecdc08ee"/>
-<approved hash="4,1,eaf5c2938bb714c6"/>
-<approved hash="4,1,b3d0e3e452f96c13"/>
-<approved hash="4,1,6e238764ce3ee8b3"/>
-<approved hash="4,1,47fc639d03b13fdc"/>
 <approved hash="7,39,c2b5261d0a7b9dad"/>
 </errors>
 </board>
