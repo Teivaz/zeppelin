@@ -7,6 +7,7 @@
 RTC_HandleTypeDef s_rtc;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
+TIM_HandleTypeDef s_tim21;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
 I2C_HandleTypeDef* GetI2c() { return &s_i2c1; }
@@ -20,6 +21,7 @@ static void Clock_Init();
 static void GPIO_Init();
 static void CRC_Init();
 static void I2C1_Init();
+static void TIM21_Init();
 
 int main(void) {
 #ifdef _DEBUG
@@ -32,6 +34,7 @@ int main(void) {
 	RTC_Init();
 	GPIO_Init();
 	CRC_Init();
+	TIM21_Init();
 	
 	initCv();
 	resetAllDv();
@@ -181,6 +184,44 @@ static void I2C1_Init() {
 	if (HAL_I2CEx_ConfigDigitalFilter(&s_i2c1, 0) != HAL_OK) {
 		Error_Handler();
 	}
+}
+
+static void TIM21_Init() {
+	TIM_ClockConfigTypeDef clockSourceConfig = {0};
+	TIM_MasterConfigTypeDef masterConfig = {0};
+	TIM_OC_InitTypeDef configOc = {0};
+
+	s_tim21.Instance = TIM21;
+	s_tim21.Init.Prescaler = 62;
+	s_tim21.Init.CounterMode = TIM_COUNTERMODE_UP;
+	s_tim21.Init.Period = 5160;
+	s_tim21.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	s_tim21.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&s_tim21) != HAL_OK) {
+		Error_Handler();
+	}
+	clockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&s_tim21, &clockSourceConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_PWM_Init(&s_tim21) != HAL_OK) {
+		Error_Handler();
+	}
+	masterConfig.MasterOutputTrigger = TIM_TRGO_OC1;
+	masterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&s_tim21, &masterConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	configOc.OCMode = TIM_OCMODE_PWM1;
+	configOc.Pulse = 258;
+	configOc.OCPolarity = TIM_OCPOLARITY_HIGH;
+	configOc.OCFastMode = TIM_OCFAST_DISABLE;
+	if (HAL_TIM_PWM_ConfigChannel(&s_tim21, &configOc, TIM_CHANNEL_1) != HAL_OK) {
+		Error_Handler();
+	}
+	void HAL_TIM_MspPostInit(TIM_HandleTypeDef*);
+	HAL_TIM_MspPostInit(&s_tim21);
+	HAL_TIM_PWM_Start(&s_tim21, TIM_CHANNEL_1);
 }
 
 void SysTick_Handler() {
