@@ -177,7 +177,7 @@ void setup() {
 		s_on = 1;
 	}
 
-	HAL_ADC_Start_DMA(GetAdc(), (uint32_t*)s_dmaAdc.buffer, sizeof(s_dmaAdc));
+	HAL_ADC_Start_DMA(GetAdc(), (uint32_t*)s_dmaAdc.buffer, 3);
 }
 
 void poll() {
