@@ -42,7 +42,7 @@ static void sendPz(PZ_Package* p) {
 
 void cmd_info(char const* argv[], uint8_t argn) {
 	if (argn > 1) {
-		uint8_t adr = atoi(argv[1]);
+		uint8_t adr = strtol(argv[1], 0, 16);
 		s_pkg = PZ_compose0(adr, PZ_Cmd_Info);
 		sendPz(&s_pkg);
 	}
@@ -53,9 +53,9 @@ void cmd_info(char const* argv[], uint8_t argn) {
 
 void cmd_writeCv(char const* argv[], uint8_t argn) {
 	if (argn > 3) {
-		uint8_t adr = atoi(argv[1]);
-		uint8_t cv = atoi(argv[2]);
-		uint8_t val = atoi(argv[3]);
+		uint8_t adr = strtol(argv[1], 0, 16);
+		uint8_t cv = strtol(argv[2], 0, 16);
+		uint8_t val = strtol(argv[3], 0, 16);
 		s_pkg = PZ_compose2(adr, PZ_Cmd_Write_cv, cv, val);
 		sendPz(&s_pkg);
 	}
@@ -66,8 +66,8 @@ void cmd_writeCv(char const* argv[], uint8_t argn) {
 
 void cmd_readCv(char const* argv[], uint8_t argn) {
 	if (argn > 1) {
-		uint8_t adr = atoi(argv[1]);
-		uint8_t cv = atoi(argv[2]);
+		uint8_t adr = strtol(argv[1], 0, 16);
+		uint8_t cv = strtol(argv[2], 0, 16);
 		s_pkg = PZ_compose1(adr, PZ_Cmd_Read_cv, cv);
 		sendPz(&s_pkg);
 	}
@@ -78,13 +78,26 @@ void cmd_readCv(char const* argv[], uint8_t argn) {
 
 void cmd_readDv(char const* argv[], uint8_t argn) {
 	if (argn > 1) {
-		uint8_t adr = atoi(argv[1]);
-		uint8_t dv = atoi(argv[2]);
+		uint8_t adr = strtol(argv[1], 0, 16);
+		uint8_t dv = strtol(argv[2], 0, 16);
 		s_pkg = PZ_compose1(adr, PZ_Cmd_Read_dv, dv);
 		sendPz(&s_pkg);
 	}
 	else {
 		printf("Error. Format: read-dv <adr> <cv>\r\n");
+	}
+}
+
+void cmd_writeDv(char const* argv[], uint8_t argn) {
+	if (argn > 3) {
+		uint8_t adr = strtol(argv[1], 0, 16);
+		uint8_t dv = strtol(argv[2], 0, 16);
+		uint8_t val = strtol(argv[3], 0, 16);
+		s_pkg = PZ_compose2(adr, PZ_Cmd_Write_dv, dv, val);
+		sendPz(&s_pkg);
+	}
+	else {
+		printf("Error. Format: write-dv <adr> <cv> <val>\r\n");
 	}
 }
 
@@ -112,6 +125,7 @@ void setup() {
 	TM_registerCommand("on", cmd_on);
 	TM_registerCommand("off", cmd_off);
 	TM_registerCommand("write-cv", cmd_writeCv);
+	TM_registerCommand("write-dv", cmd_writeDv);
 	TM_registerCommand("read-cv", cmd_readCv);
 	TM_registerCommand("read-dv", cmd_readDv);
 
