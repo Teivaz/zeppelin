@@ -1,7 +1,7 @@
 #include "nrf24_hal.h"
 #include "nrf24_hw_conf.h"
 
-SPI_HandleTypeDef* s_spi = 0;
+static SPI_HandleTypeDef* s_spi = 0;
 
 void NRF24_CE_Low() {
 	HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_RESET);

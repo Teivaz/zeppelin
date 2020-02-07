@@ -29,4 +29,14 @@ uint8_t getServoDef();
 uint8_t getServoCal1();
 uint8_t getServoCal2();
 
+// Weak Callbacks
+void CvOnAddressChanged(uint8_t value);
+void CvOnMotorDefChanged(int8_t value);
+void CvOnMotorCal1Changed(int8_t value);
+void CvOnMotorCal2Changed(int8_t value);
+void CvOnMotorCal0Changed(int8_t value);
+void CvOnServoDefChanged(uint8_t value);
+void CvOnServoCal1Changed(uint8_t value);
+void CvOnServoCal2Changed(uint8_t value);
+
 #endif // _CONFIGURABLEVALUES_H_INCLUDED_

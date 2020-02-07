@@ -34,8 +34,8 @@ struct {
 	},
 	.servo = {
 		.def = 0,
-		.cal1 = 0,
-		.cal2 = 255,
+		.cal1 = 128,
+		.cal2 = 128,
 	}
 };
 
@@ -58,8 +58,8 @@ void resetCv(PZ_Feather_CV index) {
 		case PZ_Feather_CV_motorCal2: return setMotorCal2(127);
 		case PZ_Feather_CV_motorCal0: return setMotorCal0(0);
 		case PZ_Feather_CV_servoDef: return setServoDef(0);
-		case PZ_Feather_CV_servoCal1: return setServoCal1(0);
-		case PZ_Feather_CV_servoCal2: return setServoCal2(255);
+		case PZ_Feather_CV_servoCal1: return setServoCal1(128);
+		case PZ_Feather_CV_servoCal2: return setServoCal2(128);
 		default: return;
 	}
 }
@@ -126,11 +126,7 @@ void writeCv(PZ_Feather_CV index, void* value) {
 void setAddress(uint8_t value) {
 	if (value != s_cv.address) {
 		s_cv.address = *(uint8_t*)_writeCv(PZ_Feather_CV_address, &value);
-
-		// Set I2C address here and reinit
-		HAL_I2C_DeInit(GetI2c());
-		GetI2c()->Init.OwnAddress1 = s_cv.address;
-		HAL_I2C_Init(GetI2c());
+		CvOnAddressChanged(value);
 	}
 }
 uint8_t getAddress() {
@@ -140,6 +136,7 @@ uint8_t getAddress() {
 void setMotorDef(int8_t value) {
 	if (value != s_cv.motorDef) {
 		s_cv.motorDef = *(int8_t*)_writeCv(PZ_Feather_CV_motorDef, &value);
+		CvOnMotorDefChanged(value);
 	}
 }
 int8_t getMotorDef() {
@@ -149,6 +146,7 @@ int8_t getMotorDef() {
 void setMotorCal1(int8_t value) {
 	if (value != s_cv.motorCal1) {
 		s_cv.motorCal1 = *(int8_t*)_writeCv(PZ_Feather_CV_motorCal1, &value);
+		CvOnMotorCal1Changed(value);
 	}
 }
 int8_t getMotorCal1() {
@@ -158,6 +156,7 @@ int8_t getMotorCal1() {
 void setMotorCal2(int8_t value) {
 	if (value != s_cv.motorCal2) {
 		s_cv.motorCal2 = *(int8_t*)_writeCv(PZ_Feather_CV_motorCal2, &value);
+		CvOnMotorCal2Changed(value);
 	}
 }
 int8_t getMotorCal2() {
@@ -167,6 +166,7 @@ int8_t getMotorCal2() {
 void setMotorCal0(int8_t value) {
 	if (value != s_cv.motorCal0) {
 		s_cv.motorCal0 = *(int8_t*)_writeCv(PZ_Feather_CV_motorCal0, &value);
+		CvOnMotorCal0Changed(value);
 	}
 }
 int8_t getMotorCal0() {
@@ -176,6 +176,7 @@ int8_t getMotorCal0() {
 void setServoDef(uint8_t value) {
 	if (value != s_cv.servoDef) {
 		s_cv.servoDef = *(uint8_t*)_writeCv(PZ_Feather_CV_servoDef, &value);
+		CvOnServoDefChanged(value);
 	}
 }
 uint8_t getServoDef() {
@@ -185,6 +186,7 @@ uint8_t getServoDef() {
 void setServoCal1(uint8_t value) {
 	if (value != s_cv.servoCal1) {
 		s_cv.servoCal1 = *(uint8_t*)_writeCv(PZ_Feather_CV_servoCal1, &value);
+		CvOnServoCal1Changed(value);
 	}
 }
 uint8_t getServoCal1() {
@@ -194,8 +196,18 @@ uint8_t getServoCal1() {
 void setServoCal2(uint8_t value) {
 	if (value != s_cv.servoCal2) {
 		s_cv.servoCal2 = *(uint8_t*)_writeCv(PZ_Feather_CV_servoCal2, &value);
+		CvOnServoCal2Changed(value);
 	}
 }
 uint8_t getServoCal2() {
 	return s_cv.servoCal2;
 }
+
+__attribute__ ((weak)) void CvOnAddressChanged(uint8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnMotorDefChanged(int8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnMotorCal1Changed(int8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnMotorCal2Changed(int8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnMotorCal0Changed(int8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnServoDefChanged(uint8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnServoCal1Changed(uint8_t value) { (void)value; }
+__attribute__ ((weak)) void CvOnServoCal2Changed(uint8_t value) { (void)value; }

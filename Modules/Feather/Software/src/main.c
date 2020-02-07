@@ -37,7 +37,7 @@ int main(void) {
 	TIM21_Init();
 	
 	initCv();
-	resetAllDv();
+	initDv();
 
 	I2C1_Init();
 

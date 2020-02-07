@@ -8,6 +8,10 @@ static struct {
 	uint8_t servoCalMode;
 } s_dv;
 
+void initDv() {
+	resetAllDv();
+}
+
 uint8_t readDv(PZ_Feather_DV index) {
 	switch (index) {
 		case PZ_Feather_DV_motor: return *(uint8_t*)&s_dv.motor;
@@ -47,6 +51,7 @@ void resetAllDv() {
 
 void setMotor(int8_t value) {
 	s_dv.motor = value;
+	DvOnMotorChanged(value);
 }
 int8_t getMotor() {
 	return s_dv.motor;
@@ -54,6 +59,7 @@ int8_t getMotor() {
 
 void setMotorCalMode(uint8_t value) {
 	s_dv.motorCalMode = value;
+	DvOnMotorCalModeChanged(value);
 }
 uint8_t getMotorCalMode() {
 	return s_dv.motorCalMode;
@@ -61,6 +67,7 @@ uint8_t getMotorCalMode() {
 
 void setServo(uint8_t value) {
 	s_dv.servo = value;
+	DvOnServoChanged(value);
 }
 uint8_t getServo() {
 	return s_dv.servo;
@@ -68,7 +75,13 @@ uint8_t getServo() {
 
 void setServoCalMode(uint8_t value) {
 	s_dv.servoCalMode = value;
+	DvOnServoCalModeChanged(value);
 }
 uint8_t getServoCalMode() {
 	return s_dv.servoCalMode;
 }
+
+__attribute__ ((weak)) void DvOnMotorChanged(int8_t value) { (void)value; }
+__attribute__ ((weak)) void DvOnMotorCalModeChanged(uint8_t value) { (void)value; }
+__attribute__ ((weak)) void DvOnServoChanged(uint8_t value) { (void)value; }
+__attribute__ ((weak)) void DvOnServoCalModeChanged(uint8_t value) { (void)value; }
