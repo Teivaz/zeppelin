@@ -95,8 +95,7 @@ void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef* hi2c) {
 }
 
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef* hi2c) {
-	s_state = EStateAbort;
-	HAL_I2C_Master_Abort_IT(GetI2c(), s_dendrite.addr);
+	s_state = EStateIdle;
 }
 
 void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef* hi2c) {
