@@ -1,1 +1,0 @@
-resistors 1206 1k - 100
