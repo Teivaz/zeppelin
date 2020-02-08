@@ -31,6 +31,11 @@ Well there's not much to say about schematics despite the fact that I'm using AV
 ### Software
 Keeping in mind that I am using attiny25 the IDE is obviously [AVR Strudio](http://www.atmel.com/tools/atmelstudio.aspx). The language is C without any fancy libs.
 
+### Version 1.0 Notes
+ * Feather MCU should use internal PWM channels directly. This will simplify code and increase working frequency.
+ * Feather should use a motor driver that does not short circuit when in low phase of the PWM.
+ * Consider using 8 bit controller for the Feather module.
+
 ### Further plans
  * Second version will be able to carry a camera.
  * Third version will automatically keep position, folow the route or target.
