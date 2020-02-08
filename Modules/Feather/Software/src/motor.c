@@ -9,7 +9,7 @@
 // The HAL takes t0o much time to wrap all the calls so this file does
 // not use it for performance reasons.
 
-static const uint16_t s_maxMotorTimerValue = 2000; // Corresponds to 2ms
+static const uint16_t s_maxMotorTimerValue = 500; // Corresponds to 500 us
 
 static void _setMotor(int8_t value);
 static int32_t motorToTimerValue(int8_t value);
@@ -17,6 +17,7 @@ static int32_t motorToTimerValue(int8_t value);
 void motorInit() {
 	_setMotor(getMotor());
 
+	TIM2->ARR = s_maxMotorTimerValue;
 	// Enable interrupts for compare 1, compare 2, and update
 	TIM2->DIER |= TIM_DIER_CC1IE | TIM_DIER_CC2IE | TIM_DIER_UIE;
 	TIM2->CR1 |= TIM_CR1_CEN;
@@ -114,6 +115,6 @@ void TIM2_IRQHandler() {
 	// Timer update
 	if (TIM2->SR & TIM_SR_UIF) {
 		TIM2->SR = ~TIM_SR_UIF; // Clear interrupt flag
-		GPIOA->BSRR = ((TIM2->CCR1 != 0) ? GPIO_PIN_3 : 0) | ((TIM2->CCR2 != 0) ? GPIO_PIN_4 : 0);
+		GPIOA->BSRR = ((TIM2->CCR1 != 0) * GPIO_PIN_3) | ((TIM2->CCR2 != 0) * GPIO_PIN_4);
 	}
 }

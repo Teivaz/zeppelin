@@ -243,7 +243,6 @@ static void TIM2_Init() {
 	s_tim2.Instance = TIM2;
 	s_tim2.Init.Prescaler = 15; // Internally adds 1
 	s_tim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	s_tim2.Init.Period = 2000;
 	s_tim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	s_tim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&s_tim2) != HAL_OK) {
