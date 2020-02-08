@@ -10,6 +10,8 @@ void I2C1_IRQHandler();
 
 CRC_HandleTypeDef* GetCrc();
 I2C_HandleTypeDef* GetI2c();
+TIM_HandleTypeDef* GetTim21();
+TIM_HandleTypeDef* GetTim2();
 
 int main();
 

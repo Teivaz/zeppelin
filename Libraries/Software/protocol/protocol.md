@@ -76,22 +76,21 @@ The servo and DC motor controller.
 ### Configurable values:
 - `0x00` - The address of the device. Type: `uint8_t`. Default: `0x10`.
 - `0x10` - default value for DC motor on startup. Type: `int8_t`. Default: `0`.
-- `0x11` - calibrating minimal value for DC motor. Type: `int8_t`. Default: `-127`.
-- `0x12` - calibrating maximal value for DC motor. Type: `int8_t`. Default: `127`.
-- `0x13` - calibrating zero value for DC motor. Type: `int8_t`. Default: `0`.
+- `0x11` - calibration minimal value for DC motor. Type: `int8_t`. Default: `-128`.
+- `0x12` - calibration maximal value for DC motor. Type: `int8_t`. Default: `127`.
 - `0x20` - default value for the servo on startup. Type: `uint8_t`. Default: `0`.
-- `0x21` - calibrating minimal value for the servo. Type: `uint8_t`. Default: `128`.
-- `0x22` - calibrating maximal value for the servo. Type: `uint8_t`. Default: `128`.
+- `0x21` - calibration minimal value for the servo. Type: `uint8_t`. Default: `128`.
+- `0x22` - calibration maximal value for the servo. Type: `uint8_t`. Default: `128`.
 
 ### Dynamic values:
 - `0x00` - value of DC motor. Type: `int8_t`. Defaults to value of `0x00` configurable value.
-- `0x01` - DC motor calibrating mode. Type: `uint8_t`. Values: `[0, 1, 3]`. When calibrating mode is set to `0` the device functions normally.
-	When calibrating mode is set to `1`, `2`, or `3` the dynamic value `0x00` represents the corresponding calibration value (`0x11`, `0x12`, `0x13` respectively). The DV (dynamic value) is loaded from corresponding CV (configurable value). Value normalization is disabled.
+- `0x01` - DC motor calibration mode. Type: `uint8_t`. Values: `[0, 1, 2]`. When calibration mode is set to `0` the device functions normally.
+	When calibration mode is set to `1` or `2` the dynamic value `0x00` represents the corresponding calibration value (`0x11` or `0x12` respectively). The DV (dynamic value) is loaded from corresponding CV (configurable value). Value normalization is disabled.
 	**Note** Writing to this value would not change the value of any CV. To save the calibration result - read the DV `0x00` and set corresponding CV with *write-cv* command.
 	When calibration mode is set back to `0` the value of DV `0x00` is reset to its default.
 - `0x10` - value of servo. Type: `uint8_t`. Defaults to value if `0x10` configurable value.
-- `0x11` - servo calibrating mode. Type: `uint8_t`. Values: `[0, 1]`. When calibrating mode is set to `0` the device functions normally.
-	When calibrating mode is set to `1` or `2` the dynamic value `0x10` represents the corresponding calibration value (`0x21`, `0x22` respectively). The DV is loaded from corresponding CV. Value normalization is disabled.
+- `0x11` - servo calibration mode. Type: `uint8_t`. Values: `[0, 1, 2]`. When calibration mode is set to `0` the device functions normally.
+	When calibration mode is set to `1` or `2` the dynamic value `0x10` represents the corresponding calibration value (`0x21` or `0x22` respectively). The DV is loaded from corresponding CV. Value normalization is disabled.
 	**Note** Writing to this value would not change the value of any CV. To save the calibration result - read the DV `0x10` and set corresponding CV with *write-cv* command.
 
 ## Keel

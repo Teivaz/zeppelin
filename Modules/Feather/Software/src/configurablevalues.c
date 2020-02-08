@@ -13,7 +13,6 @@ struct {
 			int8_t def; // default value for DC motor on startup
 			int8_t cal1; // calibrating minimal value for DC motor
 			int8_t cal2; // calibrating maximal value for DC motor
-			int8_t cal0; // calibrating zero value for DC motor
 		} motor;
 	};
 	union {
@@ -28,9 +27,8 @@ struct {
 	.address = 0x10,
 	.motor = {
 		.def = 0,
-		.cal1 = -127,
+		.cal1 = -128,
 		.cal2 = 127,
-		.cal0 = 0,
 	},
 	.servo = {
 		.def = 0,
@@ -44,7 +42,6 @@ static struct {
 	int8_t motorDef;
 	int8_t motorCal1;
 	int8_t motorCal2;
-	int8_t motorCal0;
 	uint8_t servoDef;
 	uint8_t servoCal1;
 	uint8_t servoCal2;
@@ -54,9 +51,8 @@ void resetCv(PZ_Feather_CV index) {
 	switch (index) {
 		case PZ_Feather_CV_address: setAddress(0x10);
 		case PZ_Feather_CV_motorDef: return setMotorDef(0);
-		case PZ_Feather_CV_motorCal1: return setMotorCal1(-127);
+		case PZ_Feather_CV_motorCal1: return setMotorCal1(-128);
 		case PZ_Feather_CV_motorCal2: return setMotorCal2(127);
-		case PZ_Feather_CV_motorCal0: return setMotorCal0(0);
 		case PZ_Feather_CV_servoDef: return setServoDef(0);
 		case PZ_Feather_CV_servoCal1: return setServoCal1(128);
 		case PZ_Feather_CV_servoCal2: return setServoCal2(128);
@@ -67,9 +63,8 @@ void resetCv(PZ_Feather_CV index) {
 void resetAllCv() {
 	// Do not reset address
 	setMotorDef(0);
-	setMotorCal1(-127);
+	setMotorCal1(-128);
 	setMotorCal2(127);
-	setMotorCal0(0);
 	setServoDef(0);
 	setServoCal1(0);
 	setServoCal2(255);
@@ -80,7 +75,6 @@ void initCv() {
 	s_cv.motorDef = s_configurableValues.motor.def;
 	s_cv.motorCal1 = s_configurableValues.motor.cal1;
 	s_cv.motorCal2 = s_configurableValues.motor.cal2;
-	s_cv.motorCal0 = s_configurableValues.motor.cal0;
 	s_cv.servoDef = s_configurableValues.servo.def;
 	s_cv.servoCal1 = s_configurableValues.servo.cal1;
 	s_cv.servoCal2 = s_configurableValues.servo.cal2;
@@ -92,7 +86,6 @@ uint8_t readCv(PZ_Feather_CV index) {
 		case PZ_Feather_CV_motorDef: return *(uint8_t*)&s_cv.motorDef;
 		case PZ_Feather_CV_motorCal1: return *(uint8_t*)&s_cv.motorCal1;
 		case PZ_Feather_CV_motorCal2: return *(uint8_t*)&s_cv.motorCal2;
-		case PZ_Feather_CV_motorCal0: return *(uint8_t*)&s_cv.motorCal0;
 		case PZ_Feather_CV_servoDef: return *(uint8_t*)&s_cv.servoDef;
 		case PZ_Feather_CV_servoCal1: return *(uint8_t*)&s_cv.servoCal1;
 		case PZ_Feather_CV_servoCal2: return *(uint8_t*)&s_cv.servoCal2;
@@ -115,7 +108,6 @@ void writeCv(PZ_Feather_CV index, void* value) {
 		case PZ_Feather_CV_motorDef: return setMotorDef(*(int8_t*)value);
 		case PZ_Feather_CV_motorCal1: return setMotorCal1(*(int8_t*)value);
 		case PZ_Feather_CV_motorCal2: return setMotorCal2(*(int8_t*)value);
-		case PZ_Feather_CV_motorCal0: return setMotorCal0(*(int8_t*)value);
 		case PZ_Feather_CV_servoDef: return setServoDef(*(uint8_t*)value);
 		case PZ_Feather_CV_servoCal1: return setServoCal1(*(uint8_t*)value);
 		case PZ_Feather_CV_servoCal2: return setServoCal2(*(uint8_t*)value);
@@ -163,16 +155,6 @@ int8_t getMotorCal2() {
 	return s_cv.motorCal2;
 }
 
-void setMotorCal0(int8_t value) {
-	if (value != s_cv.motorCal0) {
-		s_cv.motorCal0 = *(int8_t*)_writeCv(PZ_Feather_CV_motorCal0, &value);
-		CvOnMotorCal0Changed(value);
-	}
-}
-int8_t getMotorCal0() {
-	return s_cv.motorCal0;
-}
-
 void setServoDef(uint8_t value) {
 	if (value != s_cv.servoDef) {
 		s_cv.servoDef = *(uint8_t*)_writeCv(PZ_Feather_CV_servoDef, &value);
@@ -207,7 +189,6 @@ __attribute__ ((weak)) void CvOnAddressChanged(uint8_t value) { (void)value; }
 __attribute__ ((weak)) void CvOnMotorDefChanged(int8_t value) { (void)value; }
 __attribute__ ((weak)) void CvOnMotorCal1Changed(int8_t value) { (void)value; }
 __attribute__ ((weak)) void CvOnMotorCal2Changed(int8_t value) { (void)value; }
-__attribute__ ((weak)) void CvOnMotorCal0Changed(int8_t value) { (void)value; }
 __attribute__ ((weak)) void CvOnServoDefChanged(uint8_t value) { (void)value; }
 __attribute__ ((weak)) void CvOnServoCal1Changed(uint8_t value) { (void)value; }
 __attribute__ ((weak)) void CvOnServoCal2Changed(uint8_t value) { (void)value; }

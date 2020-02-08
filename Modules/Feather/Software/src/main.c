@@ -3,14 +3,21 @@
 #include "stm32l0xx_hal.h"
 #include "configurablevalues.h"
 #include "dynamicvalues.h"
+#include "motor.h"
+#include "servo.h"
+
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef*);
 
 RTC_HandleTypeDef s_rtc;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
 TIM_HandleTypeDef s_tim21;
+TIM_HandleTypeDef s_tim2;
 
 CRC_HandleTypeDef* GetCrc() { return &s_crc; }
 I2C_HandleTypeDef* GetI2c() { return &s_i2c1; }
+TIM_HandleTypeDef* GetTim21() { return &s_tim21; }
+TIM_HandleTypeDef* GetTim2() { return &s_tim2; }
 
 void Error_Handler() {
 	void __blocking_handler();
@@ -22,6 +29,7 @@ static void GPIO_Init();
 static void CRC_Init();
 static void I2C1_Init();
 static void TIM21_Init();
+static void TIM2_Init();
 
 int main(void) {
 #ifdef _DEBUG
@@ -35,11 +43,17 @@ int main(void) {
 	GPIO_Init();
 	CRC_Init();
 	TIM21_Init();
+	TIM2_Init();
 	
 	initCv();
 	initDv();
 
 	I2C1_Init();
+
+	HAL_TIM_MspPostInit(&s_tim21);
+	HAL_TIM_MspPostInit(&s_tim2);
+	motorInit();
+	servoInit();
 
 	setup();
 
@@ -192,7 +206,7 @@ static void TIM21_Init() {
 	TIM_OC_InitTypeDef configOc = {0};
 
 	s_tim21.Instance = TIM21;
-	s_tim21.Init.Prescaler = 62;
+	s_tim21.Init.Prescaler = 61; // Internally adds 1
 	s_tim21.Init.CounterMode = TIM_COUNTERMODE_UP;
 	s_tim21.Init.Period = 5160;
 	s_tim21.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -219,9 +233,44 @@ static void TIM21_Init() {
 	if (HAL_TIM_PWM_ConfigChannel(&s_tim21, &configOc, TIM_CHANNEL_1) != HAL_OK) {
 		Error_Handler();
 	}
-	void HAL_TIM_MspPostInit(TIM_HandleTypeDef*);
-	HAL_TIM_MspPostInit(&s_tim21);
-	HAL_TIM_PWM_Start(&s_tim21, TIM_CHANNEL_1);
+}
+
+static void TIM2_Init() {
+	TIM_ClockConfigTypeDef clockSourceConfig = {0};
+	TIM_MasterConfigTypeDef masterConfig = {0};
+	TIM_OC_InitTypeDef configOC = {0};
+
+	s_tim2.Instance = TIM2;
+	s_tim2.Init.Prescaler = 15; // Internally adds 1
+	s_tim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+	s_tim2.Init.Period = 2000;
+	s_tim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	s_tim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&s_tim2) != HAL_OK) {
+		Error_Handler();
+	}
+	clockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&s_tim2, &clockSourceConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_PWM_Init(&s_tim2) != HAL_OK) {
+		Error_Handler();
+	}
+	masterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	masterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&s_tim2, &masterConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	configOC.OCMode = TIM_OCMODE_PWM1;
+	configOC.Pulse = 0;
+	configOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	configOC.OCFastMode = TIM_OCFAST_ENABLE;
+	if (HAL_TIM_PWM_ConfigChannel(&s_tim2, &configOC, TIM_CHANNEL_1) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_PWM_ConfigChannel(&s_tim2, &configOC, TIM_CHANNEL_2) != HAL_OK) {
+		Error_Handler();
+	}
 }
 
 void SysTick_Handler() {
@@ -237,7 +286,7 @@ void EXTI0_1_IRQHandler() {
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 
-void I2C1_IRQHandler(void) {
+void I2C1_IRQHandler() {
 	if (s_i2c1.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
 		HAL_I2C_ER_IRQHandler(&s_i2c1);
 	} else {

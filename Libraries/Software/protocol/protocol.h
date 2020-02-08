@@ -89,7 +89,6 @@ typedef enum {
 	PZ_Feather_CV_motorDef = 0x10, // default value for DC motor on startup
 	PZ_Feather_CV_motorCal1 = 0x11, // calibrating minimal value for DC motor
 	PZ_Feather_CV_motorCal2 = 0x12, // calibrating maximal value for DC motor
-	PZ_Feather_CV_motorCal0 = 0x13, // calibrating zero value for DC motor
 	PZ_Feather_CV_servoDef = 0x20, // default value for the servo on startup
 	PZ_Feather_CV_servoCal1 = 0x21, // calibrating minimal value for the servo
 	PZ_Feather_CV_servoCal2 = 0x22, // calibrating maximal value for the servo
