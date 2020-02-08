@@ -29,20 +29,20 @@ static int32_t motorToTimerValue(int8_t value) {
 			// value is in range -128 ... -1
 			const int32_t range = -value; // 128 ... 1
 
-			const int32_t servoRange = (255 - (128 + getMotorCal1())) * s_maxMotorTimerValue / 255;
+			const int32_t motorRange = (255 - (128 + getMotorCal1())) * s_maxMotorTimerValue / 255;
 			
-			const int32_t servoValue = range * servoRange / 128;
-			return -servoValue;
+			const int32_t motorValue = range * motorRange / 128;
+			return -motorValue;
 		}
 		else if (value > 0) {
 			// value is in range 1 ... 127
 			const int32_t range = value; // 1 ... 127
 
-			const int32_t servoRange = (128 + getMotorCal2()) * s_maxMotorTimerValue / 255;
+			const int32_t motorRange = (128 + getMotorCal2()) * s_maxMotorTimerValue / 255;
 
-			const int32_t servoValue = range * servoRange / 127;
+			const int32_t motorValue = range * motorRange / 127;
 			//const int32_t minimal = getMotorCal2();
-			return servoValue;
+			return motorValue;
 		}
 		else {
 			return 0;
@@ -51,14 +51,14 @@ static int32_t motorToTimerValue(int8_t value) {
 	else if (getMotorCalMode() == 1) {
 		// value is in range -128 ... 127
 		const int32_t range = 255 - (128 + value); // 255 ... 0
-		const int32_t servoValue = range * s_maxMotorTimerValue / 255;
-		return -servoValue;
+		const int32_t motorValue = range * s_maxMotorTimerValue / 255;
+		return -motorValue;
 	}
 	else if (getMotorCalMode() == 2) {
 		// value is in range -128 ... 127
 		const int32_t range = 128 + value; // 0 ... 255
-		const int32_t servoValue = range * s_maxMotorTimerValue / 255;
-		return servoValue;
+		const int32_t motorValue = range * s_maxMotorTimerValue / 255;
+		return motorValue;
 	}
 	return 0;
 }
@@ -84,7 +84,20 @@ void DvOnMotorChanged(int8_t value) {
 }
 
 void DvOnMotorCalModeChanged(uint8_t value) {
-	// TODO: process calibration mode
+	switch (value) {
+		case 0: // Normal mode
+			setMotor(getMotorDef());
+			break;
+		case 1: // Calibrating minimal value
+			setMotor(getMotorCal1());
+			break;
+		case 2: // Calibrating maximal value
+			setMotor(getMotorCal2());
+			break;
+		default:
+			break;
+	}
+	_setMotor(getMotor());
 }
 
 void CvOnMotorCal1Changed(int8_t value) {
