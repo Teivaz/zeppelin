@@ -5,21 +5,6 @@ void HAL_MspInit(void) {
 	__HAL_RCC_PWR_CLK_ENABLE();
 }
 
-void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc) {
-	if (hrtc->Instance == RTC) {
-		__HAL_RCC_RTC_ENABLE();
-		HAL_NVIC_SetPriority(RTC_IRQn, 0, 0);
-		HAL_NVIC_EnableIRQ(RTC_IRQn);
-	}
-}
-
-void HAL_RTC_MspDeInit(RTC_HandleTypeDef* hrtc) {
-	if (hrtc->Instance == RTC) {
-		__HAL_RCC_RTC_DISABLE();
-		HAL_NVIC_DisableIRQ(RTC_IRQn);
-	}
-}
-
 void HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc) {
 	if (hcrc->Instance == CRC) {
 		__HAL_RCC_CRC_CLK_ENABLE();

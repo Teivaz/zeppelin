@@ -74,22 +74,7 @@ uint8_t PZ_crc(uint8_t const* data, uint8_t size) {
 	return HAL_CRC_Calculate(GetCrc(), (uint32_t*)data, size);
 }
 
-void onTimer() {
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
-}
-
 void setup() {
-	//printf("\r\n\r\n** [Feather] Built: %s %s **\r\n\n", __DATE__, __TIME__);
-
-	GPIO_InitTypeDef port = {0};
-
-	/*Configure GPIOA1 pin */
-	port.Pin = GPIO_PIN_1;
-	port.Mode = GPIO_MODE_OUTPUT_PP;
-	port.Pull = GPIO_NOPULL;
-	port.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOA, &port);
-
 	if (HAL_I2C_EnableListen_IT(GetI2c()) != HAL_OK) {
 		Error();
 	}
@@ -154,7 +139,4 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef* hi2c) {
 	if (HAL_I2C_EnableListen_IT(hi2c) != HAL_OK) {
 		Error();
 	}
-}
-
-void poll() {
 }

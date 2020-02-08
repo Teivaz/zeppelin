@@ -8,7 +8,6 @@
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef*);
 
-RTC_HandleTypeDef s_rtc;
 CRC_HandleTypeDef s_crc;
 I2C_HandleTypeDef s_i2c1;
 TIM_HandleTypeDef s_tim21;
@@ -23,9 +22,8 @@ void Error_Handler() {
 	void __blocking_handler();
 	__blocking_handler();
 }
-static void RTC_Init();
+
 static void Clock_Init();
-static void GPIO_Init();
 static void CRC_Init();
 static void I2C1_Init();
 static void TIM21_Init();
@@ -39,8 +37,6 @@ int main(void) {
 
 	HAL_Init();
 	Clock_Init();
-	RTC_Init();
-	GPIO_Init();
 	CRC_Init();
 	TIM21_Init();
 	TIM2_Init();
@@ -58,7 +54,7 @@ int main(void) {
 	setup();
 
 	while(1) {
-		poll();
+		asm("nop");
 	}
 }
 
@@ -89,79 +85,10 @@ static void Clock_Init() {
 	}
 
 	RCC_PeriphCLKInitTypeDef periphClck = {0};
-	periphClck.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_RTC;
-	periphClck.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
-	periphClck.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
 	periphClck.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
 	if (HAL_RCCEx_PeriphCLKConfig(&periphClck) != HAL_OK) {
 		Error_Handler();
 	}
-}
-
-static void RTC_Init() {
-	// Initialize RTC Only
-	s_rtc.Instance = RTC;
-	s_rtc.Init.HourFormat = RTC_HOURFORMAT_24;
-	s_rtc.Init.AsynchPrediv = 127;
-	s_rtc.Init.SynchPrediv = 255;
-	s_rtc.Init.OutPut = RTC_OUTPUT_DISABLE;
-	s_rtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
-	s_rtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-	s_rtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-	if (HAL_RTC_Init(&s_rtc) != HAL_OK) {
-		Error_Handler();
-	}
-
-	// Initialize RTC and set the Time and Date
-	RTC_TimeTypeDef rtcTime = {0};
-	rtcTime.Hours = 0;
-	rtcTime.Minutes = 0;
-	rtcTime.Seconds = 0;
-	rtcTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-	rtcTime.StoreOperation = RTC_STOREOPERATION_RESET;
-	if (HAL_RTC_SetTime(&s_rtc, &rtcTime, RTC_FORMAT_BIN) != HAL_OK) {
-		Error_Handler();
-	}
-
-	RTC_DateTypeDef rtcDate = {0};
-	rtcDate.WeekDay = RTC_WEEKDAY_MONDAY;
-	rtcDate.Month = RTC_MONTH_JANUARY;
-	rtcDate.Date = 1;
-	rtcDate.Year = 0;
-	if (HAL_RTC_SetDate(&s_rtc, &rtcDate, RTC_FORMAT_BIN) != HAL_OK) {
-		Error_Handler();
-	}
-
-	// Enable the Alarm A
-	RTC_AlarmTypeDef rtcAlarm = {0};
-	rtcAlarm.AlarmTime.Hours = 0;
-	rtcAlarm.AlarmTime.Minutes = 0;
-	rtcAlarm.AlarmTime.Seconds = 0;
-	rtcAlarm.AlarmTime.SubSeconds = 0;
-	rtcAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-	rtcAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-	rtcAlarm.AlarmMask = RTC_ALARMMASK_ALL;
-	rtcAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
-	rtcAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-	rtcAlarm.AlarmDateWeekDay = 1;
-	rtcAlarm.Alarm = RTC_ALARM_A;
-	if (HAL_RTC_SetAlarm_IT(&s_rtc, &rtcAlarm, RTC_FORMAT_BIN) != HAL_OK) {
-		Error_Handler();
-	}
-}
-
-static void GPIO_Init() {
-	GPIO_InitTypeDef port = {0};
-
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-
-	/*Configure GPIO pin : PA1 */
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
-	port.Pin = GPIO_PIN_1;
-	port.Mode = GPIO_MODE_OUTPUT_PP;
-	port.Pull = GPIO_NOPULL;
-	port.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &port);
 }
 
 static void CRC_Init() {
@@ -274,11 +201,6 @@ static void TIM2_Init() {
 
 void SysTick_Handler() {
 	HAL_IncTick();
-}
-
-void RTC_IRQHandler() {
-	onTimer();
-	HAL_RTC_AlarmIRQHandler(&s_rtc);
 }
 
 void EXTI0_1_IRQHandler() {

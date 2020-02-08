@@ -4,8 +4,5 @@
 #include "protocol.h"
 
 void setup();
-void onTimer();
-
-void poll();
 
 #endif // _PROGRAM_H_INCLUDED_
