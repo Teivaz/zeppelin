@@ -210,3 +210,4 @@ $RECYCLE.BIN/
 
 #AVR studio
 *.atsuo
+.cortex-debug.peripherals.state.json
