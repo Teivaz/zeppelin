@@ -187,15 +187,15 @@ $RECYCLE.BIN/
 *.mo
 
 #Mr Developer
+*.bak
 .mr.developer.cfg
 /UVisionOutput
-*.bak
 /Software/UVisionOutput
-*.bak
 /Software/*.sdf
 /Software/Feather/UVisionOutput
 /Software/Nest/UVisionOutput
-/Software/Feather/*.atsuo
+.cortex-debug.peripherals.state.json
+.cortex-debug.registers.state.json
 
 #Eagle temp files
 *.b#*
@@ -210,4 +210,3 @@ $RECYCLE.BIN/
 
 #AVR studio
 *.atsuo
-.cortex-debug.peripherals.state.json
