@@ -8,12 +8,28 @@
 			"label": "Flash (STM32 Programmer)",
 			"command": "/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI",
 			"args": [
-				"-c", "port=SWD", "freq=1000", "mode=HOTPLUG", "reset=Crst",
+				"-c", "port=SWD", "freq=${input:frequency}", "mode=HOTPLUG", "reset=Swrst",
 				"-w", "build/program.elf",
 				"-v",
 				"-rst"
 			],
 			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"description": "Frequency",
+			"id": "frequency",
+			"type": "pickString",
+			"options": [
+				"24000",
+				"8000",
+				"1000",
+				"200",
+				"50",
+				"5",
+			],
+			"default": "8000"
 		}
 	]
 }

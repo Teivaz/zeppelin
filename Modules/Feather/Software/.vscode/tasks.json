@@ -8,7 +8,7 @@
 			"label": "Flash (STM32 Programmer)",
 			"command": "/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI",
 			"args": [
-				"-c", "port=SWD", "freq=50", "mode=HOTPLUG", "reset=Crst",
+				"-c", "port=SWD", "freq=${input:frequency}", "mode=HOTPLUG", "reset=Crst",
 				"-w", "build/program.elf",
 				"-v",
 				"-rst"
@@ -20,12 +20,28 @@
 			"label": "Flash EEPROM (STM32 Programmer)",
 			"command": "/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI",
 			"args": [
-				"-c", "port=SWD", "freq=1000",
+				"-c", "port=SWD", "freq=${input:frequency}",
 				"--skipErase",
 				"-w", "build/eeprom.hex",
 				"-v"
 			],
 			"problemMatcher": []
+		},
+	],
+	"inputs": [
+		{
+			"description": "Frequency",
+			"id": "frequency",
+			"type": "pickString",
+			"options": [
+				"24000",
+				"8000",
+				"1000",
+				"200",
+				"50",
+				"5",
+			],
+			"default": "8000"
 		}
 	]
 }
