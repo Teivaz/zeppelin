@@ -11,9 +11,9 @@
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "openocd",
-			"svdFile": "${workspaceRoot}/../../../Libraries/STM32L0x1.svd",
+			"svdFile": "${workspaceRoot}/../../Libraries/STM32L0x1.svd",
 			"configFiles": [
-					"${workspaceRoot}/../../../Libraries/board.cfg"
+					"${workspaceRoot}/../../Libraries/board.cfg"
 			],
 			"overrideLaunchCommands": [],
 			"preLaunchCommands": [
@@ -31,9 +31,9 @@
 			"request": "attach",
 			"type": "cortex-debug",
 			"servertype": "openocd",
-			"svdFile": "${workspaceRoot}/../../../Libraries/STM32L0x1.svd",
+			"svdFile": "${workspaceRoot}/../../Libraries/STM32L0x1.svd",
 			"configFiles": [
-					"${workspaceRoot}/../../../Libraries/board.cfg"
+					"${workspaceRoot}/../../Libraries/board.cfg"
 			]
 		}
 	]
