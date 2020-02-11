@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(libraries_dir "${CMAKE_CURRENT_LIST_DIR}/../../../Libraries")
+set(libraries_dir "${CMAKE_CURRENT_LIST_DIR}/../../Libraries")
 set(CMAKE_TOOLCHAIN_FILE "${libraries_dir}/Software/toolchain.cmake")
 
 project("Beacon")
