@@ -22,6 +22,9 @@ static int8_t convertTemp(uint16_t measure);
 
 static uint8_t s_on = 0;
 static uint16_t s_vref = 300; // centivolts
+static uint8_t const s_selfAddress[] = PZ_CLIENT_ADDR;
+static uint8_t const s_otherAddress[] = PZ_HOST_ADDR;
+static NRF24_InstanceTypedef s_nrf24;
 
 #pragma pack(push)
 #pragma pack(2)
@@ -85,22 +88,7 @@ static void axonSend(PZ_Package const* p) {
 }
 
 static void axonSendRaw(uint8_t const* data, uint8_t len) {
-	NRF24_StopReceive();
-	NRF24_WritePayload(data, len);
-	NRF24_SetOperationalMode(NRF24_MODE_TX);
-	uint8_t result = NRF24_Transmit();
-	NRF24_SetOperationalMode(NRF24_MODE_RX);
-	NRF24_FlushTX();
-	NRF24_StartReceive();
-	if (result == 0) {
-		//printf("Transmission OK.\r\n");
-	}
-	else if (result == 1) {
-		//printf("Transmission Failed: Retransmittion limit reached.\r\n");
-	}
-	else {
-		//printf("Transmission Failed: Unkown error.\r\n");
-	}
+	NRF24_Transmit_IT(&s_nrf24, data, len);
 }
 
 void onTimer() {
@@ -139,6 +127,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 	setTemp0(convertTemp(s_dmaAdc.temp));
 }
 
+
 void setup() {
 	NRF24_Init(GetSpi());
 	//printf("\r\n\r\n** [Keel] Built: %s %s **\r\n\n", __DATE__, __TIME__);
@@ -155,52 +144,56 @@ void setup() {
 	if (NRF24_Check()) {
 		NRF24_Device_Init();
 
-		uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
-		uint8_t const hostAddr[] = PZ_HOST_ADDR;
-		NRF24_SetRFChannel(90); // set RF channel to 2490MHz
-		NRF24_SetDataRate(NRF24_DR_1Mbps); // 2Mbit/s data rate
-		NRF24_SetCRCScheme(NRF24_CRC_1byte); // 1-byte CRC scheme
-		NRF24_SetAddrWidth(5); // address width is 5 bytes
-		NRF24_SetAddr(NRF24_PIPETX, hostAddr);
-		NRF24_SetAddr(NRF24_PIPE0, hostAddr); // program pipe address
-		NRF24_SetAddr(NRF24_PIPE1, clientAddr); // program pipe address
-		NRF24_SetRXPipe(NRF24_PIPE1, NRF24_AA_ON, 8); // enable RX pipe#1 with Auto-ACK: disabled, payload length: 10 bytes
-		NRF24_LockUnlockFeature();
-		NRF24_EableDynPl();
-		NRF24_SetTXPower(NRF24_TXPWR_0dBm);
-		NRF24_SetAutoRetr(NRF24_ARD_2500us, 10);
-		NRF24_EnableAA(NRF24_PIPE0);
-		NRF24_SetOperationalMode(NRF24_MODE_RX); // switch transceiver to the RX mode
-		NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
-		NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
-		NRF24_StartReceive();
+		// Common setup
+		s_nrf24.init.rfChannel = 90; // 90 => 2490MHz
+		s_nrf24.init.dataRate = NRF24_DR_1Mbps;
+		s_nrf24.init.txPower = NRF24_TXPWR_0dBm;
+		s_nrf24.init.crcScheme = NRF24_CRC_1byte;
+		s_nrf24.init.retransmitDelay = 
+		s_nrf24.init.maxRetransmits = 10;
+		s_nrf24.init.addrLen = 5;
+		s_nrf24.init.selfAddr = s_selfAddress;
+		s_nrf24.init.otherAddr = s_otherAddress;
+		s_nrf24.mode = NRF24_MODE_RX;
+
+		if (NRF24_init(&s_nrf24) != NRF24_Error_OK) {
+			//Error handler
+		}
+		if (NRF24_Receive_IT(&s_nrf24) != NRF24_Error_OK) {
+			//Error handler
+		}
 		s_on = 1;
 	}
 
 	HAL_ADC_Start_DMA(GetAdc(), (uint32_t*)s_dmaAdc.buffer, 3);
 }
+void NRF24_OnSendErrorCallback() {
+	NRF24_Receive_IT(&s_nrf24);
+}
+
+void NRF24_OnDataSentCallback() {
+	NRF24_Receive_IT(&s_nrf24);
+}
+
+void NRF24_OnReceiveCallback(uint8_t const* data, uint8_t length, uint8_t pipe) {
+	if (PZ_verify(data, length) == PZ_OK) {
+		PZ_Package package = PZ_fromData(data);
+
+		if (package.adr == getAddress()) {
+			processPackage(&package);
+		}
+		else {
+			dendriteSend(&package);
+		}
+	}
+}
 
 void poll() {
-	const uint8_t hasSpiData = !HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
+	uint8_t const hasSpiData = !HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
 	if (hasSpiData) {
-		uint8_t dataLen = 0;
-		uint8_t buffer[PZ_MAX_PACKAGE_LEN];
-		NRF24_ReadDynPayload(buffer, &dataLen);
-
-		if (PZ_verify(buffer, dataLen) == PZ_OK) {
-			PZ_Package package = PZ_fromData(buffer);
-
-			if (package.adr == getAddress()) {
-				processPackage(&package);
-			}
-			else {
-				dendriteSend(&package);
-			}
-		}
-		NRF24_ClearIRQFlags();
-		NRF24_FlushRX();
+		NRF24_IrqHandler(&s_nrf24);
 	}
-	const uint8_t dendriteDataLength = getDendriteDataLen();
+	uint8_t const dendriteDataLength = getDendriteDataLen();
 	if (dendriteDataLength > 0) {
 		axonSendRaw(getDendriteData(), dendriteDataLength);
 		resetDendriteData();

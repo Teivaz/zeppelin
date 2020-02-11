@@ -18,6 +18,7 @@ static const uint8_t NRF24_ADDR_REGS[7] = {
 		NRF24_REG_TX_ADDR
 };
 
+static void clearIrq(uint8_t irq);
 
 // Reads a value of register
 // input:
@@ -132,7 +133,7 @@ void NRF24_Device_Init() {
 	NRF24_FlushTX();
 
 	// Clear any pending interrupt flags
-	NRF24_ClearIRQFlags();
+	clearIrq(NRF24_FLAG_RX_DR | NRF24_FLAG_TX_DS | NRF24_FLAG_MAX_RT);
 
 	// Deassert CSN pin (chip release)
 	NRF24_CSN_High();
@@ -210,13 +211,13 @@ void NRF24_SetOperationalMode(uint8_t mode) {
 //   scheme - CRC scheme, one of NRF24_CRC_xx values
 // note: transceiver will forcibly turn on the CRC in case if auto acknowledgment
 //       enabled for at least one RX pipe
-void NRF24_SetCRCScheme(uint8_t scheme) {
+void NRF24_SetCRCScheme(NRF24_CrcScheme scheme) {
 	uint8_t reg;
 
 	// Configure EN_CRC[3] and CRCO[2] bits of the CONFIG register
 	reg = NRF24_ReadReg(NRF24_REG_CONFIG);
 	reg &= ~NRF24_MASK_CRC;
-	reg |= (scheme & NRF24_MASK_CRC);
+	reg |= ((uint8_t)scheme & NRF24_MASK_CRC);
 	NRF24_WriteReg(NRF24_REG_CONFIG, reg);
 }
 
@@ -238,7 +239,7 @@ void NRF24_SetRFChannel(uint8_t channel) {
 void NRF24_SetAutoRetr(uint8_t ard, uint8_t arc) {
 	NRF24_WriteReg(
 		NRF24_REG_SETUP_RETR,
-		(uint8_t)((ard << 4) | (arc & NRF24_MASK_RETR_ARC))
+		(uint8_t)(ard | (arc & NRF24_MASK_RETR_ARC))
 	);
 }
 
@@ -315,13 +316,13 @@ void NRF24_SetTXPower(uint8_t tx_pwr) {
 // Configure transceiver data rate
 // input:
 //   data_rate - data rate, one of NRF24_DR_xx values
-void NRF24_SetDataRate(uint8_t data_rate) {
+void NRF24_SetDataRate(NRF24_TxPower data_rate) {
 	uint8_t reg;
 
 	// Configure RF_DR_LOW[5] and RF_DR_HIGH[3] bits of the RF_SETUP register
 	reg = NRF24_ReadReg(NRF24_REG_RF_SETUP);
 	reg &= ~NRF24_MASK_DATARATE;
-	reg |= data_rate;
+	reg |= (uint8_t)data_rate;
 	NRF24_WriteReg(NRF24_REG_RF_SETUP, reg);
 }
 
@@ -427,13 +428,6 @@ void NRF24_SetIrqMask(uint8_t mask) {
 	NRF24_WriteReg(NRF24_REG_CONFIG, reg);
 }
 
-void NRF24_LockUnlockFeature() {
-	NRF24_CSN_Low();
-	NRF24_LL_RW(NRF24_CMD_LOCK_UNLOCK);
-	NRF24_LL_RW(0x73);
-	NRF24_CSN_High();
-}
-
 // Get address length
 // return: the length of the address configured in the transceiver,
 //         value from 3 to 5
@@ -444,7 +438,13 @@ uint8_t NRF24_GetAddrWidth(void) {
 // Get value of the STATUS register
 // return: value of STATUS register
 uint8_t NRF24_GetStatus(void) {
-	return NRF24_ReadReg(NRF24_REG_STATUS);
+	uint8_t value;
+
+	NRF24_CSN_Low();
+	value = NRF24_LL_RW(NRF24_CMD_NOP);
+	NRF24_CSN_High();
+
+	return value;
 }
 
 // Get pending IRQ flags
@@ -468,15 +468,15 @@ uint8_t NRF24_GetStatus_TXFIFO(void) {
 
 // Get pipe number for the payload available for reading from RX FIFO
 // return: pipe number or 0x07 if the RX FIFO is empty
-uint8_t NRF24_GetRXSource(void) {
-	return ((NRF24_ReadReg(NRF24_REG_STATUS) & NRF24_MASK_RX_P_NO) >> 1);
+uint8_t NRF24_GetRXSource() {
+	return ((NRF24_GetStatus() & NRF24_MASK_RX_P_NO) >> 1);
 }
 
-uint8_t NRF24_GetRXPayloadWidth(void) {
+uint8_t NRF24_GetRXPayloadWidth() {
 	uint8_t result;
 	NRF24_CSN_Low();
 	NRF24_LL_RW(NRF24_CMD_R_RX_PL_WID);
-	result = NRF24_LL_RW(0x00);
+	result = NRF24_LL_RW(NRF24_CMD_NOP);
 	NRF24_CSN_High();
 	return result;
 }
@@ -499,51 +499,17 @@ void NRF24_ResetPLOS(void) {
 }
 
 // Flush the TX FIFO
-void NRF24_FlushTX(void) {
-	NRF24_WriteReg(NRF24_CMD_FLUSH_TX, NRF24_CMD_NOP);
+void NRF24_FlushTX() {
+	NRF24_CSN_Low();
+	NRF24_LL_RW(NRF24_CMD_FLUSH_TX);
+	NRF24_CSN_High();
 }
 
 // Flush the RX FIFO
-void NRF24_FlushRX(void) {
-	NRF24_WriteReg(NRF24_CMD_FLUSH_RX, NRF24_CMD_NOP);
-}
-
-// Clear any pending IRQ flags
-void NRF24_ClearIRQFlags(void) {
-	uint8_t reg;
-
-	// Clear RX_DR, TX_DS and MAX_RT bits of the STATUS register
-	reg = NRF24_ReadReg(NRF24_REG_STATUS);
-	reg |= NRF24_MASK_STATUS_IRQ;
-	NRF24_WriteReg(NRF24_REG_STATUS, reg);
-}
-
-uint8_t NRF24_Transmit() {
-	uint8_t status;
-	NRF24_CE_High(); // assert CE pin (transmission starts)
-	while (1) {
-		status = NRF24_GetStatus();
-		if (status & (NRF24_FLAG_TX_DS | NRF24_FLAG_MAX_RT)) {
-			// transmission ended, exit loop
-			break;
-		}
-	}
-	NRF24_CE_Low(); // de-assert CE pin (nRF24 goes to StandBy-I mode)
-	NRF24_ClearIRQFlags();
-	if (status & NRF24_FLAG_MAX_RT) {
-		return 1;
-	}
-	if (status & NRF24_FLAG_TX_DS) {
-			return 0;
-	}
-	return 2;
-}
-
-void NRF24_StartReceive() {
-	NRF24_CE_High();
-}
-void NRF24_StopReceive() {
-	NRF24_CE_Low();
+void NRF24_FlushRX() {
+	NRF24_CSN_Low();
+	NRF24_LL_RW(NRF24_CMD_FLUSH_RX);
+	NRF24_CSN_High();
 }
 
 // Write TX payload
@@ -816,4 +782,209 @@ void NRF24_DumpConfig(NRF24_printf _printf) {
 	_printf("[0x%02X] RX_PW_P4=%u\r\n", NRF24_REG_RX_PW_P4, NRF24_ReadReg(NRF24_REG_RX_PW_P4));
 	// RX_PW_P5
 	_printf("[0x%02X] RX_PW_P5=%u\r\n", NRF24_REG_RX_PW_P5, NRF24_ReadReg(NRF24_REG_RX_PW_P5));
+}
+
+
+NRF24_Error NRF24_init(NRF24_InstanceTypedef* nrf24) {
+	if (nrf24->status != NRF24_Status_Uninitialized) {
+		return NRF24_Error_Busy;
+	}
+	uint8_t regConf = 0;
+	// PWR_UP
+	regConf |= NRF24_PWR_UP;
+
+	// Set interrupts
+	regConf &= ~NRF24_FLAG_MAX_RT & ~NRF24_FLAG_TX_DS & ~NRF24_FLAG_RX_DR;
+	
+	// Set CRC scheme
+	regConf |= nrf24->init.crcScheme;
+
+	// Set TX/RX mode
+	regConf |= nrf24->mode;
+
+	NRF24_WriteReg(NRF24_REG_CONFIG, regConf);
+
+	// Enable EN_AA
+	NRF24_WriteReg(NRF24_REG_EN_AA, (1 << NRF24_PIPE0) | (1 << NRF24_PIPE1));
+
+	// Enable RX pipes
+	NRF24_WriteReg(NRF24_REG_EN_RXADDR, (1 << NRF24_PIPE0) | (1 << NRF24_PIPE1));
+
+	// Set address width with AW
+	NRF24_WriteReg(NRF24_REG_SETUP_AW, nrf24->init.addrLen - 2U);
+
+	uint8_t regRetr = 0;
+	// Set ARD and ARC
+	regRetr |= nrf24->init.retransmitDelay;
+	regRetr |= nrf24->init.maxRetransmits;
+
+	NRF24_WriteReg(NRF24_REG_SETUP_RETR, regRetr);
+
+	// Set RF_CH
+	NRF24_WriteReg(NRF24_REG_RF_CH, nrf24->init.rfChannel);
+
+	uint8_t regRf = 0;
+	// Set Data rate RF_DR
+	regRf |= nrf24->init.dataRate;
+
+	// Set RF_PWR
+	regRf |= nrf24->init.txPower;
+
+	NRF24_WriteReg(NRF24_REG_RF_SETUP, regRf);
+
+	// Set RX pipe addresses
+	NRF24_WriteMBReg(NRF24_REG_RX_ADDR_P0, nrf24->init.otherAddr, nrf24->init.addrLen);
+	NRF24_WriteMBReg(NRF24_REG_RX_ADDR_P1, nrf24->init.selfAddr, nrf24->init.addrLen);
+
+	// Set TX pipe address
+	NRF24_WriteMBReg(NRF24_REG_TX_ADDR, nrf24->init.otherAddr, nrf24->init.addrLen);
+
+	// Enable dyn payload feature
+	NRF24_WriteReg(NRF24_REG_FEATURE, NRF24_FEATURE_DPL);
+
+	// Enable dyn payload for pipe 1
+	NRF24_WriteReg(NRF24_REG_DYNPD, (1 << NRF24_PIPE0) | (1 << NRF24_PIPE1));
+
+	return NRF24_Error_OK;
+}
+
+__attribute__((weak)) void NRF24_OnReceiveCallback(uint8_t const* data, uint8_t length, uint8_t pipe) {
+	(void)data;
+	(void)length;
+	(void)pipe;
+}
+
+__attribute__((weak)) void NRF24_OnSendErrorCallback() {}
+__attribute__((weak)) void NRF24_OnDataSentCallback() {}
+
+static void readRxPayload(uint8_t* buffer) {
+	NRF24_CSN_Low();
+	NRF24_LL_RW(NRF24_CMD_R_RX_PAYLOAD);
+	for (uint8_t i = 0; i < 32; ++i) {
+		buffer[i] = NRF24_LL_RW(NRF24_CMD_NOP);
+	}
+	NRF24_CSN_High();
+}
+static void writeTxPayload(uint8_t const* buffer, uint8_t len) {
+	NRF24_CSN_Low();
+	NRF24_LL_RW(NRF24_CMD_W_TX_PAYLOAD);
+	for (uint8_t i = 0; i < len; ++i) {
+		NRF24_LL_RW(buffer[i]);
+	}
+	NRF24_CSN_High();
+}
+
+static void clearIrq(uint8_t irq) {
+	NRF24_CSN_Low();
+	uint8_t const status = NRF24_LL_RW(NRF24_CMD_W_REGISTER | NRF24_REG_STATUS);
+	NRF24_LL_RW(status | irq);
+	NRF24_CSN_High();
+}
+
+static void processRx() {
+	/*
+	 * The RX_DR IRQ is asserted by a new packet arrival event.
+	 * The procedure for handling this interrupt should be:
+	 *  1) read payload through SPI
+	 *  2) clear RX_DR IRQ
+	 *  3) read FIFO_STATUS to check if there are more payloads available in RX FIFO
+	 *  4) if there are more data in RX FIFO, repeat from step 1)
+	 * 
+	 */
+	
+	while (1) {
+		uint8_t const pipe = NRF24_GetRXSource();
+		const uint8_t dynPayload = NRF24_ReadReg(NRF24_REG_DYNPD) & pipe;
+		uint8_t bytesAvailable = 0;
+
+		if (dynPayload) {
+			bytesAvailable = NRF24_GetRXPayloadWidth();
+			/*
+			 * Always check if the packet width reported is 32 bytes or shorter when
+			 * using the `R_RX_PL_WID` command. If its width is longer than 32 bytes
+			 * then the packet contains errors and must be discarded. Discard the packet
+			 * by using the `Flush_RX` command.
+			 */
+			if (bytesAvailable > 32) {
+				NRF24_FlushRX();
+				clearIrq(NRF24_FLAG_RX_DR);
+				return;
+			}
+		}
+		else { // Static payload
+			bytesAvailable = NRF24_ReadReg(NRF24_REG_RX_PW_P0 + pipe);
+		}
+
+		uint8_t buffer[32] = {0};
+		readRxPayload(buffer);
+		clearIrq(NRF24_FLAG_RX_DR);
+
+		NRF24_OnReceiveCallback(buffer, bytesAvailable, pipe);
+
+		uint8_t const fifoStatus = NRF24_ReadReg(NRF24_REG_FIFO_STATUS);
+		if (fifoStatus & NRF24_STATUS_RXFIFO_EMPTY) {
+			return;
+		}
+	}
+}
+
+void NRF24_IrqHandler(NRF24_InstanceTypedef* nrf24) {
+	if (NRF24_GetStatus() & NRF24_FLAG_RX_DR) {
+		nrf24->status = NRF24_Status_Busy;
+		processRx();
+		nrf24->status = NRF24_Status_Idle;
+	}
+	if (NRF24_GetStatus() & NRF24_FLAG_TX_DS) {
+		clearIrq(NRF24_FLAG_TX_DS);
+		nrf24->status = NRF24_Status_Idle;
+		NRF24_OnDataSentCallback();
+	}
+	if (NRF24_GetStatus() & NRF24_FLAG_MAX_RT) {
+		NRF24_FlushTX();
+		clearIrq(NRF24_FLAG_MAX_RT);
+		nrf24->status = NRF24_Status_Idle;
+		NRF24_OnSendErrorCallback();
+	}
+}
+
+static void setMode(NRF24_InstanceTypedef* nrf24, NRF24_Mode mode) {
+	NRF24_CE_Low();
+	nrf24->mode = mode;
+
+	// Configure PRIM_RX bit of the CONFIG register
+	uint8_t reg = NRF24_ReadReg(NRF24_REG_CONFIG);
+	reg &= ~NRF24_CONFIG_PRIM_RX;
+	reg |= (mode & NRF24_CONFIG_PRIM_RX);
+	NRF24_WriteReg(NRF24_REG_CONFIG, reg);
+}
+
+NRF24_Error NRF24_Transmit_IT(NRF24_InstanceTypedef* nrf24, uint8_t const* data, uint8_t dataLen) {
+	if (dataLen == 0 || dataLen > 32 || data == 0) {
+		return NRF24_Error_Input;
+	}
+	if (nrf24->status != NRF24_Status_Idle) {
+		// TODO: can push to fifo buffer if already transmitting
+		return NRF24_Error_Busy;
+	}
+	nrf24->status = NRF24_Status_Busy;
+	if (nrf24->mode != NRF24_MODE_TX) {
+		setMode(nrf24, NRF24_MODE_TX);
+	}
+	writeTxPayload(data, dataLen);
+
+	NRF24_CE_High();
+	return NRF24_Error_OK;
+}
+
+NRF24_Error NRF24_Receive_IT(NRF24_InstanceTypedef* nrf24) {
+	if (nrf24->status != NRF24_Status_Idle) {
+		return NRF24_Error_Busy;
+	}
+	nrf24->status = NRF24_Status_Busy;
+	if (nrf24->mode != NRF24_MODE_RX) {
+		setMode(nrf24, NRF24_MODE_RX);
+	}
+	NRF24_CE_High();
+	nrf24->status = NRF24_Status_Idle;
+	return NRF24_Error_OK;
 }

@@ -10,27 +10,15 @@
 static uint8_t s_uart_buff;
 uint8_t s_on = 0;
 static uint8_t s_hasSpiData = 0;
-static uint8_t s_spiBuffer[PZ_MAX_PACKAGE_LEN];
+static uint8_t const s_selfAddress[] = PZ_HOST_ADDR;
+static uint8_t const s_otherAddress[] = PZ_CLIENT_ADDR;
+static NRF24_InstanceTypedef s_nrf24;
 PZ_Package s_pkg;
 
 static void send(uint8_t* data, uint8_t len) {
-	NRF24_StopReceive();
-	NRF24_WritePayload(data, len);
-	NRF24_SetOperationalMode(NRF24_MODE_TX);
-	uint8_t result = NRF24_Transmit();
-	NRF24_SetOperationalMode(NRF24_MODE_RX);
-	NRF24_FlushTX();
-	NRF24_StartReceive();
-	if (result == 0) {
-		//printf("Transmission OK.\r\n");
-	}
-	else if (result == 1) {
-		printf("Transmission Failed: Retransmittion limit reached.\r\n");
-	}
-	else {
-		printf("Transmission Failed: Unkown error.\r\n");
-	}
+	NRF24_Transmit_IT(&s_nrf24, data, len);
 }
+
 static void sendPz(PZ_Package* p) {
 	uint8_t msg[8];
 	uint8_t msgLen = 0;
@@ -144,48 +132,54 @@ void setup() {
 	port.Pull = GPIO_NOPULL;
 	port.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOA, &port);
-	NRF24_Device_Init();
 	if (!NRF24_Check()) {
 		printf("NRF24 Devices is FAILED\r\n");
 		return;
 	}
+	NRF24_Device_Init();
 
 	printf("NRF24 Device is OK\r\n");
 
-	uint8_t const clientAddr[] = PZ_CLIENT_ADDR;
-	uint8_t const hostAddr[] = PZ_HOST_ADDR;
-	NRF24_SetRFChannel(90); // set RF channel to 2490MHz
-	NRF24_SetDataRate(NRF24_DR_1Mbps); // 2Mbit/s data rate
-	NRF24_SetCRCScheme(NRF24_CRC_1byte); // 1-byte CRC scheme
-	NRF24_SetAddrWidth(5); // address width is 5 bytes
-	NRF24_SetAddr(NRF24_PIPETX, clientAddr);
-	NRF24_SetAddr(NRF24_PIPE0, clientAddr);
-	NRF24_SetAddr(NRF24_PIPE1, hostAddr); // program pipe address
-	NRF24_SetRXPipe(NRF24_PIPE1, NRF24_AA_ON, 8); // enable RX pipe#1 with Auto-ACK: disabled, payload length: 10 bytes
-	NRF24_LockUnlockFeature();
-	NRF24_EableDynPl();
-	NRF24_SetTXPower(NRF24_TXPWR_0dBm); // configure TX power
-	NRF24_SetAutoRetr(NRF24_ARD_2500us, 10);
-	NRF24_EnableAA(NRF24_PIPE0);
-	NRF24_SetOperationalMode(NRF24_MODE_RX); // switch transceiver to the TX mode
-	NRF24_SetIrqMask(NRF24_FLAG_RX_DR);
-	NRF24_SetPowerMode(NRF24_PWR_UP); // wake-up transceiver (in case if it is sleeping)
-	NRF24_StartReceive();
+	// Common setup
+	s_nrf24.init.rfChannel = 90; // 90 => 2490MHz
+	s_nrf24.init.dataRate = NRF24_DR_1Mbps;
+	s_nrf24.init.txPower = NRF24_TXPWR_0dBm;
+	s_nrf24.init.crcScheme = NRF24_CRC_1byte;
+	s_nrf24.init.retransmitDelay = 
+	s_nrf24.init.maxRetransmits = 10;
+	s_nrf24.init.addrLen = 5;
+	s_nrf24.init.selfAddr = s_selfAddress;
+	s_nrf24.init.otherAddr = s_otherAddress;
+	s_nrf24.mode = NRF24_MODE_RX;
+
+	if (NRF24_init(&s_nrf24) != NRF24_Error_OK) {
+		//Error handler
+	}
+	if (NRF24_Receive_IT(&s_nrf24) != NRF24_Error_OK) {
+		//Error handler
+	}
 	s_on = 1;
 }
 
 void poll() {
 	if (s_hasSpiData) {
+		s_hasSpiData = 0;
+		NRF24_IrqHandler(&s_nrf24);
+	}
+}
+void NRF24_OnSendErrorCallback() {
+	printf("Transmission Failed: Retransmittion limit reached.\r\n");
+	NRF24_Receive_IT(&s_nrf24);
+}
 
-		NRF24_ClearIRQFlags();
-		NRF24_ReadDynPayload(s_spiBuffer, &s_hasSpiData);
-		NRF24_FlushRX();
+void NRF24_OnDataSentCallback() {
+	NRF24_Receive_IT(&s_nrf24);
+}
 
-		if (PZ_verify(s_spiBuffer, s_hasSpiData) == PZ_OK) {
-			PZ_Package package = PZ_fromData(s_spiBuffer);
+void NRF24_OnReceiveCallback(uint8_t const* data, uint8_t length, uint8_t pipe) {
+		if (PZ_verify(data, length) == PZ_OK) {
+			PZ_Package package = PZ_fromData(data);
 			printf(">> ");
 			PZ_PrintInfo(printf, &package);
 		}
-		s_hasSpiData = 0;
-	}
 }
