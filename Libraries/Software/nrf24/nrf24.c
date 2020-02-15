@@ -24,7 +24,7 @@ static void clearIrq(uint8_t irq);
 // input:
 //   reg - number of register to read
 // return: value of register
-static uint8_t NRF24_ReadReg(uint8_t reg) {
+uint8_t NRF24_ReadReg(uint8_t reg) {
 	uint8_t value;
 
 	NRF24_CSN_Low();
@@ -39,7 +39,7 @@ static uint8_t NRF24_ReadReg(uint8_t reg) {
 // input:
 //   reg - number of register to write
 //   value - value to write
-static void NRF24_WriteReg(uint8_t reg, uint8_t value) {
+void NRF24_WriteReg(uint8_t reg, uint8_t value) {
 	NRF24_CSN_Low();
 	if (reg < NRF24_CMD_W_REGISTER) {
 		// This is a register access
@@ -810,6 +810,9 @@ NRF24_Error NRF24_init(NRF24_InstanceTypedef* nrf24) {
 	// Enable RX pipes
 	NRF24_WriteReg(NRF24_REG_EN_RXADDR, (1 << NRF24_PIPE0) | (1 << NRF24_PIPE1));
 
+	//NRF24_WriteReg(NRF24_REG_RX_PW_P0, 32);
+	//NRF24_WriteReg(NRF24_REG_RX_PW_P1, 32);
+
 	// Set address width with AW
 	NRF24_WriteReg(NRF24_REG_SETUP_AW, nrf24->init.addrLen - 2U);
 
@@ -844,7 +847,7 @@ NRF24_Error NRF24_init(NRF24_InstanceTypedef* nrf24) {
 
 	// Enable dyn payload for pipe 1
 	NRF24_WriteReg(NRF24_REG_DYNPD, (1 << NRF24_PIPE0) | (1 << NRF24_PIPE1));
-
+	nrf24->status = NRF24_Status_Idle;
 	return NRF24_Error_OK;
 }
 
@@ -881,7 +884,16 @@ static void clearIrq(uint8_t irq) {
 	NRF24_CSN_High();
 }
 
-static void processRx() {
+typedef struct RxData {
+	uint8_t data[32];
+	uint8_t len;
+	uint8_t pipe;
+} RxData;
+
+static RxData s_rxData[3];
+
+// Returns number of RxData to be read from s_rxData
+static uint8_t processRx() {
 	/*
 	 * The RX_DR IRQ is asserted by a new packet arrival event.
 	 * The procedure for handling this interrupt should be:
@@ -891,10 +903,10 @@ static void processRx() {
 	 *  4) if there are more data in RX FIFO, repeat from step 1)
 	 * 
 	 */
-	
+	uint8_t payloads = 0;
 	while (1) {
 		uint8_t const pipe = NRF24_GetRXSource();
-		const uint8_t dynPayload = NRF24_ReadReg(NRF24_REG_DYNPD) & pipe;
+		const uint8_t dynPayload = NRF24_ReadReg(NRF24_REG_DYNPD) & (1 << pipe);
 		uint8_t bytesAvailable = 0;
 
 		if (dynPayload) {
@@ -908,22 +920,25 @@ static void processRx() {
 			if (bytesAvailable > 32) {
 				NRF24_FlushRX();
 				clearIrq(NRF24_FLAG_RX_DR);
-				return;
+				return payloads;
 			}
 		}
 		else { // Static payload
 			bytesAvailable = NRF24_ReadReg(NRF24_REG_RX_PW_P0 + pipe);
 		}
 
-		uint8_t buffer[32] = {0};
-		readRxPayload(buffer);
-		clearIrq(NRF24_FLAG_RX_DR);
+		RxData* rxData = &s_rxData[payloads];
+		++payloads;
 
-		NRF24_OnReceiveCallback(buffer, bytesAvailable, pipe);
+		readRxPayload(rxData->data);
+		rxData->pipe = pipe;
+		rxData->len = bytesAvailable;
+
+		clearIrq(NRF24_FLAG_RX_DR);
 
 		uint8_t const fifoStatus = NRF24_ReadReg(NRF24_REG_FIFO_STATUS);
 		if (fifoStatus & NRF24_STATUS_RXFIFO_EMPTY) {
-			return;
+			return payloads;
 		}
 	}
 }
@@ -931,8 +946,11 @@ static void processRx() {
 void NRF24_IrqHandler(NRF24_InstanceTypedef* nrf24) {
 	if (NRF24_GetStatus() & NRF24_FLAG_RX_DR) {
 		nrf24->status = NRF24_Status_Busy;
-		processRx();
+		uint8_t payloads = processRx();
 		nrf24->status = NRF24_Status_Idle;
+		while (payloads--) {
+			NRF24_OnReceiveCallback(s_rxData[payloads].data, s_rxData[payloads].len, s_rxData[payloads].pipe);
+		}
 	}
 	if (NRF24_GetStatus() & NRF24_FLAG_TX_DS) {
 		clearIrq(NRF24_FLAG_TX_DS);

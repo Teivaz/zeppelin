@@ -268,4 +268,7 @@ void NRF24_OnDataSentCallback();
 typedef int (*NRF24_printf)(const char* character, ...);
 void NRF24_DumpConfig(NRF24_printf);
 
+uint8_t NRF24_ReadReg(uint8_t reg);
+void NRF24_WriteReg(uint8_t reg, uint8_t value);
+
 #endif // _NRF24_H_INCLUDED_
