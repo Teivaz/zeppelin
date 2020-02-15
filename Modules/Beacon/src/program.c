@@ -9,7 +9,6 @@
 
 static uint8_t s_uart_buff;
 uint8_t s_on = 0;
-static uint8_t s_hasSpiData = 0;
 static uint8_t const s_selfAddress[] = PZ_HOST_ADDR;
 static uint8_t const s_otherAddress[] = PZ_CLIENT_ADDR;
 static NRF24_InstanceTypedef s_nrf24;
@@ -26,6 +25,41 @@ static void sendPz(PZ_Package* p) {
 	PZ_PrintInfo(printf, p);
 	PZ_toData(msg, &msgLen, p);
 	send(msg, msgLen);
+}
+
+void cmd_nrf_r(char const* argv[], uint8_t argn) {
+	if (argn > 1) {
+		uint8_t reg = strtol(argv[1], 0, 16);
+		uint8_t result = NRF24_ReadReg(reg);
+		printf("%08b\r\n", result);
+	}
+	else {
+		printf("Error. Format: nrf-r <reg>\r\n");
+	}
+}
+
+void cmd_nrf_w(char const* argv[], uint8_t argn) {
+	if (argn > 2) {
+		uint8_t reg = strtol(argv[1], 0, 16);
+		uint8_t val;
+		if (argv[2][0] == 'b') {
+			val = strtol(argv[2]+1, 0, 2);
+		}
+		else if (argv[2][0] == 'x') {
+			val = strtol(argv[2]+1, 0, 16);
+		}
+		else if (argv[2][0] == 'd') {
+			val = strtol(argv[2]+1, 0, 10);
+		}
+		else {
+			printf("Error. Value can not be converted. Format '[b|x|d]<value>'");
+			return;
+		}
+		NRF24_WriteReg(reg, val);
+	}
+	else {
+		printf("Error. Format: nrf-w <reg> <val>\r\n");
+	}
 }
 
 void cmd_info(char const* argv[], uint8_t argn) {
@@ -100,7 +134,7 @@ void onTimer() {
 }
 
 void onExtIrq() {
-	s_hasSpiData = 1;
+	NRF24_IrqHandler(&s_nrf24);
 }
 
 void onUart() {
@@ -116,6 +150,8 @@ void setup() {
 	TM_registerCommand("write-dv", cmd_writeDv);
 	TM_registerCommand("read-cv", cmd_readCv);
 	TM_registerCommand("read-dv", cmd_readDv);
+	TM_registerCommand("nrf-w", cmd_nrf_w);
+	TM_registerCommand("nrf-r", cmd_nrf_r);
 
 	s_pkg = PZ_compose1(0x10, PZ_Cmd_Read_dv, 0x10);
 
@@ -142,10 +178,10 @@ void setup() {
 
 	// Common setup
 	s_nrf24.init.rfChannel = 90; // 90 => 2490MHz
-	s_nrf24.init.dataRate = NRF24_DR_1Mbps;
+	s_nrf24.init.dataRate = NRF24_DR_2Mbps;
 	s_nrf24.init.txPower = NRF24_TXPWR_0dBm;
 	s_nrf24.init.crcScheme = NRF24_CRC_1byte;
-	s_nrf24.init.retransmitDelay = 
+	s_nrf24.init.retransmitDelay = NRF24_ARD_500us;
 	s_nrf24.init.maxRetransmits = 10;
 	s_nrf24.init.addrLen = 5;
 	s_nrf24.init.selfAddr = s_selfAddress;
@@ -162,11 +198,8 @@ void setup() {
 }
 
 void poll() {
-	if (s_hasSpiData) {
-		s_hasSpiData = 0;
-		NRF24_IrqHandler(&s_nrf24);
-	}
 }
+
 void NRF24_OnSendErrorCallback() {
 	printf("Transmission Failed: Retransmittion limit reached.\r\n");
 	NRF24_Receive_IT(&s_nrf24);

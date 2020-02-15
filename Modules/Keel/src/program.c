@@ -146,10 +146,10 @@ void setup() {
 
 		// Common setup
 		s_nrf24.init.rfChannel = 90; // 90 => 2490MHz
-		s_nrf24.init.dataRate = NRF24_DR_1Mbps;
+		s_nrf24.init.dataRate = NRF24_DR_2Mbps;
 		s_nrf24.init.txPower = NRF24_TXPWR_0dBm;
 		s_nrf24.init.crcScheme = NRF24_CRC_1byte;
-		s_nrf24.init.retransmitDelay = 
+		s_nrf24.init.retransmitDelay = NRF24_ARD_500us;
 		s_nrf24.init.maxRetransmits = 10;
 		s_nrf24.init.addrLen = 5;
 		s_nrf24.init.selfAddr = s_selfAddress;

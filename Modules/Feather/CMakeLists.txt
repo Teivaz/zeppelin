@@ -12,6 +12,7 @@ set(device_name "STM32L011xx")
 
 set(c_compile_options
 	"-mcpu=cortex-m0plus"
+	"-mthumb"
 	"-g3"
 	"-c"
 	"-Os"
@@ -21,7 +22,6 @@ set(c_compile_options
 	"-fstack-usage"
 	"--specs=nano.specs"
 	"-mfloat-abi=soft"
-	"-mthumb"
 )
 
 set(compile_definitions "${device_name}")
@@ -34,7 +34,7 @@ endif()
 set(link_flags
 	"-mcpu=cortex-m0plus \
 	-T\"${linker_script}\" \
-	--specs=nosys.specs -Wl,-Map=\"${PROJECT_NAME}.map\" \
+	-Wl,-Map=\"${PROJECT_NAME}.map\" \
 	-Wl,--gc-sections \
 	-static \
 	--specs=nano.specs \
