@@ -12,6 +12,8 @@
 #define TEMP130_CAL (*(uint16_t const*)0x1FF8007EUL)
 #define VDD_CALIB ((uint16_t) (300)) // centivolts
 #define ADC_MAX_VAL (uint16_t)0xFFF
+#define V1ADC_R1 (uint16_t)51 // R1 - 51 kOhm
+#define V1ADC_R2 (uint16_t)10 // R2 - 10 kOhm
 
 static void processPackage(PZ_Package const* p);
 static void axonSend(PZ_Package const* p);
@@ -98,7 +100,7 @@ void onTimer() {
 }
 
 static uint8_t convertVoltage(uint16_t measure, uint8_t scaleFactor) {
-	uint16_t voltage = scaleFactor * measure * (int32_t)s_vref / ADC_MAX_VAL; // centivolts
+	uint16_t voltage = scaleFactor * measure * (int32_t)s_vref * (V1ADC_R1 + V1ADC_R2) / V1ADC_R2 / ADC_MAX_VAL; // centivolts
 	voltage = (voltage + 5) / 10; // Round and convert to decivolts
 	return (uint8_t)voltage;
 }
