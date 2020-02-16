@@ -1,6 +1,6 @@
 [Eagle]
 Version="09 05 02"
-Platform="Windows"
+Platform="Mac OS X"
 Globals="Globals"
 Desktop="Desktop"
 
@@ -17,15 +17,15 @@ UsedLibrary="Libraries/nrf24.lbr"
 UsedLibrary="Libraries/st.lbr"
 UsedLibrary="Libraries/irf-2.lbr"
 UsedLibrary="Libraries/con-samtec-FTSH.lbr"
-UsedLibrary="Libraries/probe.lbr"
-UsedLibrary="Libraries/switch.lbr"
 UsedLibrary="Libraries/led.lbr"
 UsedLibrary="Libraries/logo.lbr"
+UsedLibrary="Libraries/probe.lbr"
+UsedLibrary="Libraries/switch.lbr"
 
 [Win_1]
 Type="Control Panel"
 Number=0
 
 [Desktop]
-Screen="2560 1440"
+Screen="1280 800"
 Window="Win_1"

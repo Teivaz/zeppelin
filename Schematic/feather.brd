@@ -3,7 +3,7 @@
 <eagle version="9.5.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="yes"/>
+<setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="1" unitdist="mm" unit="mm" style="dots" multiple="2" display="yes" altdistance="0.25" altunitdist="mm" altunit="mm"/>
@@ -2059,15 +2059,13 @@ In short: You are welcome to use (and extend) this library, but extensions must 
 </signal>
 <signal name="N$2">
 <contactref element="R3" pad="1"/>
-<contactref element="U1" pad="10"/>
-<wire x1="15.125" y1="14.075" x2="15.125" y2="12.175" width="0.3" layer="1"/>
 <wire x1="15.125" y1="12.175" x2="14.95" y2="12" width="0.3" layer="1" curve="-90"/>
+<contactref element="U1" pad="9"/>
+<wire x1="15.125" y1="12.175" x2="15.125" y2="14.725" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$5">
-<contactref element="U1" pad="9"/>
 <contactref element="R2" pad="2"/>
 <wire x1="11.75" y1="25.7" x2="11.45" y2="26" width="0.25" layer="1" curve="90"/>
-<wire x1="15.125" y1="14.725" x2="12" y2="14.725" width="0.25" layer="1"/>
 <wire x1="12" y1="14.725" x2="11" y2="15.725" width="0.25" layer="1" curve="-90"/>
 <wire x1="11.45" y1="26" x2="11.75" y2="25.7" width="0.25" layer="1" curve="-90"/>
 <wire x1="11.75" y1="25.7" x2="11.75" y2="20.9142125" width="0.25" layer="1"/>
@@ -2075,13 +2073,13 @@ In short: You are welcome to use (and extend) this library, but extensions must 
 <wire x1="11.25" y1="20" x2="11.45710625" y2="20.20710625" width="0.25" layer="1"/>
 <wire x1="11.45710625" y1="20.20710625" x2="11.75" y2="20.9142125" width="0.25" layer="1" curve="45"/>
 <wire x1="11" y1="15.725" x2="11" y2="19.396446875" width="0.25" layer="1"/>
+<contactref element="U1" pad="8"/>
+<wire x1="12" y1="14.725" x2="15.125" y2="15.375" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$8">
 <contactref element="CN1" pad="1"/>
-<contactref element="U1" pad="8"/>
-<wire x1="18" y1="8.54" x2="18" y2="14.375" width="0.25" layer="1"/>
-<wire x1="18" y1="14.375" x2="17" y2="15.375" width="0.25" layer="1" curve="90"/>
-<wire x1="17" y1="15.375" x2="15.125" y2="15.375" width="0.25" layer="1"/>
+<contactref element="U1" pad="7"/>
+<wire x1="18" y1="8.54" x2="15.125" y2="16.025" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>
