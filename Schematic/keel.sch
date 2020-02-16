@@ -8647,45 +8647,55 @@ NS Package M08A</description>
 <rectangle x1="-0.88" y1="2" x2="-0.39" y2="3.1" layer="51"/>
 <rectangle x1="-2.15" y1="2" x2="-1.66" y2="3.1" layer="51"/>
 </package>
-<package name="SOT89" urn="urn:adsk.eagle:footprint:16336/1" library_version="7">
-<description>&lt;b&gt;SOT98&lt;/b&gt; PK (R-PDSO-G3)&lt;p&gt;
-Source: http://focus.ti.com/lit/ds/symlink/ua78l05.pdf</description>
-<wire x1="2.235" y1="-1.245" x2="-2.235" y2="-1.245" width="0.127" layer="51"/>
-<wire x1="2.235" y1="1.219" x2="2.235" y2="-1.245" width="0.127" layer="21"/>
-<wire x1="-2.235" y1="-1.245" x2="-2.235" y2="1.219" width="0.127" layer="21"/>
-<wire x1="-2.235" y1="1.219" x2="2.235" y2="1.219" width="0.127" layer="51"/>
-<wire x1="-0.7874" y1="1.5748" x2="-0.3556" y2="2.0066" width="0.1998" layer="51"/>
-<wire x1="-0.3556" y1="2.0066" x2="0.3556" y2="2.0066" width="0.1998" layer="51"/>
-<wire x1="0.3556" y1="2.0066" x2="0.7874" y2="1.5748" width="0.1998" layer="51"/>
-<wire x1="0.7874" y1="1.5748" x2="0.7874" y2="1.2954" width="0.1998" layer="51"/>
-<wire x1="0.7874" y1="1.2954" x2="-0.7874" y2="1.2954" width="0.1998" layer="51"/>
-<wire x1="-0.7874" y1="1.2954" x2="-0.7874" y2="1.5748" width="0.1998" layer="51"/>
-<smd name="1" x="-1.499" y="-1.981" dx="1" dy="1.5" layer="1" stop="no" cream="no"/>
-<smd name="3" x="1.499" y="-1.981" dx="1" dy="1.5" layer="1" stop="no" cream="no"/>
-<smd name="2" x="0" y="-1.727" dx="1" dy="2" layer="1" stop="no" cream="no"/>
-<smd name="2@1" x="0" y="0.94" dx="2.2" dy="3.7" layer="1" roundness="100" cream="no"/>
-<text x="-2.54" y="3.175" size="1.27" layer="25">&gt;NAME</text>
-<text x="-2.4051" y="-4.3449" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="-1.7272" y1="-2.1082" x2="-1.27" y2="-1.27" layer="51"/>
-<rectangle x1="1.27" y1="-2.1082" x2="1.7272" y2="-1.27" layer="51"/>
-<rectangle x1="-0.2794" y1="-2.1082" x2="0.2794" y2="-1.27" layer="51"/>
-<rectangle x1="-0.4" y1="-2.68" x2="0.4" y2="-1.28" layer="31"/>
-<rectangle x1="-2.025" y1="-2.775" x2="-0.975" y2="-1.2" layer="29"/>
-<rectangle x1="0.975" y1="-2.775" x2="2.025" y2="-1.2" layer="29"/>
-<rectangle x1="-0.525" y1="-2.775" x2="0.525" y2="-1.2" layer="29"/>
-<rectangle x1="1.1" y1="-2.68" x2="1.9" y2="-1.28" layer="31"/>
-<rectangle x1="-1.9" y1="-2.68" x2="-1.1" y2="-1.28" layer="31"/>
-<rectangle x1="-0.9" y1="0" x2="0.9" y2="2.2" layer="31"/>
-<polygon width="0.1998" layer="51">
-<vertex x="-0.7874" y="1.3208"/>
-<vertex x="-0.7874" y="1.5748"/>
-<vertex x="-0.3556" y="2.0066"/>
-<vertex x="0.3048" y="2.0066"/>
-<vertex x="0.3556" y="2.0066"/>
-<vertex x="0.7874" y="1.5748"/>
-<vertex x="0.7874" y="1.2954"/>
-<vertex x="-0.7874" y="1.2954"/>
-</polygon>
+<package name="SOT223" urn="urn:adsk.eagle:footprint:28484/1" library_version="7">
+<description>&lt;b&gt;Small Outline Transistor&lt;/b&gt;</description>
+<wire x1="3.2766" y1="1.778" x2="3.2766" y2="-1.778" width="0.2032" layer="21"/>
+<wire x1="3.2766" y1="-1.778" x2="-3.2766" y2="-1.778" width="0.2032" layer="21"/>
+<wire x1="-3.2766" y1="-1.778" x2="-3.2766" y2="1.778" width="0.2032" layer="21"/>
+<wire x1="-3.2766" y1="1.778" x2="3.2766" y2="1.778" width="0.2032" layer="21"/>
+<smd name="1" x="-2.3114" y="-3.0988" dx="1.2192" dy="2.2352" layer="1"/>
+<smd name="2" x="0" y="-3.0988" dx="1.2192" dy="2.2352" layer="1"/>
+<smd name="3" x="2.3114" y="-3.0988" dx="1.2192" dy="2.2352" layer="1"/>
+<smd name="4" x="0" y="3.099" dx="3.6" dy="2.2" layer="1"/>
+<text x="1.0208" y="-4.318" size="0.8128" layer="21" ratio="12">3</text>
+<text x="1.905" y="2.54" size="0.8128" layer="21" ratio="12">4</text>
+<text x="-3.4526" y="-4.318" size="0.8128" layer="21" ratio="12">1</text>
+<text x="-1.2906" y="-4.3274" size="0.8128" layer="21" ratio="12">2</text>
+<text x="-2.54" y="0.0508" size="1.27" layer="25">&gt;NAME</text>
+<text x="-2.54" y="-1.3208" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.6002" y1="1.8034" x2="1.6002" y2="3.6576" layer="51"/>
+<rectangle x1="-0.4318" y1="-3.6576" x2="0.4318" y2="-1.8034" layer="51"/>
+<rectangle x1="-2.7432" y1="-3.6576" x2="-1.8796" y2="-1.8034" layer="51"/>
+<rectangle x1="1.8796" y1="-3.6576" x2="2.7432" y2="-1.8034" layer="51"/>
+<rectangle x1="-1.6002" y1="1.8034" x2="1.6002" y2="3.6576" layer="51"/>
+<rectangle x1="-0.4318" y1="-3.6576" x2="0.4318" y2="-1.8034" layer="51"/>
+<rectangle x1="-2.7432" y1="-3.6576" x2="-1.8796" y2="-1.8034" layer="51"/>
+<rectangle x1="1.8796" y1="-3.6576" x2="2.7432" y2="-1.8034" layer="51"/>
+</package>
+<package name="SOT23" urn="urn:adsk.eagle:footprint:16354/1" library_version="7">
+<description>&lt;b&gt;SMALL OUTLINE TRANSISTOR&lt;/b&gt;&lt;p&gt;
+reflow soldering</description>
+<wire x1="-1.973" y1="1.983" x2="1.973" y2="1.983" width="0.0508" layer="39"/>
+<wire x1="1.973" y1="-1.983" x2="-1.973" y2="-1.983" width="0.0508" layer="39"/>
+<wire x1="-1.973" y1="-1.983" x2="-1.973" y2="1.983" width="0.0508" layer="39"/>
+<wire x1="1.973" y1="1.983" x2="1.973" y2="-1.983" width="0.0508" layer="39"/>
+<wire x1="1.422" y1="0.66" x2="1.422" y2="-0.66" width="0.1524" layer="51"/>
+<wire x1="1.422" y1="-0.66" x2="-1.422" y2="-0.66" width="0.1524" layer="51"/>
+<wire x1="-1.422" y1="-0.66" x2="-1.422" y2="0.66" width="0.1524" layer="51"/>
+<wire x1="-1.422" y1="0.66" x2="1.422" y2="0.66" width="0.1524" layer="51"/>
+<wire x1="-1.422" y1="-0.152" x2="-1.422" y2="0.66" width="0.1524" layer="21"/>
+<wire x1="-1.422" y1="0.66" x2="-0.864" y2="0.66" width="0.1524" layer="21"/>
+<wire x1="0.864" y1="0.66" x2="1.422" y2="0.66" width="0.1524" layer="21"/>
+<wire x1="1.422" y1="0.66" x2="1.422" y2="-0.152" width="0.1524" layer="21"/>
+<smd name="3" x="0" y="1.1" dx="1" dy="1.4" layer="1"/>
+<smd name="2" x="0.95" y="-1.1" dx="1" dy="1.4" layer="1"/>
+<smd name="1" x="-0.95" y="-1.1" dx="1" dy="1.4" layer="1"/>
+<text x="-1.905" y="1.905" size="1.27" layer="25">&gt;NAME</text>
+<text x="-1.905" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-0.2286" y1="0.7112" x2="0.2286" y2="1.2954" layer="51"/>
+<rectangle x1="0.7112" y1="-1.2954" x2="1.1684" y2="-0.7112" layer="51"/>
+<rectangle x1="-1.1684" y1="-1.2954" x2="-0.7112" y2="-0.7112" layer="51"/>
+<rectangle x1="-0.5001" y1="-0.3" x2="0.5001" y2="0.3" layer="35"/>
 </package>
 </packages>
 <packages3d>
@@ -8702,11 +8712,17 @@ NS Package M08A</description>
 <packageinstance name="SO08"/>
 </packageinstances>
 </package3d>
-<package3d name="SOT89" urn="urn:adsk.eagle:package:16478/2" type="model" library_version="7">
-<description>SOT98 PK (R-PDSO-G3)
-Source: http://focus.ti.com/lit/ds/symlink/ua78l05.pdf</description>
+<package3d name="SOT223" urn="urn:adsk.eagle:package:28541/2" type="model" library_version="7">
+<description>Small Outline Transistor</description>
 <packageinstances>
-<packageinstance name="SOT89"/>
+<packageinstance name="SOT223"/>
+</packageinstances>
+</package3d>
+<package3d name="SOT23" urn="urn:adsk.eagle:package:16489/2" type="model" library_version="7">
+<description>SMALL OUTLINE TRANSISTOR
+reflow soldering</description>
+<packageinstances>
+<packageinstance name="SOT23"/>
 </packageinstances>
 </package3d>
 </packages3d>
@@ -8730,18 +8746,17 @@ Source: http://focus.ti.com/lit/ds/symlink/ua78l05.pdf</description>
 <pin name="V+" x="0" y="7.62" visible="pad" length="middle" direction="pwr" rot="R270"/>
 <pin name="V-" x="0" y="-7.62" visible="pad" length="middle" direction="pwr" rot="R90"/>
 </symbol>
-<symbol name="78XX2GND" urn="urn:adsk.eagle:symbol:16335/1" library_version="7">
-<wire x1="-5.08" y1="-5.08" x2="7.62" y2="-5.08" width="0.4064" layer="94"/>
+<symbol name="78XX" urn="urn:adsk.eagle:symbol:16149/1" library_version="7">
+<wire x1="-7.62" y1="-5.08" x2="7.62" y2="-5.08" width="0.4064" layer="94"/>
 <wire x1="7.62" y1="-5.08" x2="7.62" y2="2.54" width="0.4064" layer="94"/>
-<wire x1="7.62" y1="2.54" x2="-5.08" y2="2.54" width="0.4064" layer="94"/>
-<wire x1="-5.08" y1="2.54" x2="-5.08" y2="-5.08" width="0.4064" layer="94"/>
-<text x="-5.08" y="5.715" size="1.778" layer="95">&gt;NAME</text>
-<text x="-5.08" y="3.175" size="1.778" layer="96">&gt;VALUE</text>
-<text x="-1.27" y="-4.318" size="1.524" layer="95">GND</text>
-<pin name="VI" x="-7.62" y="0" length="short" direction="in"/>
+<wire x1="7.62" y1="2.54" x2="-7.62" y2="2.54" width="0.4064" layer="94"/>
+<wire x1="-7.62" y1="2.54" x2="-7.62" y2="-5.08" width="0.4064" layer="94"/>
+<text x="-7.62" y="5.715" size="1.778" layer="95">&gt;NAME</text>
+<text x="-7.62" y="3.175" size="1.778" layer="96">&gt;VALUE</text>
+<text x="-2.032" y="-4.318" size="1.524" layer="95">GND</text>
+<pin name="VI" x="-10.16" y="0" length="short" direction="in"/>
 <pin name="GND" x="0" y="-7.62" visible="pad" length="short" direction="pas" rot="R90"/>
 <pin name="VO" x="10.16" y="0" length="short" direction="pas" rot="R180"/>
-<pin name="GND@1" x="2.54" y="-7.62" visible="off" length="short" direction="pas" rot="R90"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -8816,42 +8831,40 @@ Source: http://cache.national.com/ds/LM/LM158.pdf</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="78L*" urn="urn:adsk.eagle:component:16802/3" prefix="IC" library_version="7">
-<description>&lt;b&gt;POSITOIV-VOLTAGE REGULATORS&lt;/b&gt;&lt;p&gt;
-Output up to 100 mA&lt;br&gt;
-Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datasheet &lt;/a&gt;</description>
+<deviceset name="MCP1703" urn="urn:adsk.eagle:component:16824/5" prefix="IC" library_version="7">
+<description>&lt;b&gt;250 mA, 16V, Low Quiescent Current LDO Regulator&lt;/b&gt;&lt;p&gt;
+Source: http://ww1.microchip.com/downloads/en/DeviceDoc/22049b.pdf</description>
 <gates>
-<gate name="G$1" symbol="78XX2GND" x="0" y="0"/>
+<gate name="G$1" symbol="78XX" x="0" y="0"/>
 </gates>
 <devices>
-<device name="F" package="SOT89">
+<device name="DB" package="SOT223">
 <connects>
 <connect gate="G$1" pin="GND" pad="2"/>
-<connect gate="G$1" pin="GND@1" pad="2@1"/>
-<connect gate="G$1" pin="VI" pad="3"/>
-<connect gate="G$1" pin="VO" pad="1"/>
+<connect gate="G$1" pin="VI" pad="1"/>
+<connect gate="G$1" pin="VO" pad="3"/>
 </connects>
 <package3dinstances>
-<package3dinstance package3d_urn="urn:adsk.eagle:package:16478/2"/>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:28541/2"/>
 </package3dinstances>
 <technologies>
-<technology name="05">
-<attribute name="POPULARITY" value="5" constant="no"/>
+<technology name="">
+<attribute name="POPULARITY" value="3" constant="no"/>
 </technology>
-<technology name="08">
-<attribute name="POPULARITY" value="0" constant="no"/>
-</technology>
-<technology name="09">
-<attribute name="POPULARITY" value="0" constant="no"/>
-</technology>
-<technology name="10">
-<attribute name="POPULARITY" value="0" constant="no"/>
-</technology>
-<technology name="12">
-<attribute name="POPULARITY" value="0" constant="no"/>
-</technology>
-<technology name="15">
-<attribute name="POPULARITY" value="0" constant="no"/>
+</technologies>
+</device>
+<device name="CB" package="SOT23">
+<connects>
+<connect gate="G$1" pin="GND" pad="1"/>
+<connect gate="G$1" pin="VI" pad="3"/>
+<connect gate="G$1" pin="VO" pad="2"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:16489/2"/>
+</package3dinstances>
+<technologies>
+<technology name="">
+<attribute name="POPULARITY" value="19" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -9175,12 +9188,12 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 <part name="R8" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:23553/2" value="500r"/>
 <part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/2" value="470pf"/>
 <part name="GND15" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
-<part name="IC1" library="linear" library_urn="urn:adsk.eagle:library:262" deviceset="78L*" device="F" package3d_urn="urn:adsk.eagle:package:16478/2" technology="05"/>
 <part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/2"/>
 <part name="C4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/2"/>
 <part name="GND16" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND17" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND18" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="IC2" library="linear" library_urn="urn:adsk.eagle:library:262" deviceset="MCP1703" device="CB" package3d_urn="urn:adsk.eagle:package:16489/2" value="MCP1700T-3302E"/>
 </parts>
 <sheets>
 <sheet>
@@ -9225,8 +9238,8 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 <instance part="P+3" gate="VCC" x="111.76" y="101.6" smashed="yes" rot="R90">
 <attribute name="VALUE" x="110.744" y="102.362" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="P+4" gate="VCC" x="-76.2" y="109.22" smashed="yes" rot="R270">
-<attribute name="VALUE" x="-78.74" y="111.76" size="1.778" layer="96"/>
+<instance part="P+4" gate="VCC" x="-73.66" y="109.22" smashed="yes" rot="R270">
+<attribute name="VALUE" x="-76.2" y="111.76" size="1.778" layer="96"/>
 </instance>
 <instance part="GND4" gate="1" x="-124.46" y="104.14" smashed="yes">
 <attribute name="VALUE" x="-127" y="101.6" size="1.778" layer="96"/>
@@ -9380,26 +9393,26 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 <instance part="GND15" gate="1" x="-33.02" y="20.32" smashed="yes">
 <attribute name="VALUE" x="-35.56" y="17.78" size="1.778" layer="96"/>
 </instance>
-<instance part="IC1" gate="G$1" x="-93.98" y="109.22" smashed="yes">
-<attribute name="NAME" x="-99.06" y="114.935" size="1.778" layer="95"/>
-<attribute name="VALUE" x="-99.06" y="112.395" size="1.778" layer="96"/>
-</instance>
 <instance part="C3" gate="G$1" x="-104.14" y="104.14" smashed="yes">
 <attribute name="NAME" x="-102.616" y="104.521" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-102.616" y="99.441" size="1.778" layer="96"/>
 </instance>
-<instance part="C4" gate="G$1" x="-81.28" y="104.14" smashed="yes">
-<attribute name="NAME" x="-79.756" y="104.521" size="1.778" layer="95"/>
-<attribute name="VALUE" x="-79.756" y="99.441" size="1.778" layer="96"/>
+<instance part="C4" gate="G$1" x="-78.74" y="104.14" smashed="yes">
+<attribute name="NAME" x="-77.216" y="104.521" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-77.216" y="99.441" size="1.778" layer="96"/>
 </instance>
-<instance part="GND16" gate="1" x="-81.28" y="93.98" smashed="yes">
-<attribute name="VALUE" x="-83.82" y="91.44" size="1.778" layer="96"/>
+<instance part="GND16" gate="1" x="-78.74" y="93.98" smashed="yes">
+<attribute name="VALUE" x="-81.28" y="91.44" size="1.778" layer="96"/>
 </instance>
 <instance part="GND17" gate="1" x="-104.14" y="93.98" smashed="yes">
 <attribute name="VALUE" x="-106.68" y="91.44" size="1.778" layer="96"/>
 </instance>
-<instance part="GND18" gate="1" x="-93.98" y="93.98" smashed="yes">
-<attribute name="VALUE" x="-96.52" y="91.44" size="1.778" layer="96"/>
+<instance part="GND18" gate="1" x="-91.44" y="93.98" smashed="yes">
+<attribute name="VALUE" x="-93.98" y="91.44" size="1.778" layer="96"/>
+</instance>
+<instance part="IC2" gate="G$1" x="-91.44" y="109.22" smashed="yes">
+<attribute name="NAME" x="-99.06" y="114.935" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-99.06" y="112.395" size="1.778" layer="96"/>
 </instance>
 </instances>
 <busses>
@@ -9557,12 +9570,12 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 </segment>
 <segment>
 <pinref part="P+4" gate="VCC" pin="VCC"/>
-<wire x1="-83.82" y1="109.22" x2="-81.28" y2="109.22" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="G$1" pin="VO"/>
-<pinref part="C4" gate="G$1" pin="1"/>
 <wire x1="-81.28" y1="109.22" x2="-78.74" y2="109.22" width="0.1524" layer="91"/>
-<wire x1="-81.28" y1="109.22" x2="-81.28" y2="106.68" width="0.1524" layer="91"/>
-<junction x="-81.28" y="109.22"/>
+<pinref part="C4" gate="G$1" pin="1"/>
+<wire x1="-78.74" y1="109.22" x2="-76.2" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="-78.74" y1="109.22" x2="-78.74" y2="106.68" width="0.1524" layer="91"/>
+<junction x="-78.74" y="109.22"/>
+<pinref part="IC2" gate="G$1" pin="VO"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -9662,7 +9675,7 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 <segment>
 <pinref part="GND16" gate="1" pin="GND"/>
 <pinref part="C4" gate="G$1" pin="2"/>
-<wire x1="-81.28" y1="96.52" x2="-81.28" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="-78.74" y1="96.52" x2="-78.74" y2="99.06" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND17" gate="1" pin="GND"/>
@@ -9671,13 +9684,9 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 </segment>
 <segment>
 <pinref part="GND18" gate="1" pin="GND"/>
-<pinref part="IC1" gate="G$1" pin="GND"/>
-<wire x1="-93.98" y1="96.52" x2="-93.98" y2="99.06" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="G$1" pin="GND@1"/>
-<wire x1="-93.98" y1="99.06" x2="-93.98" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="-91.44" y1="96.52" x2="-91.44" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="-91.44" y1="101.6" x2="-91.44" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="-91.44" y1="99.06" x2="-93.98" y2="99.06" width="0.1524" layer="91"/>
-<junction x="-93.98" y="99.06"/>
+<pinref part="IC2" gate="G$1" pin="GND"/>
 </segment>
 </net>
 <net name="I2C_SCL" class="0">
@@ -9913,7 +9922,6 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 <segment>
 <pinref part="SW1" gate="G$2" pin="3"/>
 <wire x1="-114.3" y1="109.22" x2="-111.76" y2="109.22" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="G$1" pin="VI"/>
 <pinref part="R6" gate="G$1" pin="2"/>
 <wire x1="-111.76" y1="109.22" x2="-104.14" y2="109.22" width="0.1524" layer="91"/>
 <wire x1="-104.14" y1="109.22" x2="-101.6" y2="109.22" width="0.1524" layer="91"/>
@@ -9924,6 +9932,7 @@ Source: &lt;a href="http://focus.ti.com/lit/ds/symlink/ua78l05.pdf"&gt; Datashee
 <pinref part="C3" gate="G$1" pin="1"/>
 <wire x1="-104.14" y1="109.22" x2="-104.14" y2="106.68" width="0.1524" layer="91"/>
 <junction x="-104.14" y="109.22"/>
+<pinref part="IC2" gate="G$1" pin="VI"/>
 </segment>
 </net>
 </nets>
