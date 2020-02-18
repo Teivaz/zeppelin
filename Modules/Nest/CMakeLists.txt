@@ -37,9 +37,16 @@ else()
 endif()
 add_compile_definitions("${compile_definitions}")
 
+add_subdirectory("${libraries_dir}/Software/STM32WBxx_HAL_Driver" "STM32WBxx_HAL")
+add_subdirectory("${libraries_dir}/Software/CMSIS" "CMSIS")
+add_subdirectory("${libraries_dir}/Software/protocol" "protocol")
+
 file(GLOB_RECURSE sources "src/*.[c|h]")
 add_executable("${PROJECT_NAME}" "${sources}")
 set_target_properties("${PROJECT_NAME}" PROPERTIES OUTPUT_NAME "program.elf")
+target_link_libraries("${PROJECT_NAME}" "STM32WBxx_HAL" "protocol")
+target_include_directories("STM32WBxx_HAL" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
+
 set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS
 	"-mcpu=cortex-m4 \
 	-T\"${linker_script}\" \
