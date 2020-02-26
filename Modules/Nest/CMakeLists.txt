@@ -10,7 +10,7 @@ project("Nest")
 
 set(CMAKE_C_STANDARD "11")
 
-set(linker_script "${libraries_dir}/Software/stm32wb55rg.ld")
+set(linker_script "${libraries_dir}/Software/stm32wb55rg-wFlash.ld")
 set(device_name "STM32WB55xx")
 
 add_compile_options(

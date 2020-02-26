@@ -16,6 +16,8 @@ extern int _data_end;
 extern int _data_start_initialised;
 extern int __bss_start;
 extern int __bss_end;
+extern int _mbMem2_start;
+extern int _mbMem2_end;
 
 #define _WEAK_DEFAULT __attribute__ ((weak, alias ("default_handler")))
 #define _INLINE __attribute__((always_inline)) inline
@@ -40,6 +42,7 @@ _INLINE void copy_data(int const* source_begin, int const* source_end, int* dest
 __attribute__ ((weak, naked)) void Reset_Handler(void) {
 	copy_data(&_data_start, &_data_end, &_data_start_initialised);
 	zero_initialise(&__bss_start, &__bss_end);
+	zero_initialise(&_mbMem2_start, &_mbMem2_end);
 	__libc_init_array();
 	main();
 	while(1);

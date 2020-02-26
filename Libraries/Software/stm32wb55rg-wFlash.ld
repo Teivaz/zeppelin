@@ -1,7 +1,7 @@
 /**
- * Link script for the STM32WB55RG SoC
+ * Link script for the STM32WB55RG SoC with room for wireless binary in the flash
  * Created by Teivaz
- * 16.02.2020
+ * 26.02.2020
  */
 
 /**
@@ -16,16 +16,15 @@
  *
  */
 
-MEMORY
-{
-	ram		(rwx):	ORIGIN = 0x20000000, LENGTH = 256K
-	flash	(rx) :	ORIGIN = 0x08000000, LENGTH = 1M
+MEMORY {
+	ram         (rwx): ORIGIN = 0x20000004, LENGTH = 192K - 4
+	ram_shared  (rwx): ORIGIN = 0x20030000, LENGTH = 10K
+	flash        (rx): ORIGIN = 0x08000000, LENGTH = 1M
 }
 _stack = ORIGIN(ram) + LENGTH(ram);
 ENTRY(Reset_Handler)
 
-SECTIONS
-{
+SECTIONS {
 	.boot : {
 		KEEP(*(.vector))
 	} > flash
@@ -99,4 +98,19 @@ SECTIONS
 	.ARM.attributes 0 : {
 		*(.ARM.attributes)
 	}
+
+	MAPPING_TABLE (NOLOAD) : {
+	 	*(MAPPING_TABLE)
+	} > ram_shared
+
+	MB_MEM1 (NOLOAD) : {
+		*(MB_MEM1)
+	} > ram_shared
+
+	MB_MEM2 (NOLOAD) : {
+		_mbMem2_start = . ;
+		*(MB_MEM2) ;
+		_mbMem2_end = . ;
+	} > ram_shared
+
 }
