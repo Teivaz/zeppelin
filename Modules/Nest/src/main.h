@@ -26,4 +26,3 @@ void ErrorHandler(void);
 DMA_HandleTypeDef* getUsartDma();
 RTC_HandleTypeDef* getRtc();
 UART_HandleTypeDef* geUart1();
-

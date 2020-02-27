@@ -1,5 +1,5 @@
 #include "main.h"
-#include "app_entry.h"
+#include "wpanapp.h"
 #include "app_common.h"
 #include "stm32_seq.h"
 #include <stdio.h>
@@ -32,7 +32,7 @@ int main(void) {
 	MX_RF_Init();
 	MX_RTC_Init();
 
-	APPE_Init();
+	WpanAppInit();
 
 	while(1) {
 		UTIL_SEQ_Run(~0);
