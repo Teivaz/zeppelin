@@ -62,7 +62,7 @@ typedef struct
    * state of the P2P Client
    * state machine
    */
-  enum BleAppConnectionStatus state;
+  enum BleAppConStatus state;
 
   /**
    * connection handle
@@ -157,7 +157,7 @@ void P2PC_APP_Init(void)
 /* USER CODE END P2PC_APP_Init_1 */
   for(index = 0; index < BLE_CFG_CLT_MAX_NBR_CB; index++)
   {
-    aP2PClientContext[index].state= APP_BLE_IDLE;
+    aP2PClientContext[index].state= EBleAppConStatus_Idle;
   }
 
   /**
@@ -253,14 +253,14 @@ static SVCCTL_EvtAckStatus_t Event_Handler(void *Event)
           handle = pr->Connection_Handle;
           index = 0;
           while((index < BLE_CFG_CLT_MAX_NBR_CB) &&
-                  (aP2PClientContext[index].state != APP_BLE_IDLE))
+                  (aP2PClientContext[index].state != EBleAppConStatus_Idle))
           {
-            enum BleAppConnectionStatus const status = BleAppGetConnectionStatus(aP2PClientContext[index].connHandle);
+            enum BleAppConStatus const status = BleAppGetConnectionStatus(aP2PClientContext[index].connHandle);
 
-            if ((aP2PClientContext[index].state == APP_BLE_CONNECTED_CLIENT)&&(status == APP_BLE_IDLE)) {
+            if ((aP2PClientContext[index].state == EBleAppConStatus_ConnectedClient)&&(status == EBleAppConStatus_Idle)) {
               /* Handle deconnected */
 
-              aP2PClientContext[index].state = APP_BLE_IDLE;
+              aP2PClientContext[index].state = EBleAppConStatus_Idle;
               aP2PClientContext[index].connHandle = 0xFFFF;
               break;
             }
@@ -304,7 +304,7 @@ static SVCCTL_EvtAckStatus_t Event_Handler(void *Event)
                 aP2PClientContext[index].P2PServiceHandle = UNPACK_2_BYTE_PARAMETER(&pr->Attribute_Data_List[idx-4]);
                 aP2PClientContext[index].P2PServiceEndHandle = UNPACK_2_BYTE_PARAMETER (&pr->Attribute_Data_List[idx-2]);
 #endif                  
-                  aP2PClientContext[index].state = APP_BLE_DISCOVER_CHARACS ;
+                  aP2PClientContext[index].state = EBleAppConStatus_DiscoverChars ;
                 }
                 idx += 6;
               }
@@ -361,7 +361,7 @@ static SVCCTL_EvtAckStatus_t Event_Handler(void *Event)
 #if(CFG_DEBUG_APP_TRACE != 0)
                   APP_DBG_MSG("-- GATT : WRITE_UUID FOUND - connection handle 0x%x\n", aP2PClientContext[index].connHandle);
 #endif
-                  aP2PClientContext[index].state = APP_BLE_DISCOVER_WRITE_DESC;
+                  aP2PClientContext[index].state = EBleAppConStatus_DiscoverWriteDesc;
                   aP2PClientContext[index].P2PWriteToServerCharHdle = handle;
                 }
 
@@ -370,7 +370,7 @@ static SVCCTL_EvtAckStatus_t Event_Handler(void *Event)
 #if(CFG_DEBUG_APP_TRACE != 0)
                   APP_DBG_MSG("-- GATT : NOTIFICATION_CHAR_UUID FOUND  - connection handle 0x%x\n", aP2PClientContext[index].connHandle);
 #endif
-                  aP2PClientContext[index].state = APP_BLE_DISCOVER_NOTIFICATION_CHAR_DESC;
+                  aP2PClientContext[index].state = EBleAppConStatus_DiscoverNotificationCharDesc;
                   aP2PClientContext[index].P2PNotificationCharHdle = handle;
                 }
 #if (UUID_128BIT_FORMAT==1)
@@ -425,11 +425,11 @@ static SVCCTL_EvtAckStatus_t Event_Handler(void *Event)
 #if(CFG_DEBUG_APP_TRACE != 0)
                   APP_DBG_MSG("-- GATT : CLIENT_CHAR_CONFIG_DESCRIPTOR_UUID- connection handle 0x%x\n", aP2PClientContext[index].connHandle);
 #endif
-                  if( aP2PClientContext[index].state == APP_BLE_DISCOVER_NOTIFICATION_CHAR_DESC)
+                  if( aP2PClientContext[index].state == EBleAppConStatus_DiscoverNotificationCharDesc)
                   {
 
                     aP2PClientContext[index].P2PNotificationDescHandle = handle;
-                    aP2PClientContext[index].state = APP_BLE_ENABLE_NOTIFICATION_DESC;
+                    aP2PClientContext[index].state = EBleAppConStatus_EnabledNotificationDesc;
 
                   }
                 }

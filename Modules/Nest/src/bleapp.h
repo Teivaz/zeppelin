@@ -2,23 +2,23 @@
 
 #include "hci_tl.h"
 
-enum BleAppConnectionStatus {
-	APP_BLE_IDLE,
-	APP_BLE_FAST_ADV,
-	APP_BLE_LP_ADV,
-	APP_BLE_SCAN,
-	APP_BLE_LP_CONNECTING,
-	APP_BLE_CONNECTED_SERVER,
-	APP_BLE_CONNECTED_CLIENT,
+enum BleAppConStatus {
+	EBleAppConStatus_Idle,
+	EBleAppConStatus_FastAdv,
+	EBleAppConStatus_BleLpAdv,
+	EBleAppConStatus_BleScan,
+	EBleAppConStatus_Connecting,
+	EBleAppConStatus_ConnectedServer,
+	EBleAppConStatus_ConnectedClient,
 
-	APP_BLE_DISCOVER_SERVICES,
-	APP_BLE_DISCOVER_CHARACS,
-	APP_BLE_DISCOVER_WRITE_DESC,
-	APP_BLE_DISCOVER_NOTIFICATION_CHAR_DESC,
-	APP_BLE_ENABLE_NOTIFICATION_DESC,
-	APP_BLE_DISABLE_NOTIFICATION_DESC,
+	EBleAppConStatus_DiscoverServices,
+	EBleAppConStatus_DiscoverChars,
+	EBleAppConStatus_DiscoverWriteDesc,
+	EBleAppConStatus_DiscoverNotificationCharDesc,
+	EBleAppConStatus_EnabledNotificationDesc,
+	EBleAppConStatus_DisableNotificationDesc,
 };
 
 void BleAppInit(void); 
 
-enum BleAppConnectionStatus BleAppGetConnectionStatus(uint16_t connectionHandler);
+enum BleAppConStatus BleAppGetConnectionStatus(uint16_t connectionHandler);

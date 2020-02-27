@@ -43,7 +43,7 @@ struct ProfileGlobalContext {
 
 struct ApplicationContext {
 	struct ProfileGlobalContext BleApplicationContext_legacy;
-	enum BleAppConnectionStatus connectionStatus;
+	enum BleAppConStatus connectionStatus;
 	uint8_t switchOffGpioTimerId;
 	uint8_t deviceServerFound;
 };
@@ -110,7 +110,7 @@ void BleAppInit(void) {
 	UTIL_SEQ_RegTask(1 << CFG_TASK_START_SCAN_ID, UTIL_SEQ_RFU, ScanRequest);
 	UTIL_SEQ_RegTask(1 << CFG_TASK_CONN_DEV_1_ID, UTIL_SEQ_RFU, ConnectRequest);
 
-	sAppContext.connectionStatus = APP_BLE_IDLE;
+	sAppContext.connectionStatus = EBleAppConStatus_Idle;
 
 	//!
 	P2PC_APP_Init();
@@ -118,11 +118,11 @@ void BleAppInit(void) {
 	UTIL_SEQ_SetTask(1 << CFG_TASK_START_SCAN_ID, CFG_SCH_PRIO_0);
 }
 
-enum BleAppConnectionStatus BleAppGetConnectionStatus(uint16_t connectionHandle) {
+enum BleAppConStatus BleAppGetConnectionStatus(uint16_t connectionHandle) {
   if (sAppContext.BleApplicationContext_legacy.connectionHandle == connectionHandle) {
     return sAppContext.connectionStatus;
   }
-  return APP_BLE_IDLE;
+  return EBleAppConStatus_Idle;
 }
 
 static void BleTlInit(void) {
@@ -207,7 +207,7 @@ static void BleHciGapGattInit(void){
 }
 
 static void ScanRequest(void) {
-	if (sAppContext.connectionStatus != APP_BLE_CONNECTED_CLIENT) {
+	if (sAppContext.connectionStatus != EBleAppConStatus_ConnectedClient) {
 		tBleStatus const result = aci_gap_start_general_discovery_proc(SCAN_P, SCAN_L, PUBLIC_ADDR, 1);
 		if (result == BLE_STATUS_SUCCESS) {
 			APP_DBG_MSG("\r\n** START GENERAL DISCOVERY (SCAN) **\r\n");
@@ -220,7 +220,7 @@ static void ScanRequest(void) {
 
 static void ConnectRequest(void) {
 	APP_DBG_MSG("\r\n** CREATE CONNECTION TO SERVER **\r\n");
-	if (sAppContext.connectionStatus != APP_BLE_CONNECTED_CLIENT) {
+	if (sAppContext.connectionStatus != EBleAppConStatus_ConnectedClient) {
 		tBleStatus const result = aci_gap_create_connection(
 			SCAN_P, SCAN_L,
 			PUBLIC_ADDR, sServerRemoteBdAddr,
@@ -232,10 +232,10 @@ static void ConnectRequest(void) {
 		);
 
 		if (result == BLE_STATUS_SUCCESS) {
-			sAppContext.connectionStatus = APP_BLE_LP_CONNECTING;
+			sAppContext.connectionStatus = EBleAppConStatus_Connecting;
 		}
 		else {
-			sAppContext.connectionStatus = APP_BLE_IDLE;
+			sAppContext.connectionStatus = EBleAppConStatus_Idle;
 		}
 	}
 }
@@ -350,7 +350,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
 					if (gap_evt_proc_complete->Procedure_Code == GAP_GENERAL_DISCOVERY_PROC && gap_evt_proc_complete->Status == 0x00) {
 						APP_DBG_MSG("-- GAP GENERAL DISCOVERY PROCEDURE_COMPLETED\r\n");
 						/*if a device found, connect to it, device 1 being chosen first if both found*/
-						if (sAppContext.deviceServerFound == 0x01 && sAppContext.connectionStatus != APP_BLE_CONNECTED_CLIENT) {
+						if (sAppContext.deviceServerFound == 0x01 && sAppContext.connectionStatus != EBleAppConStatus_ConnectedClient) {
 							UTIL_SEQ_SetTask(1 << CFG_TASK_CONN_DEV_1_ID, CFG_SCH_PRIO_0);
 						}
 					}
@@ -366,7 +366,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
 		case EVT_DISCONN_COMPLETE: {
 			if (cc->Connection_Handle == sAppContext.BleApplicationContext_legacy.connectionHandle) {
 				sAppContext.BleApplicationContext_legacy.connectionHandle = 0;
-				sAppContext.connectionStatus = APP_BLE_IDLE;
+				sAppContext.connectionStatus = EBleAppConStatus_Idle;
 				APP_DBG_MSG("\r\n\r** DISCONNECTION EVENT WITH SERVER \n");
 				sNotificationHdl.P2P_Evt_Opcode = PEER_DISCON_HANDLE_EVT;
 				sNotificationHdl.ConnectionHandle = sAppContext.BleApplicationContext_legacy.connectionHandle;
@@ -384,7 +384,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
 					 */
 					connection_complete_event = (hci_le_connection_complete_event_rp0 *) meta_evt->data;
 					sAppContext.BleApplicationContext_legacy.connectionHandle = connection_complete_event->Connection_Handle;
-					sAppContext.connectionStatus = APP_BLE_CONNECTED_CLIENT;
+					sAppContext.connectionStatus = EBleAppConStatus_ConnectedClient;
 
 					/* CONNECTION WITH CLIENT */
 					APP_DBG_MSG("\r\n\r** CONNECTION EVENT WITH SERVER \n");
