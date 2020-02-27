@@ -85,7 +85,7 @@ void PendSV_Handler(void);
  * 
  * System tick timer
  **/
-void Systick_Handler(void);
+void SysTick_Handler(void);
 
 /**
  * Priority: 7

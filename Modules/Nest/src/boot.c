@@ -31,18 +31,21 @@ typedef void (*fptr)(void);
 #endif
 
 _INLINE void zero_initialise(int* region_begin, int const* region_end) {
-	int* p = region_begin;
-	while (p < region_end) *p++ = 0;
+	while (region_begin < region_end) *region_begin++ = 0;
 }
-_INLINE void copy_data(int const* source_begin, int const* source_end, int* dest) {
-	int const* p = source_begin;
-	while (p < source_end) *dest++ = *p++;
+_INLINE void copy_data(int* dest_begin, int const* dest_end, int const* source) {
+	while (dest_begin < dest_end) *dest_begin++ = *source++;
 }
 
 __attribute__ ((weak, naked)) void Reset_Handler(void) {
 	copy_data(&_data_start, &_data_end, &_data_start_initialised);
 	zero_initialise(&__bss_start, &__bss_end);
 	zero_initialise(&_mbMem2_start, &_mbMem2_end);
+
+	// the ST way of initializing stuff
+	void SystemInit(void);
+	SystemInit();
+
 	__libc_init_array();
 	main();
 	while(1);
@@ -56,7 +59,7 @@ _WEAK_DEFAULT void UsageFault_Handler(void);
 _WEAK_DEFAULT void SVCall_Handler(void);
 _WEAK_DEFAULT void Debug_Handler(void);
 _WEAK_DEFAULT void PendSV_Handler(void);
-_WEAK_DEFAULT void Systick_Handler(void);
+_WEAK_DEFAULT void SysTick_Handler(void);
 _WEAK_DEFAULT void WWDG_Handler(void);
 _WEAK_DEFAULT void PVD_Handler(void);
 _WEAK_DEFAULT void TAMP_Handler(void);
@@ -135,7 +138,7 @@ struct {
 	fptr Debug;								// 0x0030
 	fptr Reserved_34;					// 0x0034
 	fptr PendSV;							// 0x0038
-	fptr Systick;							// 0x003C
+	fptr SysTick;							// 0x003C
 	fptr WWDG;								// 0x0040
 	fptr PVD;									// 0x0044
 	fptr TAMP;								// 0x0048
@@ -210,7 +213,7 @@ struct {
 	.SVCall = SVCall_Handler,
 	.Debug = Debug_Handler,
 	.PendSV = PendSV_Handler,
-	.Systick = Systick_Handler,
+	.SysTick = SysTick_Handler,
 	.WWDG = WWDG_Handler,
 	.PVD = PVD_Handler,
 	.TAMP = TAMP_Handler,
