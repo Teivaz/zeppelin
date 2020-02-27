@@ -2,7 +2,7 @@
 
 #include "main.h"
 #include "app_common.h"
-#include "app_ble.h"
+#include "bleapp.h"
 #include "ble.h"
 #include "tl.h"
 #include "stm32_seq.h"
@@ -102,7 +102,7 @@ static void SysStatusNot(SHCI_TL_CmdStatus_t status) {
 
 static void SysUserEventTx(void* payload) {
 	TL_TRACES_Init();
-	APP_BLE_Init();
+	BleAppInit();
 	UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
 }
 

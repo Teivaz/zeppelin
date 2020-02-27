@@ -1,4 +1,4 @@
-#include "app_ble.h"
+#include "bleapp.h"
 #include "app_common.h"
 #include "ble_conf.h"
 #include "shci.h"
@@ -18,7 +18,7 @@
 #define APPBLE_GAP_DEVICE_NAME_LENGTH 7
 #define BD_ADDR_SIZE_LOCAL 6
 
-typedef struct ble_SecurityParams {
+struct SecurityParams {
 	uint8_t ioCapability;
 	uint8_t mitmMode;
 	uint8_t bondingMode;
@@ -29,24 +29,24 @@ typedef struct ble_SecurityParams {
 	uint8_t encryptionKeySizeMax;
 	uint32_t fixedPin;
 	uint8_t initiateSecurity;
-} ble_SecurityParams;
+};
 
-typedef struct ble_ProfileGlobalContext {
-	ble_SecurityParams bleSecurityParam;
+struct ProfileGlobalContext {
+	struct SecurityParams bleSecurityParam;
 	uint16_t gapServiceHandle;
 	uint16_t devNameCharHandle;
 	uint16_t appearanceCharHandle;
   uint16_t connectionHandle;
 	uint8_t advtServUuidLen;
 	uint8_t advtServUuid[100];
-} ble_ProfileGlobalContext;
+};
 
-typedef struct ApplicationContext {
-	ble_ProfileGlobalContext BleApplicationContext_legacy;
-	APP_BLE_ConnStatus_t connectionStatus;
+struct ApplicationContext {
+	struct ProfileGlobalContext BleApplicationContext_legacy;
+	enum BleAppConnectionStatus connectionStatus;
 	uint8_t switchOffGpioTimerId;
 	uint8_t deviceServerFound;
-} ApplicationContext;
+};
 
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_CmdPacket_t sBleCmdBuffer;
 
@@ -67,7 +67,7 @@ static uint8_t const BLE_CFG_ER_VALUE[16] = CFG_BLE_ERK;
 static uint8_t sServerRemoteBdAddr[BD_ADDR_SIZE_LOCAL];
 P2PC_APP_ConnHandle_Not_evt_t sNotificationHdl;
 
-PLACE_IN_SECTION("BLE_APP_CONTEXT") static ApplicationContext sAppContext;
+PLACE_IN_SECTION("BLE_APP_CONTEXT") static struct ApplicationContext sAppContext;
 
 static void BleUserEvtRx(void* pPayload);
 static void BleStatusNot(HCI_TL_CmdStatus_t status);
@@ -77,7 +77,7 @@ static uint8_t const* BleGetBdAddress(void);
 static void ScanRequest(void);
 static void ConnectRequest(void);
 
-void APP_BLE_Init(void) {
+void BleAppInit(void) {
 	SHCI_C2_Ble_Init_Cmd_Packet_t bleInitCmdPacket = {
 		.Header = {0},
 		.Param = {
@@ -118,7 +118,7 @@ void APP_BLE_Init(void) {
 	UTIL_SEQ_SetTask(1 << CFG_TASK_START_SCAN_ID, CFG_SCH_PRIO_0);
 }
 
-APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t connectionHandle) {
+enum BleAppConnectionStatus BleAppGetConnectionStatus(uint16_t connectionHandle) {
   if (sAppContext.BleApplicationContext_legacy.connectionHandle == connectionHandle) {
     return sAppContext.connectionStatus;
   }

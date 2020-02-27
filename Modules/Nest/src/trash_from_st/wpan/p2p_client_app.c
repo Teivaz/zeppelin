@@ -29,7 +29,7 @@
 #include "p2p_client_app.h"
 
 #include "stm32_seq.h"
-#include "app_ble.h"
+#include "bleapp.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -62,7 +62,7 @@ typedef struct
    * state of the P2P Client
    * state machine
    */
-  APP_BLE_ConnStatus_t state;
+  enum BleAppConnectionStatus state;
 
   /**
    * connection handle
@@ -255,13 +255,9 @@ static SVCCTL_EvtAckStatus_t Event_Handler(void *Event)
           while((index < BLE_CFG_CLT_MAX_NBR_CB) &&
                   (aP2PClientContext[index].state != APP_BLE_IDLE))
           {
-            APP_BLE_ConnStatus_t status;
+            enum BleAppConnectionStatus const status = BleAppGetConnectionStatus(aP2PClientContext[index].connHandle);
 
-            status = APP_BLE_Get_Client_Connection_Status(aP2PClientContext[index].connHandle);
-
-            if((aP2PClientContext[index].state == APP_BLE_CONNECTED_CLIENT)&&
-                    (status == APP_BLE_IDLE))
-            {
+            if ((aP2PClientContext[index].state == APP_BLE_CONNECTED_CLIENT)&&(status == APP_BLE_IDLE)) {
               /* Handle deconnected */
 
               aP2PClientContext[index].state = APP_BLE_IDLE;
