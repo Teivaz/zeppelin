@@ -19,12 +19,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "app_common.h"
+#include "main.h"
 #include "hw_conf.h"
 #if (CFG_HW_LPUART1_ENABLED == 1)
 extern UART_HandleTypeDef hlpuart1;
 #endif
 #if (CFG_HW_USART1_ENABLED == 1)
-extern UART_HandleTypeDef huart1;
+#define huart1 (*geUart1())
 #endif
 
 /* Macros --------------------------------------------------------------------*/

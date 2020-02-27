@@ -30,40 +30,13 @@
 #include "stm32_lpm.h"
 #include "dbg_trace.h"
 
-/* Private includes -----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-extern RTC_HandleTypeDef hrtc;
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private defines -----------------------------------------------------------*/
 #define POOL_SIZE (CFG_TLBLE_EVT_QUEUE_LENGTH*4U*DIVC(( sizeof(TL_PacketHeader_t) + TL_BLE_EVENT_FRAME_SIZE ), 4U))
 
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macros ------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t EvtPool[POOL_SIZE];
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t SystemCmdBuffer;
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255U];
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255];
 
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private functions prototypes-----------------------------------------------*/
 static void SystemPower_Config( void );
 static void Init_Debug( void );
 static void appe_Tl_Init( void );
@@ -86,7 +59,7 @@ void APPE_Init( void )
 {
   SystemPower_Config(); /**< Configure the system Power Mode */
 
-  HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
+  HW_TS_Init(hw_ts_InitMode_Full, getRtc()); /**< Initialize the TimerServer */
 
 /* USER CODE BEGIN APPE_Init_1 */
   Init_Debug();

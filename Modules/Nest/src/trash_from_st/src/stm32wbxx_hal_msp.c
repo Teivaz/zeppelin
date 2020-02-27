@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include "otp.h"
 /* USER CODE END Includes */
-extern DMA_HandleTypeDef hdma_usart1_tx;
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
@@ -155,21 +154,22 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 
     /* USART1 DMA Init */
     /* USART1_TX Init */
-    hdma_usart1_tx.Instance = DMA1_Channel1;
-    hdma_usart1_tx.Init.Request = DMA_REQUEST_USART1_TX;
-    hdma_usart1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
-    hdma_usart1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_usart1_tx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_usart1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_usart1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart1_tx.Init.Mode = DMA_NORMAL;
-    hdma_usart1_tx.Init.Priority = DMA_PRIORITY_LOW;
-    if (HAL_DMA_Init(&hdma_usart1_tx) != HAL_OK)
+    DMA_HandleTypeDef* dma = getUsartDma();
+    dma->Instance = DMA1_Channel1;
+    dma->Init.Request = DMA_REQUEST_USART1_TX;
+    dma->Init.Direction = DMA_MEMORY_TO_PERIPH;
+    dma->Init.PeriphInc = DMA_PINC_DISABLE;
+    dma->Init.MemInc = DMA_MINC_ENABLE;
+    dma->Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    dma->Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    dma->Init.Mode = DMA_NORMAL;
+    dma->Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(dma) != HAL_OK)
     {
-      Error_Handler();
+      ErrorHandler();
     }
 
-    __HAL_LINKDMA(huart,hdmatx,hdma_usart1_tx);
+    __HAL_LINKDMA(huart, hdmatx, *dma);
 
     /* USART1 interrupt Init */
     HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
