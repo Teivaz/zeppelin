@@ -77,6 +77,7 @@ extern "C"{
 
 #define MODSUB( a, b, m )    MODADD( a, (m)-(b), m )
 
+#undef PAUSE
 #define PAUSE( t )           M_BEGIN \
                                __IO int _i; \
                                for ( _i = t; _i > 0; _i -- ); \

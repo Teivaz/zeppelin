@@ -23,6 +23,7 @@ add_compile_options(
 	"-Wall"
 	
 	"-Wno-unused-function" # for development
+	"-Wno-missing-braces" # this warning is wrong
 	
 	"-ffunction-sections"
 	"-fdata-sections"
