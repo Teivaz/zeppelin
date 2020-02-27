@@ -1,4 +1,6 @@
+#include "stm32wbxx_hal.h"
 
-int main(void) {
-	while(1);
-}
+// int main(void) {
+// 	//HAL_Init();
+// 	while(1);
+// }

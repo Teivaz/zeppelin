@@ -19,17 +19,20 @@ add_compile_options(
 	"-mfloat-abi=hard"
 	"-mfpu=fpv4-sp-d16"
 	"--specs=nano.specs"
-	"-ffunction-sections"
-	"-fdata-sections"
 	"-Wa,-adhlns=program.lst"
 	"-Wall"
+	
+	"-Wno-unused-function" # for development
+	
+	"-ffunction-sections"
+	"-fdata-sections"
 	"-fstack-usage"
 	"-O0"
 	"-g3"
 	"-c"
 )
 
-set(compile_definitions "${device_name}")
+set(compile_definitions "${device_name}" "USE_HAL_DRIVER")
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	list(APPEND compile_definitions "DEBUG" "_DEBUG")
 else()
@@ -46,6 +49,23 @@ add_executable("${PROJECT_NAME}" "${sources}")
 set_target_properties("${PROJECT_NAME}" PROPERTIES OUTPUT_NAME "program.elf")
 target_link_libraries("${PROJECT_NAME}" "STM32WBxx_HAL" "protocol")
 target_include_directories("STM32WBxx_HAL" PUBLIC "${CMAKE_CURRENT_LIST_DIR}/config")
+
+target_include_directories("${PROJECT_NAME}" PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/src/"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/src"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/inc"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/sequencer"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/ble"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/ble/core"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/ble/core/template"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/interface"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/interface/shci"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/interface/tl"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/wpan_middleware/utilities"
+	"${CMAKE_CURRENT_LIST_DIR}/src/trash_from_st/tiny_lpm"
+)
 
 set_target_properties("${PROJECT_NAME}" PROPERTIES LINK_FLAGS
 	"-mcpu=cortex-m4 \

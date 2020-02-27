@@ -1,8 +1,9 @@
 {
 	"C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
 	"files.associations": {
+		"*.c": "c",
 		"*.h": "c",
-		"*.c": "c"
+		"cstdio": "c"
 	},
 	"cmake.configureOnOpen": true,
 	"lldb.displayFormat": "auto",
