@@ -32,7 +32,7 @@ void WpanAppInit(void) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin) {
 	if (pin == Bt1Pin) {
-		UTIL_SEQ_SetTask(1 << CFG_TASK_SW1_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
+		UTIL_SEQ_SetTask(1 << EAppTask_ButtonPushed, 0);
 	}
 }
 
@@ -72,15 +72,11 @@ static void InitDebug(void) {
 static void ConfigureSystemPower(void) {
 	LL_RCC_SetClkAfterWakeFromStop(LL_RCC_STOP_WAKEUPCLOCK_HSI);
 	UTIL_LPM_Init();
-
-#if (CFG_USB_INTERFACE_ENABLE != 0)
-	HAL_PWREx_EnableVddUSB();
-#endif
 }
 
 static void InitTl(void) {
 	TL_Init();
-	UTIL_SEQ_RegTask(1 << CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID, UTIL_SEQ_RFU, shci_user_evt_proc);
+	UTIL_SEQ_RegTask(1 << EAppTask_SystemHciAsyncEventId, UTIL_SEQ_RFU, shci_user_evt_proc);
 
 	SHCI_TL_HciInitConf_t hciConf;
 	hciConf.p_cmdbuffer = (uint8_t*)&sSystemCmdBuffer;
@@ -117,7 +113,7 @@ void UTIL_SEQ_EvtIdle(UTIL_SEQ_bm_t task_id_bm, UTIL_SEQ_bm_t evt_waited_bm) {
 }
 
 void shci_notify_asynch_evt(void* data) {
-	UTIL_SEQ_SetTask(1 << CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID, CFG_SCH_PRIO_0);
+	UTIL_SEQ_SetTask(1 << EAppTask_SystemHciAsyncEventId, 0);
 }
 
 void shci_cmd_resp_release(uint32_t flag) {

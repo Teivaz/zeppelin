@@ -103,19 +103,19 @@ void BleAppInit(void) {
 
 	BleTlInit();
 	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_DISABLE);
-	UTIL_SEQ_RegTask(1 << CFG_TASK_HCI_ASYNCH_EVT_ID, UTIL_SEQ_RFU, hci_user_evt_proc);
+	UTIL_SEQ_RegTask(1 << EAppTask_AsyncEventId, UTIL_SEQ_RFU, hci_user_evt_proc);
 	SHCI_C2_BLE_Init(&bleInitCmdPacket);
 	BleHciGapGattInit();
 	SVCCTL_Init();
-	UTIL_SEQ_RegTask(1 << CFG_TASK_START_SCAN_ID, UTIL_SEQ_RFU, ScanRequest);
-	UTIL_SEQ_RegTask(1 << CFG_TASK_CONN_DEV_1_ID, UTIL_SEQ_RFU, ConnectRequest);
+	UTIL_SEQ_RegTask(1 << EAppTask_ScanId, UTIL_SEQ_RFU, ScanRequest);
+	UTIL_SEQ_RegTask(1 << EAppTask_ConnectDev1Id, UTIL_SEQ_RFU, ConnectRequest);
 
 	sAppContext.connectionStatus = EBleAppConStatus_Idle;
 
 	//!
 	P2PC_APP_Init();
 	
-	UTIL_SEQ_SetTask(1 << CFG_TASK_START_SCAN_ID, CFG_SCH_PRIO_0);
+	UTIL_SEQ_SetTask(1 << EAppTask_ScanId, 0);
 }
 
 enum BleAppConStatus BleAppGetConnectionStatus(uint16_t connectionHandle) {
@@ -273,7 +273,7 @@ uint8_t const* BleGetBdAddress(void) {
 }
 
 void hci_notify_asynch_evt(void* pdata) {
-	UTIL_SEQ_SetTask(1 << CFG_TASK_HCI_ASYNCH_EVT_ID, CFG_SCH_PRIO_0);
+	UTIL_SEQ_SetTask(1 << EAppTask_AsyncEventId, 0);
 }
 
 void hci_cmd_resp_release(uint32_t flag) {
@@ -304,7 +304,7 @@ static void BleStatusNot(HCI_TL_CmdStatus_t status) {
 			 * All tasks that may send an aci/hci commands shall be listed here
 			 * This is to prevent a new command being sent while one is already pending
 			 */
-			taskIdList = (1 << CFG_LAST_TASK_ID_WITH_HCICMD) - 1;
+			taskIdList = (1 << EAppTask_Last) - 1;
 			UTIL_SEQ_PauseTask(taskIdList);
 			break;
 
@@ -313,7 +313,7 @@ static void BleStatusNot(HCI_TL_CmdStatus_t status) {
 			 * All tasks that may send an aci/hci commands shall be listed here
 			 * This is to prevent a new command being sent while one is already pending
 			 */
-			taskIdList = (1 << CFG_LAST_TASK_ID_WITH_HCICMD) - 1;
+			taskIdList = (1 << EAppTask_Last) - 1;
 			UTIL_SEQ_ResumeTask(taskIdList);
 			break;
 
@@ -351,7 +351,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
 						APP_DBG_MSG("-- GAP GENERAL DISCOVERY PROCEDURE_COMPLETED\r\n");
 						/*if a device found, connect to it, device 1 being chosen first if both found*/
 						if (sAppContext.deviceServerFound == 0x01 && sAppContext.connectionStatus != EBleAppConStatus_ConnectedClient) {
-							UTIL_SEQ_SetTask(1 << CFG_TASK_CONN_DEV_1_ID, CFG_SCH_PRIO_0);
+							UTIL_SEQ_SetTask(1 << EAppTask_ConnectDev1Id, 0);
 						}
 					}
 					break;

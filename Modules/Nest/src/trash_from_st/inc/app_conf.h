@@ -437,42 +437,22 @@ typedef enum
  * the requirement that a HCI/ACI command shall never be sent if there is already one pending
  */
 
+enum AppTask {
 /**< Add in that list all tasks that may send a ACI/HCI command */
-typedef enum
-{
-    CFG_TASK_START_SCAN_ID,
-    CFG_TASK_CONN_DEV_1_ID,
-    CFG_TASK_SEARCH_SERVICE_ID,
-    CFG_TASK_SW1_BUTTON_PUSHED_ID,
-    CFG_TASK_CONN_UPDATE_ID,
-    CFG_TASK_HCI_ASYNCH_EVT_ID,
-/* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
-
-/* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
-    CFG_LAST_TASK_ID_WITH_HCICMD,                                               /**< Shall be LAST in the list */
-} CFG_Task_Id_With_HCI_Cmd_t;
+    EAppTask_ScanId,
+    EAppTask_ConnectDev1Id,
+    EAppTask_SearchServiceId,
+    EAppTask_ButtonPushed,
+    EAppTask_UpdateId,
+    EAppTask_AsyncEventId,
 
 /**< Add in that list all tasks that never send a ACI/HCI command */
-typedef enum
-{
-    CFG_FIRST_TASK_ID_WITH_NO_HCICMD = CFG_LAST_TASK_ID_WITH_HCICMD - 1,        /**< Shall be FIRST in the list */
-    CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID,
-/* USER CODE BEGIN CFG_Task_Id_With_NO_HCI_Cmd_t */
+    EAppTask_SystemHciAsyncEventId,
 
-/* USER CODE END CFG_Task_Id_With_NO_HCI_Cmd_t */
-    CFG_LAST_TASK_ID_WITHO_NO_HCICMD                                            /**< Shall be LAST in the list */
-} CFG_Task_Id_With_NO_HCI_Cmd_t;
-#define CFG_TASK_NBR    CFG_LAST_TASK_ID_WITHO_NO_HCICMD
+    EAppTask_Last, // Has to be the last
+};
 
-/**
- * This is the list of priority required by the application
- * Each Id shall be in the range 0..31
- */
-typedef enum
-{
-    CFG_SCH_PRIO_0,
-    CFG_PRIO_NBR,
-} CFG_SCH_Prio_Id_t;
+#define CFG_TASK_NBR EAppTask_Last
 
 /**
  * This is a bit mapping over 32bits listing all events id supported in the application
