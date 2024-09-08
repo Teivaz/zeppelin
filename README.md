@@ -26,10 +26,15 @@ Most parts used here were thoroughly measured and calculated. Like these cases f
 <img alt="preview" src="https://raw.githubusercontent.com/Teivaz/zeppelin/master/Blueprints/Renders/Balloon%20Assembled%20bot.png" width="50%"><img alt="feather" src="https://raw.githubusercontent.com/Teivaz/zeppelin/master/Blueprints/Renders/DC%20Motor%20And%20Servo%20Cover.png" width="50%">
 
 ### Electronic schematics and PCBs
-Well there's not much to say about schematics despite the fact that I'm using AVR microcontroller attiny25 and transmitting modules RF24013. It is designed and traced with [EAGLE](http://www.cadsoftusa.com).
+Well there's not much to say about schematics despite the fact that I'm using ST microcontroller stm32l011f4 and transmitting modules nRF24013. It is designed and traced with [EAGLE](https://www.autodesk.com/products/eagle/overview).
 
 ### Software
-Keeping in mind that I am using attiny25 the IDE is obviously [AVR Strudio](http://www.atmel.com/tools/atmelstudio.aspx). The language is C without any fancy libs.
+I am using smt32l011 and the IDE is [VS Code](https://code.visualstudio.com). The language is C with HAL library.
+
+### Version 1.0 considerations
+ * Feather MCU should use internal PWM channels directly. This will simplify code and increase working frequency.
+ * Feather should use a motor driver that does not short circuit when in low phase of the PWM.
+ * Consider using 8 bit controller for the Feather module.
 
 ### Further plans
  * Second version will be able to carry a camera.

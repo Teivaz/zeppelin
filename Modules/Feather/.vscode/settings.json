@@ -1,0 +1,12 @@
+{
+	"C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+	"files.associations": {
+		"*.h": "c",
+		"*.c": "c"
+	},
+	"cmake.configureOnOpen": true,
+	"lldb.displayFormat": "auto",
+	"lldb.showDisassembly": "auto",
+	"lldb.dereferencePointers": true,
+	"cmake.toolset": ""
+}

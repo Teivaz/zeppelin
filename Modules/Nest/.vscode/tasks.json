@@ -1,0 +1,41 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Flash (STM32 Programmer)",
+			"command": "/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI",
+			"args": [
+				"-c", "port=SWD", "freq=${input:frequency}", "mode=HOTPLUG", "reset=Hwrst",
+				"-w", "build/program.elf",
+				"-v",
+				"-rst"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "console",
+			"type": "shell",
+			"command": "screen /dev/tty.usbmodem1421202 115200"
+		}
+	],
+	"inputs": [
+		{
+			"description": "Frequency",
+			"id": "frequency",
+			"type": "pickString",
+			"options": [
+				"24000",
+				"8000",
+				"3000",
+				"1000",
+				"200",
+				"50",
+				"5",
+			],
+			"default": "24000"
+		}
+	]
+}

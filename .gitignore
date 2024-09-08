@@ -182,23 +182,28 @@ $RECYCLE.BIN/
 *.mo
 
 #Mr Developer
+*.bak
 .mr.developer.cfg
 /UVisionOutput
-*.bak
 /Software/UVisionOutput
-*.bak
 /Software/*.sdf
 /Software/Feather/UVisionOutput
 /Software/Nest/UVisionOutput
-/Software/Feather/*.atsuo
+.cortex-debug.peripherals.state.json
+.cortex-debug.registers.state.json
 
 #Eagle temp files
 *.b#*
 *.l#*
 *.s#*
+
+*.lbr.lck
 *.brd.lck
 *.sch.lck
 **/Hardware/**/*.job
+/Schematic/*.job
+/Schematic/*.pro
+/Schematic/*.scr
 
 #AVR studio
 *.atsuo
